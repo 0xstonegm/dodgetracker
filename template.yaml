@@ -2,6 +2,18 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
 Description: An example serverless application using AWS SAM for updating players.
 
+Parameters:
+    DBHOST:
+        Type: String
+    DBUSER:
+        Type: String
+    DBPASS:
+        Type: String
+    DBPORT:
+        Type: String
+    RIOTAPIKEY:
+        Type: String
+
 Resources:
     UpdatePlayersFunction:
         Type: "AWS::Serverless::Function"
@@ -9,6 +21,14 @@ Resources:
             Handler: index.handler
             Runtime: nodejs20.x
             CodeUri: lambda/updatePlayers/
+            Timeout: 60
+            Environment:
+                Variables:
+                    DB_HOST: !Ref DBHOST
+                    DB_USER: !Ref DBUSER
+                    DB_PASS: !Ref DBPASS
+                    DB_PORT: !Ref DBPORT
+                    RIOT_API_KEY: !Ref RIOTAPIKEY
             Events:
                 HttpApiEvent:
                     Type: HttpApi
