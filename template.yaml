@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
+Description: An example serverless application using AWS SAM for updating players.
+
+Resources:
+    UpdatePlayersFunction:
+        Type: "AWS::Serverless::Function"
+        Properties:
+            Handler: index.handler
+            Runtime: nodejs20.x
+            CodeUri: lambda/updatePlayers/
+            Events:
+                HttpApiEvent:
+                    Type: HttpApi
+                    Properties:
+                        Path: /updatePlayers
+                        Method: post
+        Metadata:
+            BuildMethod: esbuild
+            BuildProperties:
+                Minify: true
+                Target: "es2020"
