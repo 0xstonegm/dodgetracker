@@ -11,8 +11,15 @@ interface Player {
     summonerId: string;
     summonerName: string;
     rankTier: string;
-    currentLp: number;
+    lp: number;
     gamesPlayed: number;
+}
+
+interface Dodge {
+    summonerId: string;
+    lp_before: number;
+    lp_after: number;
+    atGamesPlayed: number;
 }
 
 async function getPlayers(): Promise<Player[]> {
@@ -30,12 +37,76 @@ async function getPlayers(): Promise<Player[]> {
             summonerId: entry.summonerId,
             summonerName: entry.summonerName,
             rankTier: response.data.tier,
-            currentLp: entry.leaguePoints,
+            lp: entry.leaguePoints,
             gamesPlayed: entry.wins + entry.losses,
         })),
     );
 
     return players;
+}
+
+async function fetchCurrentPlayersData(connection): Promise<{
+    [summonerId: string]: {
+        lp: number;
+        gamesPlayed: number;
+    };
+}> {
+    const [rows] = await connection.execute(
+        "SELECT summoner_id, current_lp, games_played FROM players",
+    );
+    const currentPlayersData = {};
+    rows.forEach((row) => {
+        currentPlayersData[row.summoner_id] = {
+            lp: row.current_lp,
+            gamesPlayed: row.games_played,
+        };
+    });
+    return currentPlayersData;
+}
+
+async function getDodges(
+    oldPlayersData: {
+        [summonerId: string]: { lp: number; gamesPlayed: number };
+    },
+    newPlayersData: Player[],
+): Promise<Dodge[]> {
+    const dodges: Dodge[] = [];
+    for (const player of newPlayersData) {
+        if (!oldPlayersData[player.summonerId]) {
+            continue;
+        }
+
+        const playerDataBefore = oldPlayersData[player.summonerId];
+
+        if (
+            player.lp < playerDataBefore.lp &&
+            player.gamesPlayed === playerDataBefore.gamesPlayed
+        ) {
+            dodges.push({
+                summonerId: player.summonerId,
+                lp_before: playerDataBefore.lp,
+                lp_after: player.lp,
+                atGamesPlayed: player.gamesPlayed,
+            });
+        }
+    }
+    return dodges;
+}
+
+async function insertDodges(dodges: Dodge[], connection) {
+    const query = `
+        INSERT INTO dodges (summoner_id, lp_before, lp_after, at_games_played)
+        VALUES ?;
+    `;
+
+    const values = dodges.map((dodge) => [
+        dodge.summonerId,
+        dodge.lp_before,
+        dodge.lp_after,
+        dodge.atGamesPlayed,
+    ]);
+
+    await connection.query(query, [values]);
 }
 
 async function upsertPlayers(players: Player[], connection) {
@@ -52,7 +123,7 @@ async function upsertPlayers(players: Player[], connection) {
         player.summonerId,
         player.summonerName,
         player.rankTier,
-        player.currentLp,
+        player.lp,
         player.gamesPlayed,
     ]);
 
@@ -72,6 +143,13 @@ export const handler: Handler = async () => {
         });
 
         const players = await getPlayers();
+        const currentPlayersData = await fetchCurrentPlayersData(connection);
+        const dodges = await getDodges(currentPlayersData, players);
+
+        if (dodges.length > 0) {
+            await insertDodges(dodges, connection);
+            console.log(`Batch inserted ${dodges.length} dodges.`);
+        }
         if (players.length > 0) {
             await upsertPlayers(players, connection);
             console.log(`Batch updated ${players.length} players.`);
