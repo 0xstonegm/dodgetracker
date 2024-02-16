@@ -131,16 +131,16 @@ async function upsertPlayers(players: Player[], connection) {
 }
 
 export const handler: Handler = async () => {
+    const connection = await createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        database: "dodgetracker",
+        password: process.env.DB_PASS,
+        port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306,
+    });
+
     try {
-        const connection = await createConnection({
-            host: process.env.DB_HOST,
-            user: process.env.DB_USER,
-            database: "dodgetracker",
-            password: process.env.DB_PASS,
-            port: process.env.DB_PORT
-                ? parseInt(process.env.DB_PORT, 10)
-                : 3306,
-        });
+        await connection.beginTransaction(); // Start the transaction
 
         const players = await getPlayers();
         const currentPlayersData = await fetchCurrentPlayersData(connection);
@@ -155,14 +155,11 @@ export const handler: Handler = async () => {
             console.log(`Batch updated ${players.length} players.`);
         }
 
-        await connection.end();
-        return {
-            statusCode: 200,
-            body: JSON.stringify({
-                message: "Players and dodges updated sucessfully",
-            }),
-        };
+        await connection.commit();
+        console.log("Transaction committed successfully.");
     } catch (error) {
+        await connection.rollback();
+        console.error("Transaction rolled back due to an error:", error);
         return {
             statusCode: 500,
             body: JSON.stringify({
@@ -170,5 +167,14 @@ export const handler: Handler = async () => {
                 error,
             }),
         };
+    } finally {
+        await connection.end();
     }
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            message: "Players and dodges updated successfully",
+        }),
+    };
 };
