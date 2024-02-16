@@ -158,7 +158,9 @@ export const handler: Handler = async () => {
         await connection.end();
         return {
             statusCode: 200,
-            body: JSON.stringify({ message: "Players updated" }),
+            body: JSON.stringify({
+                message: "Players and dodges updated sucessfully",
+            }),
         };
     } catch (error) {
         return {
