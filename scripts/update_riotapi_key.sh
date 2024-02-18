@@ -1,35 +1,32 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1090
 set -e
 
-# Script to update the RiotAPI key in github secrets and the Lambda function configuration
-api_key=$1
-[ "$api_key" = "" ] && echo "Usage: $0 <api_key>" && exit 1
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
-
-env_vars_file="$(realpath "$SCRIPT_DIR/../.env.txt")"
+env_vars_file="$(realpath "$SCRIPT_DIR/../.env")"
 [ ! -f "$env_vars_file" ] && echo "File not found: $(realpath "$env_vars_file")" && exit 1
+source "$env_vars_file"
 
-sed -i "s/^RIOT_API_KEY=.*/RIOT_API_KEY=$api_key/" "$env_vars_file"
+echo "Current API key: $RIOT_API_KEY"
 
-# Ask for confirmation that you want to deploy the new API key
-read -p "Are you sure you want to deploy the new API key? [y/N] " -n 1 -r
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo -e "\nContinuing..."
-else
+read -p "Are you sure you want to deploy the new API key? [y/N] " -r
+if ! [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "API key deployment cancelled."
     exit 0
 fi
 
-LAMBDA_FUNCTION_NAME="dodgetracker-UpdatePlayersAndDodges-v0GzQQD5rILI" # FIXME: break out into .env file
+echo "Continuing..."
 
-# Construct the environment variables string in the required format
-ENV_VARS_STRING=$(awk -F'=' '{print $1"="$2}' "$env_vars_file" | paste -sd ',' -)
+echo "Deploying new API key to AWS Lambda..."
+aws lambda update-function-configuration \
+    --function-name "$LAMBDA_FUNCTION_NAME" \
+    --environment "Variables={DB_HOST=$DB_HOST,DB_USER=$DB_USER,DB_PASS=$DB_PASS,DB_PORT=$DB_PORT,RIOT_API_KEY=$RIOT_API_KEY}"
+echo "API key deployed to AWS Lambda."
 
-# Update the Lambda function configuration with the new environment variables
-aws lambda update-function-configuration --function-name "$LAMBDA_FUNCTION_NAME" --environment "Variables={$ENV_VARS_STRING}"
+echo "Deploying new API key to GitHub..."
+gh secret set RIOT_API_KEY --body "$RIOT_API_KEY" -R isak102/dodgetracker
 
-gh secret set RIOT_API_KEY --body "$api_key" -R isak102/dodgetracker
+echo "API key deployed to GitHub."
+echo "API key deployment complete."
 
-# TODO: update netlify env vars
-# FIXME: remove .env.txt and only use .env file if possible
+# TODO: deploy key to netlify
