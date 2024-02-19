@@ -1,0 +1,66 @@
+import { Regions } from "twisted/dist/constants";
+import { pool } from "./db";
+import {
+    LeagueItemDTOWithRegionAndTier,
+    constructSummonerAndRegionKey,
+} from "./players";
+
+export interface Dodge {
+    summonerId: string;
+    lp_before: number;
+    lp_after: number;
+    region: Regions;
+    rankTier: string;
+    atGamesPlayed: number;
+}
+
+export async function getDodges(
+    oldPlayersData: Map<string, { lp: number; gamesPlayed: number }>,
+    newPlayersData: LeagueItemDTOWithRegionAndTier[],
+): Promise<Dodge[]> {
+    console.log("Getting dodges...");
+    let dodges: Dodge[] = [];
+    let notFound = 0;
+    newPlayersData.forEach((newData) => {
+        const oldData = oldPlayersData.get(
+            constructSummonerAndRegionKey(newData.summonerId, newData.region),
+        );
+        if (oldData) {
+            const newGamesPlayed = newData.wins + newData.losses;
+            if (
+                newData.leaguePoints < oldData.lp &&
+                newGamesPlayed == oldData.gamesPlayed
+            ) {
+                dodges.push({
+                    summonerId: newData.summonerId,
+                    lp_before: oldData.lp,
+                    lp_after: newData.leaguePoints,
+                    region: newData.region,
+                    rankTier: newData.rankTier,
+                    atGamesPlayed: oldData.gamesPlayed,
+                });
+            }
+        } else {
+            notFound++;
+        }
+    });
+    console.log(`Old data not found for ${notFound} players`);
+    console.log(`Found ${dodges.length} dodges`);
+    return dodges;
+}
+
+export async function insertDodges(dodges: Dodge[]): Promise<void> {
+    const query = `
+        INSERT INTO dodges (summoner_id, lp_before, lp_after, region, rank_tier, at_games_played)
+        VALUES ?
+    `;
+
+    const connection = await pool.getConnection();
+    try {
+        await connection.query(query, [
+            dodges.map((dodge) => Object.values(dodge)),
+        ]);
+    } finally {
+        if (connection) connection.release();
+    }
+}
