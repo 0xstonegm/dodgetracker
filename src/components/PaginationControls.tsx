@@ -1,30 +1,7 @@
 "use client";
-
 import { FC } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-
-interface ButtonProps {
-    label: string;
-    onClick: () => void;
-    disabled?: boolean;
-    className?: string;
-}
-
-const Button = ({ label, onClick, disabled, className }: ButtonProps) => {
-    const enabledClass = !disabled
-        ? "hover:bg-zinc-600 cursor-pointer"
-        : "cursor-not-allowed";
-
-    return (
-        <button
-            className={`rounded-md bg-zinc-800 p-1 text-white ${enabledClass} ${className}`}
-            disabled={disabled}
-            onClick={onClick}
-        >
-            {label}
-        </button>
-    );
-};
+import { useRouter } from "next/navigation";
+import { Button } from "./Button";
 
 interface PaginationControlsProps {
     currentPage: number;
