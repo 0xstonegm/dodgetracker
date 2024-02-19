@@ -1,3 +1,14 @@
+import DodgeList from "../components/DodgeList";
+
 export default function Home() {
-    return <h1>Hello World</h1>;
+    return (
+        <>
+            <header className="p-4 text-center text-4xl font-bold">
+                Dodges
+            </header>
+            <div className="mx-auto w-3/4">
+                <DodgeList></DodgeList>
+            </div>
+        </>
+    );
 }
