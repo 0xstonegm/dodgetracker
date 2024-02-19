@@ -8,7 +8,7 @@ const pool = createPool({
     database: "dodgetracker",
 });
 
-export async function getAllDodges(): Promise<Dodge[]> {
+export async function getDodges(): Promise<Dodge[]> {
     try {
         const [rows, _] = await pool.query(`
             SELECT
