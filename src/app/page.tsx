@@ -1,4 +1,5 @@
 import DodgeList from "../components/DodgeList";
+import RefreshButton from "../components/RefreshButton";
 
 export default function Home({
     searchParams,
@@ -12,9 +13,12 @@ export default function Home({
 
     return (
         <>
-            <header className="p-4 text-center text-4xl font-bold">
-                Dodges
-            </header>
+            <div className="flex items-center justify-center">
+                <header className="p-4 text-center text-4xl font-bold">
+                    Dodges
+                </header>
+                <RefreshButton />
+            </div>
             <div className="mx-auto w-3/4">
                 <DodgeList pageNumber={pageNumber}></DodgeList>
             </div>
