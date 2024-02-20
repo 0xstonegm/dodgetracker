@@ -12,18 +12,22 @@ export async function getDodges(): Promise<Dodge[]> {
     try {
         const [rows, _] = await pool.query(`
             SELECT
-                d.dodge_id as dodgeId,
-                p.summoner_name as summonerName,
-                d.lp_before as lpBeforeDodge,
-                p.rank_tier as rankTier,
-                (d.lp_before - d.lp_after) as lpLost,
-                d.dodge_timestamp as time
+                d.dodge_id as dodgeID,
+                r.game_name as gameName,
+                r.tag_line as tagLine,
+                s.profile_icon_id as profileIconID,
+                d.region as riotRegion,
+                d.rank_tier as rankTier,
+                d.lp_before as lp,
+                d.lp_before - d.lp_after as lpLost,
+                d.created_at as time
             FROM
                 dodges d
-            INNER JOIN
-                players p ON d.summoner_id = p.summoner_id
-            ORDER BY
-                d.dodge_timestamp DESC
+            JOIN
+                summoners s ON d.summoner_id = s.summoner_id AND d.region = s.region
+            JOIN
+                riot_ids r ON s.puuid = r.puuid
+            order by d.created_at DESC;
         `);
 
         // Assuming the rows directly match the structure of Dodge[]

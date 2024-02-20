@@ -5,10 +5,13 @@ export enum Tier {
 }
 
 export interface Dodge {
-    dodgeId: number;
-    summonerName: string;
-    lpBeforeDodge: number;
-    rankTier: string;
+    dodgeID: number;
+    gameName: string;
+    tagLine: number;
+    profileIconID: number;
+    riotRegion: string;
+    rankTier: Tier;
+    lp: number;
     lpLost: number;
     time: Date;
 }

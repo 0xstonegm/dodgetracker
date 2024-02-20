@@ -28,15 +28,15 @@ export default async function DodgeList({ pageNumber }: DodgeListProps) {
             <div className="p-2">
                 {entries.map((dodge, index) => (
                     <div
-                        key={dodge.dodgeId}
+                        key={dodge.dodgeID}
                         className={`py-2 ${index === dodges.length - 1 ? "" : "border-b border-gray-300"}`}
                     >
                         <div className="grid grid-cols-4">
                             <div className="text-xl font-bold">
-                                {dodge.summonerName}
+                                {dodge.gameName}#{dodge.tagLine}
                             </div>
                             <div>
-                                {dodge.rankTier} {dodge.lpBeforeDodge}LP
+                                {dodge.rankTier} {dodge.lp}LP
                             </div>
                             <div className="text-right text-xl">
                                 -{dodge.lpLost}LP
