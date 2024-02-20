@@ -1,7 +1,8 @@
 import React from "react";
-import { getDodges } from "../data";
+import { getDodges, profileIconUrl } from "../data";
 import { format } from "date-fns";
 import PaginationControls from "./PaginationControls";
+import Image from "next/image";
 
 interface DodgeListProps {
     pageNumber: number;
@@ -31,17 +32,29 @@ export default async function DodgeList({ pageNumber }: DodgeListProps) {
                         key={dodge.dodgeID}
                         className={`py-2 ${index === dodges.length - 1 ? "" : "border-b border-gray-300"}`}
                     >
-                        <div className="grid grid-cols-4">
+                        <div className="grid grid-cols-[2fr,1fr,0.5fr,1fr]">
                             <div className="text-xl font-bold">
-                                {dodge.gameName}#{dodge.tagLine}
+                                <div className="flex items-center">
+                                    <Image
+                                        src={profileIconUrl(
+                                            dodge.profileIconID,
+                                        )}
+                                        width={50}
+                                        height={50}
+                                        alt="Profile Icon"
+                                    ></Image>
+                                    <div className="pl-2">
+                                        {dodge.gameName}#{dodge.tagLine}
+                                    </div>
+                                </div>
                             </div>
-                            <div>
+                            <div className="flex items-center">
                                 {dodge.rankTier} {dodge.lp}LP
                             </div>
-                            <div className="text-right text-xl">
+                            <div className="flex items-center text-left text-xl">
                                 -{dodge.lpLost}LP
                             </div>
-                            <div className="text-right text-xl">
+                            <div className="flex items-center justify-end text-right text-xl">
                                 {format(new Date(dodge.time), "HH:mm dd/MM")}
                             </div>
                         </div>

@@ -8,6 +8,10 @@ const pool = createPool({
     database: "dodgetracker",
 });
 
+export function profileIconUrl(profileIconID: number): string {
+    return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${profileIconID}.jpg`;
+}
+
 export async function getDodges(): Promise<Dodge[]> {
     try {
         const [rows, _] = await pool.query(`
