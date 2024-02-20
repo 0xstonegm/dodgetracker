@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import DodgeList from "../components/DodgeList";
 import RefreshButton from "../components/RefreshButton";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Home({
     searchParams,
@@ -20,7 +22,9 @@ export default function Home({
                 <RefreshButton />
             </div>
             <div className="mx-auto w-3/4">
-                <DodgeList pageNumber={pageNumber}></DodgeList>
+                <Suspense fallback={<LoadingSpinner />}>
+                    <DodgeList pageNumber={pageNumber}></DodgeList>
+                </Suspense>
             </div>
         </>
     );

@@ -1,10 +1,12 @@
+import { Suspense } from "react";
 import DodgeList from "../components/DodgeList";
-
+import RefreshButton from "../components/RefreshButton";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Home({
     searchParams,
 }: {
-    searchParams: { [key: string]: string | string[] | undefined; };
+    searchParams: { [key: string]: string | string[] | undefined };
 }) {
     const page = Array.isArray(searchParams["page"])
         ? searchParams["page"][0]
@@ -18,9 +20,16 @@ export default function Home({
             </header>
             <RefreshButton />
             <div className="mx-auto w-3/4">
-                <DodgeList pageNumber={pageNumber}></DodgeList>
+                <Suspense
+                    fallback={
+                        <div>
+                            <LoadingSpinner />
+                        </div>
+                    }
+                >
+                    <DodgeList pageNumber={pageNumber}></DodgeList>
+                </Suspense>
             </div>
         </>
     );
 }
-
