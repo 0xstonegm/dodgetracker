@@ -165,13 +165,13 @@ export async function updateAccountsData(
         });
 
     console.log(
+        `${dodges.length - summonersToFetch.size}/${dodges.length} of the summoners data already in DB.`,
+    );
+
+    console.log(
         `Fetching summoner data for ${summonersToFetch.size} summoners...`,
     );
     const summonerResults = await Promise.all(promises);
-
-    console.log(
-        `${dodges.length - summonersToFetch.size}/${dodges.length} of the summoners data already in DB.`,
-    );
 
     let puuids: string[] = [];
     let summonersToInsert = summonerResults.map((result) => {
