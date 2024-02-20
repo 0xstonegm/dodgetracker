@@ -1,9 +1,9 @@
 import { Regions } from "twisted/dist/constants";
-import { pool } from "./db";
 import {
     LeagueItemDTOWithRegionAndTier,
     constructSummonerAndRegionKey,
 } from "./players";
+import { PoolConnection } from "mysql2/promise";
 
 export interface Dodge {
     summonerId: string;
@@ -49,18 +49,16 @@ export async function getDodges(
     return dodges;
 }
 
-export async function insertDodges(dodges: Dodge[]): Promise<void> {
+export async function insertDodges(
+    dodges: Dodge[],
+    connection: PoolConnection,
+): Promise<void> {
     const query = `
         INSERT INTO dodges (summoner_id, lp_before, lp_after, region, rank_tier, at_games_played)
         VALUES ?
     `;
 
-    const connection = await pool.getConnection();
-    try {
-        await connection.query(query, [
-            dodges.map((dodge) => Object.values(dodge)),
-        ]);
-    } finally {
-        if (connection) connection.release();
-    }
+    await connection.query(query, [
+        dodges.map((dodge) => Object.values(dodge)),
+    ]);
 }
