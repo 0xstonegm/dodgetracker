@@ -1,6 +1,6 @@
 "use client";
 import { FC } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "./Button";
 
 interface PaginationControlsProps {
@@ -17,8 +17,9 @@ const PaginationControls: FC<PaginationControlsProps> = ({
     totalPageCount,
 }) => {
     const router = useRouter();
+    const pathname = usePathname();
     const goToPage = (newPage: number) => {
-        router.push(`/?page=${newPage}`);
+        router.push(`${pathname}?page=${newPage}`);
     };
 
     return (

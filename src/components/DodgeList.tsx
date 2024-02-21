@@ -3,13 +3,19 @@ import { getDodges, profileIconUrl } from "../data";
 import { format } from "date-fns";
 import PaginationControls from "./PaginationControls";
 import Image from "next/image";
+import { riotRegionToUserRegion, userRegionToRiotRegion } from "../regions";
 
 interface DodgeListProps {
     pageNumber: number;
+    userRegion: string;
 }
 
-export default async function DodgeList({ pageNumber }: DodgeListProps) {
-    const dodges = await getDodges();
+export default async function DodgeList({
+    pageNumber,
+    userRegion,
+}: DodgeListProps) {
+    console.log("Page number: ", pageNumber);
+    const dodges = await getDodges(userRegionToRiotRegion(userRegion));
 
     const entriesPerPage = 50;
     const totalPageCount = Math.ceil(dodges.length / entriesPerPage);
