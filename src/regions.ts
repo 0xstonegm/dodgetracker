@@ -1,4 +1,4 @@
-export const supportedUserRegions = new Set(["eune", "euw", "kr", "na", "oce"]);
+export const supportedUserRegions = new Set(["euw", "eune", "na", "kr", "oce"]);
 
 export function userRegionToRiotRegion(region: string): string {
     if (region === undefined) {
