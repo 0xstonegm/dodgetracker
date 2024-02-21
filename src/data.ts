@@ -1,6 +1,9 @@
 import { createPool } from "mysql2/promise";
 import { Dodge } from "./types"; // Assuming Dodge is properly defined to match the query results
 
+import * as dotenv from "dotenv";
+dotenv.config();
+
 const pool = createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
