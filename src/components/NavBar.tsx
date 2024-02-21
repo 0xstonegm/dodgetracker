@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import RegionSelector from "./RegionSelector";
 
 function NavBar() {
     return (
@@ -8,6 +9,7 @@ function NavBar() {
                 <Link href="/">
                     <div className="text-3xl">Dodgetracker</div>
                 </Link>
+                <RegionSelector />
             </div>
             <div className="flex">
                 <Link href="/about">
