@@ -7,10 +7,6 @@ import { userRegionToRiotRegion } from "../regions";
 import { Button } from "./Button";
 import { getDeeplolUrl, getOpggUrl } from "../statSites";
 
-import masterEmblem from "../../public/lol/rankEmblems/master.png";
-import grandmasterEmblem from "../../public/lol/rankEmblems/grandmaster.png";
-import challengerEmblem from "../../public/lol/rankEmblems/challenger.png";
-
 interface DodgeListProps {
     pageNumber: number;
     userRegion: string;
@@ -26,6 +22,7 @@ export default async function DodgeList({
     const totalPageCount = Math.ceil(dodges.length / entriesPerPage);
 
     if (isNaN(pageNumber)) {
+        // TODO: remove this?
         pageNumber = 1;
     }
     pageNumber = Math.max(pageNumber, 1);
@@ -36,16 +33,8 @@ export default async function DodgeList({
     const entries = dodges.slice(start, end);
 
     const getRankEmblem = (rankTier: string) => {
-        switch (rankTier.toUpperCase()) {
-            case "MASTER":
-                return masterEmblem;
-            case "GRANDMASTER":
-                return grandmasterEmblem;
-            case "CHALLENGER":
-                return challengerEmblem;
-            default:
-                throw new Error("Invalid rank tier");
-        }
+        rankTier = rankTier.toLowerCase();
+        return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/${rankTier}.svg`;
     };
 
     return (
@@ -105,12 +94,12 @@ export default async function DodgeList({
                                 </div>
                             </div>
                             <div className="flex flex-wrap items-center">
-                                <div className="relative mr-2 h-10 w-10">
+                                <div className="relative mr-1 h-10 w-10">
                                     <Image
                                         src={getRankEmblem(dodge.rankTier)}
                                         alt={dodge.rankTier}
-                                        quality={100}
                                         fill
+                                        quality={100}
                                     />
                                 </div>
                                 {dodge.lp}LP
