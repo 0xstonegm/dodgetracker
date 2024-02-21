@@ -2,7 +2,7 @@
 
 export interface ButtonProps {
     label: string;
-    onClick: () => void;
+    onClick?: () => void;
     disabled?: boolean;
     className?: string;
 }
@@ -19,9 +19,9 @@ export const Button = ({
 
     return (
         <button
-            className={`rounded-md bg-zinc-800 p-1 text-white ${enabledClass} ${className}`}
+            className={`rounded-md bg-zinc-800 p-1 align-middle text-white ${enabledClass} ${className}`}
             disabled={disabled}
-            onClick={onClick}
+            onClick={onClick ?? (() => {})}
         >
             {label}
         </button>

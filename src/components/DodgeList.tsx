@@ -3,7 +3,9 @@ import { getDodges, profileIconUrl } from "../data";
 import { format } from "date-fns";
 import PaginationControls from "./PaginationControls";
 import Image from "next/image";
-import { riotRegionToUserRegion, userRegionToRiotRegion } from "../regions";
+import { userRegionToRiotRegion } from "../regions";
+import { Button } from "./Button";
+import { getDeeplolUrl, getOpggUrl } from "../statSites";
 
 interface DodgeListProps {
     pageNumber: number;
@@ -14,7 +16,6 @@ export default async function DodgeList({
     pageNumber,
     userRegion,
 }: DodgeListProps) {
-    console.log("Page number: ", pageNumber);
     const dodges = await getDodges(userRegionToRiotRegion(userRegion));
 
     const entriesPerPage = 50;
@@ -40,7 +41,7 @@ export default async function DodgeList({
                     >
                         <div className="grid grid-cols-[2fr,1fr,0.5fr,1fr]">
                             <div className="text-xl font-bold">
-                                <div className="flex items-center">
+                                <div className="flex flex-wrap items-center">
                                     <Image
                                         src={profileIconUrl(
                                             dodge.profileIconID,
@@ -51,6 +52,36 @@ export default async function DodgeList({
                                     ></Image>
                                     <div className="pl-2">
                                         {dodge.gameName}#{dodge.tagLine}
+                                    </div>
+                                    <div className="pl-2">
+                                        <a
+                                            href={getOpggUrl(
+                                                dodge.riotRegion,
+                                                dodge.gameName,
+                                                dodge.tagLine,
+                                            )}
+                                            target="_blank"
+                                        >
+                                            <Button
+                                                label="OP.GG"
+                                                className="text-xs text-zinc-400"
+                                            ></Button>
+                                        </a>
+                                    </div>
+                                    <div className="pl-1">
+                                        <a
+                                            href={getDeeplolUrl(
+                                                dodge.riotRegion,
+                                                dodge.gameName,
+                                                dodge.tagLine,
+                                            )}
+                                            target="_blank"
+                                        >
+                                            <Button
+                                                label="DEEPLOL.GG"
+                                                className="text-xs text-zinc-400"
+                                            ></Button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

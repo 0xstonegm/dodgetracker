@@ -7,7 +7,7 @@ export enum Tier {
 export interface Dodge {
     dodgeID: number;
     gameName: string;
-    tagLine: number;
+    tagLine: string;
     profileIconID: number;
     riotRegion: string;
     rankTier: Tier;
