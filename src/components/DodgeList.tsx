@@ -7,6 +7,10 @@ import { userRegionToRiotRegion } from "../regions";
 import { Button } from "./Button";
 import { getDeeplolUrl, getOpggUrl } from "../statSites";
 
+import masterEmblem from "../../public/lol/rankEmblems/master.png";
+import grandmasterEmblem from "../../public/lol/rankEmblems/grandmaster.png";
+import challengerEmblem from "../../public/lol/rankEmblems/challenger.png";
+
 interface DodgeListProps {
     pageNumber: number;
     userRegion: string;
@@ -31,6 +35,19 @@ export default async function DodgeList({
     const end = start + Number(entriesPerPage);
     const entries = dodges.slice(start, end);
 
+    const getRankEmblem = (rankTier: string) => {
+        switch (rankTier.toUpperCase()) {
+            case "MASTER":
+                return masterEmblem;
+            case "GRANDMASTER":
+                return grandmasterEmblem;
+            case "CHALLENGER":
+                return challengerEmblem;
+            default:
+                throw new Error("Invalid rank tier");
+        }
+    };
+
     return (
         <div>
             <div className="p-2">
@@ -42,14 +59,16 @@ export default async function DodgeList({
                         <div className="grid grid-cols-[2fr,1fr,0.5fr,1fr]">
                             <div className="text-xl font-bold">
                                 <div className="flex flex-wrap items-center">
-                                    <Image
-                                        src={profileIconUrl(
-                                            dodge.profileIconID,
-                                        )}
-                                        width={50}
-                                        height={50}
-                                        alt="Profile Icon"
-                                    ></Image>
+                                    <div className="relative h-12 w-12">
+                                        <Image
+                                            alt="Profile Icon"
+                                            src={profileIconUrl(
+                                                dodge.profileIconID,
+                                            )}
+                                            fill
+                                            quality={100}
+                                        ></Image>
+                                    </div>
                                     <div className="pl-2">
                                         {dodge.gameName}#{dodge.tagLine}
                                     </div>
@@ -86,7 +105,15 @@ export default async function DodgeList({
                                 </div>
                             </div>
                             <div className="flex items-center">
-                                {dodge.rankTier} {dodge.lp}LP
+                                <div className="relative mr-2 h-10 w-10">
+                                    <Image
+                                        src={getRankEmblem(dodge.rankTier)}
+                                        alt={dodge.rankTier}
+                                        quality={100}
+                                        fill
+                                    />
+                                </div>
+                                {dodge.lp}LP
                             </div>
                             <div className="flex items-center text-left text-xl">
                                 -{dodge.lpLost}LP
