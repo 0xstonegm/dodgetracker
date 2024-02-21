@@ -56,7 +56,7 @@ export default async function DodgeList({
                         key={dodge.dodgeID}
                         className={`py-2 ${index === dodges.length - 1 ? "" : "border-b border-gray-300"}`}
                     >
-                        <div className="grid grid-cols-[2fr,1fr,0.5fr,1fr]">
+                        <div className="grid grid-cols-[3fr,1fr,0.25fr,1.5fr] gap-5">
                             <div className="text-xl font-bold">
                                 <div className="flex flex-wrap items-center">
                                     <div className="relative h-12 w-12">
@@ -104,7 +104,7 @@ export default async function DodgeList({
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex items-center">
+                            <div className="flex flex-wrap items-center">
                                 <div className="relative mr-2 h-10 w-10">
                                     <Image
                                         src={getRankEmblem(dodge.rankTier)}
