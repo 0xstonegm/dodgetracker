@@ -56,6 +56,7 @@ export default async function DodgeList({
                                             )}
                                             fill
                                             quality={100}
+                                            unoptimized // save vercel bandwidth
                                         ></Image>
                                     </div>
                                     <div className="pl-2">
@@ -100,6 +101,7 @@ export default async function DodgeList({
                                         alt={dodge.rankTier}
                                         fill
                                         quality={100}
+                                        unoptimized // save vercel bandwidth
                                     />
                                 </div>
                                 {dodge.lp}LP
