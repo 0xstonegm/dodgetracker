@@ -14,6 +14,8 @@ export interface Dodge {
     atGamesPlayed: number;
 }
 
+const DECAY_LP_LOSS = 75;
+
 export async function getDodges(
     oldPlayersData: Map<string, { lp: number; gamesPlayed: number }>,
     newPlayersData: LeagueItemDTOWithRegionAndTier[],
@@ -29,7 +31,8 @@ export async function getDodges(
             const newGamesPlayed = newData.wins + newData.losses;
             if (
                 newData.leaguePoints < oldData.lp &&
-                newGamesPlayed == oldData.gamesPlayed
+                newGamesPlayed == oldData.gamesPlayed &&
+                oldData.lp - newData.leaguePoints != DECAY_LP_LOSS
             ) {
                 dodges.push({
                     summonerId: newData.summonerId,
