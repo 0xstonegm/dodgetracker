@@ -23,12 +23,12 @@ export default function Region({ params, searchParams }: RegionProps) {
     return (
         <>
             <div className="flex items-center justify-center">
-                <header className="p-4 text-center text-4xl font-bold">
+                <header className="p-2 text-center text-4xl font-bold">
                     Dodges
                 </header>
                 <RefreshButton />
             </div>
-            <div className="mx-auto w-3/4">
+            <div className="mx-auto lg:w-5/6">
                 <Suspense fallback={<LoadingSpinner />}>
                     <DodgeList
                         pageNumber={pageNumber}
