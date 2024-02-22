@@ -3,6 +3,7 @@ import { supportedUserRegions } from "@/src/regions";
 import { notFound } from "next/navigation";
 import React from "react";
 import Image from "next/image";
+import DodgeList from "@/src/components/DodgeList";
 
 export default async function Summoner({
     params,
@@ -76,6 +77,17 @@ export default async function Summoner({
                     </section>
                 </section>
             </section>
+
+            <div className="mx-auto lg:w-5/6">
+                <DodgeList
+                    userRegion={region}
+                    pageNumber={1}
+                    gameName={gameName}
+                    tagLine={tagLine}
+                    statSiteButtons={false}
+                    profileLink={false}
+                />
+            </div>
         </main>
     );
 }

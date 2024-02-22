@@ -60,6 +60,42 @@ export async function getDodges(riotRegion?: string): Promise<Dodge[]> {
     }
 }
 
+export async function getDodgesByPlayer(
+    gameName: string,
+    tagLine: string,
+): Promise<Dodge[]> {
+    try {
+        const query = `
+        SELECT
+            d.dodge_id as dodgeID,
+            r.game_name as gameName,
+            r.tag_line as tagLine,
+            s.profile_icon_id as profileIconID,
+            d.region as riotRegion,
+            d.rank_tier as rankTier,
+            d.lp_before as lp,
+            d.lp_before - d.lp_after as lpLost,
+            d.created_at as time
+        FROM
+            riot_ids r
+        JOIN 
+            summoners s ON s.puuid = r.puuid
+        JOIN 
+            dodges d ON s.summoner_id = d.summoner_id
+        WHERE
+            r.game_name = ? AND r.tag_line = ?
+        ORDER BY 
+            d.created_at DESC;
+        `;
+
+        const [rows, _] = await pool.query(query, [gameName, tagLine]);
+        return rows as Dodge[];
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
 export async function getSummoner(
     gameName: string,
     tagLine: string,

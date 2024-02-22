@@ -1,5 +1,10 @@
 import React from "react";
-import { getDodges, getRankEmblem, profileIconUrl } from "../data";
+import {
+    getDodges,
+    getDodgesByPlayer,
+    getRankEmblem,
+    profileIconUrl,
+} from "../data";
 import { format } from "date-fns";
 import PaginationControls from "./PaginationControls";
 import Image from "next/image";
@@ -11,41 +16,60 @@ import Link from "next/link";
 interface DodgeListProps {
     pageNumber: number;
     userRegion: string;
+    gameName?: string;
+    tagLine?: string;
+    statSiteButtons?: boolean;
+    profileLink?: boolean;
 }
 
 export default async function DodgeList({
     pageNumber,
     userRegion,
+    gameName,
+    tagLine,
+    statSiteButtons = true,
+    profileLink = true,
 }: DodgeListProps) {
-    const dodges = await getDodges(userRegionToRiotRegion(userRegion));
+    const dodges = await (async function () {
+        if (gameName === undefined || tagLine === undefined) {
+            return getDodges(userRegionToRiotRegion(userRegion));
+        }
+        return getDodgesByPlayer(gameName, tagLine);
+    })();
 
     const entriesPerPage = 50;
     const totalPageCount = Math.ceil(dodges.length / entriesPerPage);
 
-    if (isNaN(pageNumber)) {
-        // TODO: remove this?
-        pageNumber = 1;
-    }
-    pageNumber = Math.max(pageNumber, 1);
-    pageNumber = Math.min(pageNumber, totalPageCount);
+    /* Makes sure the pageNumber variable is valid and inside of bounds */
+    pageNumber = (function () {
+        if (isNaN(pageNumber)) {
+            return 1;
+        }
+        return Math.min(Math.max(pageNumber, 1), totalPageCount);
+    })();
 
-    const start = (Number(pageNumber) - 1) * Number(entriesPerPage);
-    const end = start + Number(entriesPerPage);
-    const entries = dodges.slice(start, end);
+    const startEntryIdx = (Number(pageNumber) - 1) * Number(entriesPerPage);
+    const endEntryIdx = startEntryIdx + Number(entriesPerPage);
+    const visibleDodgeEntries = dodges.slice(startEntryIdx, endEntryIdx);
 
     return (
         <div>
             <div className="p-2">
-                {entries.map((dodge, index) => (
+                {visibleDodgeEntries.map((dodge, _) => (
                     <div
                         key={dodge.dodgeID}
-                        className={`py-2 ${index === dodges.length - 1 ? "" : "border-b border-gray-300"}`}
+                        className="border-b border-zinc-900 py-2"
                     >
                         <div className="grid grid-cols-[3fr,1fr,0.25fr,1.5fr] gap-5">
                             <div className="text-xl font-bold">
                                 <div className="flex flex-wrap items-center">
                                     <Link
                                         href={`/${userRegion}/${dodge.gameName}-${dodge.tagLine}`}
+                                        style={{
+                                            pointerEvents: profileLink
+                                                ? "auto"
+                                                : "none",
+                                        }}
                                     >
                                         <div className="flex flex-wrap items-center">
                                             <div className="relative h-12 w-12">
@@ -64,36 +88,42 @@ export default async function DodgeList({
                                             </div>
                                         </div>
                                     </Link>
-                                    <div className="pl-2">
-                                        <a
-                                            href={getOpggUrl(
-                                                dodge.riotRegion,
-                                                dodge.gameName,
-                                                dodge.tagLine,
-                                            )}
-                                            target="_blank"
-                                        >
-                                            <Button
-                                                label="OP.GG"
-                                                className="text-xs text-zinc-400"
-                                            ></Button>
-                                        </a>
-                                    </div>
-                                    <div className="pl-1">
-                                        <a
-                                            href={getDeeplolUrl(
-                                                dodge.riotRegion,
-                                                dodge.gameName,
-                                                dodge.tagLine,
-                                            )}
-                                            target="_blank"
-                                        >
-                                            <Button
-                                                label="DEEPLOL.GG"
-                                                className="text-xs text-zinc-400"
-                                            ></Button>
-                                        </a>
-                                    </div>
+                                    {statSiteButtons && (
+                                        <>
+                                            <div className="pl-2">
+                                                <a
+                                                    href={getOpggUrl(
+                                                        dodge.riotRegion,
+                                                        dodge.gameName,
+                                                        dodge.tagLine,
+                                                    )}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
+                                                >
+                                                    <Button
+                                                        label="OP.GG"
+                                                        className="text-xs text-zinc-400"
+                                                    />
+                                                </a>
+                                            </div>
+                                            <div className="pl-1">
+                                                <a
+                                                    href={getDeeplolUrl(
+                                                        dodge.riotRegion,
+                                                        dodge.gameName,
+                                                        dodge.tagLine,
+                                                    )}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    <Button
+                                                        label="DEEPLOL.GG"
+                                                        className="text-xs text-zinc-400"
+                                                    />
+                                                </a>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex flex-wrap items-center">
@@ -121,8 +151,8 @@ export default async function DodgeList({
             <div className="flex justify-center">
                 <PaginationControls
                     currentPage={pageNumber}
-                    hasNextPage={end < dodges.length}
-                    hasPrevPage={start > 0}
+                    hasNextPage={endEntryIdx < dodges.length}
+                    hasPrevPage={startEntryIdx > 0}
                     totalPageCount={totalPageCount}
                 />
             </div>
