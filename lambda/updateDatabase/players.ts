@@ -117,7 +117,8 @@ export async function upsertPlayers(
         summoner_name = VALUES(summoner_name),
         rank_tier = VALUES(rank_tier),
         current_lp = VALUES(current_lp),
-        games_played = VALUES(games_played);
+        games_played = VALUES(games_played),
+        updated_at = NOW();
     `;
 
     const playersToUpsert = players.map((player) => {
@@ -208,7 +209,8 @@ export async function updateAccountsData(
             region = VALUES(region),
             account_id = VALUES(account_id),
             profile_icon_id = VALUES(profile_icon_id),
-            summoner_level = VALUES(summoner_level);
+            summoner_level = VALUES(summoner_level),
+            updated_at = NOW();
         `,
             [summonersToInsert],
         );
@@ -248,7 +250,8 @@ export async function updateAccountsData(
             INSERT INTO riot_ids (puuid, game_name, tag_line)
             VALUES ? ON DUPLICATE KEY UPDATE
             game_name = VALUES(game_name),
-            tag_line = VALUES(tag_line);
+            tag_line = VALUES(tag_line),
+            updated_at = NOW();
         `,
             [accountsToUpsert],
         );
