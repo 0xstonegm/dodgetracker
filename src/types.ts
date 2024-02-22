@@ -15,3 +15,15 @@ export interface Dodge {
     lpLost: number;
     time: Date;
 }
+
+export interface Summoner {
+    gameName: string;
+    tagLine: string;
+    summonerLevel: number;
+    profileIconID: number;
+    rankTier: Tier;
+    currentLP: number;
+    gamesPlayed: number; // TODO: change DB to store wins and losses separately
+    lastUpdateTime: Date;
+    isInLatestUpdate: boolean;
+}

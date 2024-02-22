@@ -1,5 +1,5 @@
-import { createPool } from "mysql2/promise";
-import { Dodge } from "./types"; // Assuming Dodge is properly defined to match the query results
+import { RowDataPacket, createPool } from "mysql2/promise";
+import { Dodge, Summoner } from "./types"; // Assuming Dodge is properly defined to match the query results
 
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -57,5 +57,54 @@ export async function getDodges(riotRegion?: string): Promise<Dodge[]> {
     } catch (error) {
         console.error(error);
         return [];
+    }
+}
+
+export async function getSummoner(
+    gameName: string,
+    tagLine: string,
+): Promise<Summoner | null> {
+    try {
+        // Initialize the query
+        const query = `
+            SELECT
+                r.game_name as gameName,
+                r.tag_line as tagLine,
+                s.summoner_level as summonerLevel,
+                s.profile_icon_id as profileIconID,
+                p.rank_tier as rankTier,
+                p.current_lp as currentLP,
+                p.games_played as gamesPlayed,
+                p.updated_at as lastUpdateTime,
+                (p.updated_at = (SELECT MAX(updated_at) FROM apex_tier_players)) as isInLatestUpdate
+            FROM
+                riot_ids r
+            JOIN 
+                summoners s ON s.puuid = r.puuid
+            JOIN 
+                apex_tier_players p ON s.summoner_id = p.summoner_id AND s.region = p.region
+            WHERE
+                r.game_name = ? AND r.tag_line = ?;
+        `;
+
+        // Execute the query with the parameters
+        const [rows, _] = (await pool.query(query, [
+            gameName,
+            tagLine,
+        ])) as RowDataPacket[][];
+
+        switch (rows.length) {
+            case 0:
+                return null;
+            case 1:
+                return rows[0] as Summoner;
+            default:
+                throw new Error(
+                    `Expected 0 or 1 summoners, but received ${rows.length} summoners.`,
+                );
+        }
+    } catch (error) {
+        console.error(error);
+        return null;
     }
 }
