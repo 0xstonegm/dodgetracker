@@ -148,14 +148,16 @@ export default async function DodgeList({
                     </div>
                 ))}
             </div>
-            <div className="flex justify-center">
-                <PaginationControls
-                    currentPage={pageNumber}
-                    hasNextPage={endEntryIdx < dodges.length}
-                    hasPrevPage={startEntryIdx > 0}
-                    totalPageCount={totalPageCount}
-                />
-            </div>
+            {totalPageCount > 1 && (
+                <div className="flex justify-center">
+                    <PaginationControls
+                        currentPage={pageNumber}
+                        hasNextPage={endEntryIdx < dodges.length}
+                        hasPrevPage={startEntryIdx > 0}
+                        totalPageCount={totalPageCount}
+                    />
+                </div>
+            )}
         </div>
     );
 }
