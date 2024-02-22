@@ -64,7 +64,7 @@ export default async function DodgeList({
                                                     unoptimized // save vercel bandwidth
                                                 ></Image>
                                             </div>
-                                            <div className="pl-2">
+                                            <div className="pl-2 underline-offset-4 hover:underline">
                                                 {dodge.gameName}#{dodge.tagLine}
                                             </div>
                                         </div>
