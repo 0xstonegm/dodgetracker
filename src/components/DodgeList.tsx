@@ -6,6 +6,7 @@ import Image from "next/image";
 import { userRegionToRiotRegion } from "../regions";
 import { Button } from "./Button";
 import { getDeeplolUrl, getOpggUrl } from "../statSites";
+import Link from "next/link";
 
 interface DodgeListProps {
     pageNumber: number;
@@ -48,20 +49,26 @@ export default async function DodgeList({
                         <div className="grid grid-cols-[3fr,1fr,0.25fr,1.5fr] gap-5">
                             <div className="text-xl font-bold">
                                 <div className="flex flex-wrap items-center">
-                                    <div className="relative h-12 w-12">
-                                        <Image
-                                            alt="Profile Icon"
-                                            src={profileIconUrl(
-                                                dodge.profileIconID,
-                                            )}
-                                            fill
-                                            quality={100}
-                                            unoptimized // save vercel bandwidth
-                                        ></Image>
-                                    </div>
-                                    <div className="pl-2">
-                                        {dodge.gameName}#{dodge.tagLine}
-                                    </div>
+                                    <Link
+                                        href={`/${userRegion}/${dodge.gameName}-${dodge.tagLine}`}
+                                    >
+                                        <div className="flex flex-wrap items-center">
+                                            <div className="relative h-12 w-12">
+                                                <Image
+                                                    alt="Profile Icon"
+                                                    src={profileIconUrl(
+                                                        dodge.profileIconID,
+                                                    )}
+                                                    fill
+                                                    quality={100}
+                                                    unoptimized // save vercel bandwidth
+                                                ></Image>
+                                            </div>
+                                            <div className="pl-2">
+                                                {dodge.gameName}#{dodge.tagLine}
+                                            </div>
+                                        </div>
+                                    </Link>
                                     <div className="pl-2">
                                         <a
                                             href={getOpggUrl(
