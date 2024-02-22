@@ -28,14 +28,20 @@ export default function Region({ params, searchParams }: RegionProps) {
                 </header>
                 <RefreshButton />
             </div>
-            <div className="mx-auto lg:w-5/6">
-                <Suspense fallback={<LoadingSpinner />}>
+            <Suspense
+                fallback={
+                    <div className="flex h-[75vh] items-center justify-center">
+                        <LoadingSpinner></LoadingSpinner>
+                    </div>
+                }
+            >
+                <div className="mx-auto lg:w-5/6">
                     <DodgeList
                         pageNumber={pageNumber}
                         userRegion={params.region}
                     ></DodgeList>
-                </Suspense>
-            </div>
+                </div>
+            </Suspense>
         </>
     );
 }
