@@ -39,34 +39,41 @@ export default async function Summoner({
     return (
         <main>
             <section className="flex min-h-[20vh] items-center justify-center border-b-4 border-zinc-900 bg-zinc-600">
-                <section className="flex">
-                    <div className="relative size-28">
-                        <Image
-                            src={profileIconUrl(summoner.profileIconID)}
-                            alt="Profile Icon"
-                            className="rounded-md"
-                            quality={100}
-                            fill
-                            unoptimized
-                        />
-                    </div>
-                    <div className="flex flex-col justify-around pl-2">
-                        <div className="text-xl font-bold">
-                            {summoner.gameName}#{summoner.tagLine}
-                        </div>
-                        <div className="flex items-center justify-center">
-                            <div className="relative mr-2 size-16">
-                                <Image
-                                    src={getRankEmblem(summoner.rankTier)}
-                                    alt={summoner.rankTier}
-                                    fill
-                                    quality={100}
-                                    unoptimized
-                                />
+                <section>
+                    <section className="flex">
+                        <div className="relative size-28">
+                            <Image
+                                src={profileIconUrl(summoner.profileIconID)}
+                                alt="Profile Icon"
+                                className="rounded-md"
+                                quality={100}
+                                fill
+                                unoptimized
+                            />
+                            <div className="absolute bottom-0 flex w-full translate-y-1/3 items-center justify-center">
+                                <div className="rounded-xl bg-zinc-900 bg-opacity-90 p-1 px-2 text-xs ">
+                                    {summoner.summonerLevel}
+                                </div>
                             </div>
-                            {summoner.currentLP}LP
                         </div>
-                    </div>
+                        <div className="flex flex-col justify-center pl-2">
+                            <div className="text-xl font-bold">
+                                {summoner.gameName}#{summoner.tagLine}
+                            </div>
+                            <div className="flex items-center justify-center">
+                                <div className="relative mr-2 size-12">
+                                    <Image
+                                        src={getRankEmblem(summoner.rankTier)}
+                                        alt={summoner.rankTier}
+                                        fill
+                                        quality={100}
+                                        unoptimized
+                                    />
+                                </div>
+                                {summoner.currentLP}LP
+                            </div>
+                        </div>
+                    </section>
                 </section>
             </section>
         </main>
