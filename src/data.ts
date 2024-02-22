@@ -1,5 +1,5 @@
 import { RowDataPacket, createPool } from "mysql2/promise";
-import { Dodge, Summoner } from "./types"; // Assuming Dodge is properly defined to match the query results
+import { Dodge, Summoner, Tier } from "./types"; // Assuming Dodge is properly defined to match the query results
 
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -107,4 +107,9 @@ export async function getSummoner(
         console.error(error);
         return null;
     }
+}
+
+export function getRankEmblem(rankTier: Tier) {
+    const rankTierStr = rankTier.toLowerCase();
+    return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/${rankTierStr}.svg`;
 }

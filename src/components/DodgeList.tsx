@@ -1,5 +1,5 @@
 import React from "react";
-import { getDodges, profileIconUrl } from "../data";
+import { getDodges, getRankEmblem, profileIconUrl } from "../data";
 import { format } from "date-fns";
 import PaginationControls from "./PaginationControls";
 import Image from "next/image";
@@ -32,11 +32,6 @@ export default async function DodgeList({
     const start = (Number(pageNumber) - 1) * Number(entriesPerPage);
     const end = start + Number(entriesPerPage);
     const entries = dodges.slice(start, end);
-
-    const getRankEmblem = (rankTier: string) => {
-        rankTier = rankTier.toLowerCase();
-        return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/${rankTier}.svg`;
-    };
 
     return (
         <div>
