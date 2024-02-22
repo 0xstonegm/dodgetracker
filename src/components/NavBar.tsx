@@ -1,14 +1,13 @@
 import Link from "next/link";
 import React from "react";
 import RegionSelector from "./RegionSelector";
+import Logo from "./Logo";
 
 function NavBar() {
     return (
         <div className="flex justify-between bg-zinc-800 p-2">
             <div className="flex">
-                <Link href="/">
-                    <div className="text-3xl">Dodgetracker</div>
-                </Link>
+                <Logo />
                 <RegionSelector />
             </div>
             <div className="flex">
