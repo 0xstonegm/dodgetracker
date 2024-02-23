@@ -40,8 +40,10 @@ export default async function Summoner({
     return (
         <main>
             <section className="flex min-h-[20vh] flex-wrap items-center justify-center border-b-4 border-zinc-900 bg-zinc-600">
-                <ProfileCard gameName={gameName} tagLine={tagLine} />
-                <DodgeStats gameName={gameName} tagLine={tagLine} />
+                <Suspense fallback={<LoadingSpinner></LoadingSpinner>}>
+                    <ProfileCard gameName={gameName} tagLine={tagLine} />
+                    <DodgeStats gameName={gameName} tagLine={tagLine} />
+                </Suspense>
             </section>
 
             <Suspense
