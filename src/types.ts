@@ -27,3 +27,9 @@ export interface Summoner {
     lastUpdateTime: Date;
     isInLatestUpdate: boolean;
 }
+
+export interface DodgeCounts {
+    last24Hours: number;
+    last7Days: number;
+    last30Days: number;
+}

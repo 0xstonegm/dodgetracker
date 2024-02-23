@@ -1,5 +1,5 @@
 import { RowDataPacket, createPool } from "mysql2/promise";
-import { Dodge, Summoner, Tier } from "./types"; // Assuming Dodge is properly defined to match the query results
+import { Dodge, DodgeCounts, Summoner, Tier } from "./types"; // Assuming Dodge is properly defined to match the query results
 
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -137,6 +137,60 @@ export async function getSummoner(
             default:
                 throw new Error(
                     `Expected 0 or 1 summoners, but received ${rows.length} summoners.`,
+                );
+        }
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function getDodgeCounts(
+    gameName: string,
+    tagLine: string,
+): Promise<DodgeCounts | null> {
+    try {
+        const query = `
+        SELECT
+            COUNT(
+                CASE
+                    WHEN d.created_at >= CURRENT_TIMESTAMP - INTERVAL 1 DAY THEN 1
+                END
+            ) AS last24Hours,
+            COUNT(
+                CASE
+                    WHEN d.created_at >= CURRENT_TIMESTAMP - INTERVAL 7 DAY THEN 1
+                END
+            ) AS last7Days,
+            COUNT(
+                CASE
+                    WHEN d.created_at >= CURRENT_TIMESTAMP - INTERVAL 30 DAY THEN 1
+                END
+            ) AS last30Days
+        FROM
+            riot_ids r
+            JOIN summoners s ON r.puuid = s.puuid
+            JOIN dodges d ON d.summoner_id = s.summoner_id
+        WHERE
+            game_name = ?
+            AND tag_line = ?
+        HAVING
+            COUNT(d.dodge_id) > 0;
+    `;
+
+        const [rows, _] = (await pool.query(query, [
+            gameName,
+            tagLine,
+        ])) as RowDataPacket[][];
+
+        switch (rows.length) {
+            case 0:
+                return null;
+            case 1:
+                return rows[0] as DodgeCounts;
+            default:
+                throw new Error(
+                    `Expected 0 or 1 dodge counts, but received ${rows.length} dodge counts.`,
                 );
         }
     } catch (error) {

@@ -6,6 +6,7 @@ import Image from "next/image";
 import DodgeList from "@/src/components/DodgeList";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
 import ProfileCard from "@/src/components/ProfileCard";
+import DodgeStats from "@/src/components/DodgeStats";
 
 export default async function Summoner({
     params,
@@ -38,16 +39,9 @@ export default async function Summoner({
 
     return (
         <main>
-            <section className="flex min-h-[20vh] items-center justify-center border-b-4 border-zinc-900 bg-zinc-600">
-                <Suspense
-                    fallback={
-                        <div className="flex h-[20vh] items-center justify-center">
-                            <LoadingSpinner></LoadingSpinner>
-                        </div>
-                    }
-                >
-                    <ProfileCard gameName={gameName} tagLine={tagLine} />
-                </Suspense>
+            <section className="flex min-h-[20vh] flex-wrap items-center justify-center border-b-4 border-zinc-900 bg-zinc-600">
+                <ProfileCard gameName={gameName} tagLine={tagLine} />
+                <DodgeStats gameName={gameName} tagLine={tagLine} />
             </section>
 
             <Suspense
