@@ -23,7 +23,7 @@ const PaginationControls: FC<PaginationControlsProps> = ({
     };
 
     return (
-        <div className="mb-2 flex gap-2">
+        <div className="mb-2 flex items-center justify-center gap-2 text-sm md:text-base">
             <Button
                 label="First"
                 onClick={() => goToPage(1)}

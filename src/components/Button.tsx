@@ -19,7 +19,7 @@ export const Button = ({
 
     return (
         <button
-            className={`rounded-md bg-zinc-800 p-1 align-middle text-white ${enabledClass} ${className}`}
+            className={`rounded-md bg-zinc-800 p-1 align-middle ${enabledClass} ${className}`}
             disabled={disabled}
             onClick={onClick ?? (() => {})}
         >

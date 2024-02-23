@@ -23,7 +23,7 @@ export default function Region({ params, searchParams }: RegionProps) {
     return (
         <>
             <div className="flex items-center justify-center">
-                <header className="p-2 text-center text-4xl font-bold">
+                <header className="p-2 text-center text-2xl font-bold md:text-4xl">
                     Dodges
                 </header>
                 <RefreshButton />

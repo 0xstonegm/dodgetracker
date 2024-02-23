@@ -9,7 +9,7 @@ export default function Logo() {
 
     return (
         <Link href={`/${currentUserRegion}`}>
-            <p className="text-3xl">Dodgetracker</p>
+            <p className="text-xl md:text-3xl">Dodgetracker</p>
         </Link>
     );
 }

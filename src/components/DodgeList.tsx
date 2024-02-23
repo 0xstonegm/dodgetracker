@@ -60,8 +60,8 @@ export default async function DodgeList({
                         key={dodge.dodgeID}
                         className="border-b border-zinc-900 py-2"
                     >
-                        <div className="grid grid-cols-[3fr,1fr,0.25fr,1.5fr] gap-5">
-                            <div className="text-xl font-bold">
+                        <div className="grid grid-cols-[3fr,1fr,0.25fr,1.5fr] gap-1 md:gap-5">
+                            <div className="md:text-xl">
                                 <div className="flex flex-wrap items-center">
                                     <Link
                                         href={`/${userRegion}/${dodge.gameName}-${dodge.tagLine}`}
@@ -71,8 +71,8 @@ export default async function DodgeList({
                                                 : "none",
                                         }}
                                     >
-                                        <div className="flex flex-wrap items-center">
-                                            <div className="relative h-12 w-12">
+                                        <div className="flex items-center justify-center sm:justify-start">
+                                            <div className="relative size-10 self-center md:size-12">
                                                 <Image
                                                     alt="Profile Icon"
                                                     src={profileIconUrl(
@@ -83,7 +83,7 @@ export default async function DodgeList({
                                                     unoptimized // save vercel bandwidth
                                                 ></Image>
                                             </div>
-                                            <div className="pl-2 underline-offset-4 hover:underline">
+                                            <div className="break-all pl-2 font-bold underline-offset-4 hover:underline">
                                                 {dodge.gameName}#{dodge.tagLine}
                                             </div>
                                         </div>
@@ -126,8 +126,8 @@ export default async function DodgeList({
                                     )}
                                 </div>
                             </div>
-                            <div className="flex flex-wrap items-center">
-                                <div className="relative mr-1 h-10 w-10">
+                            <div className="flex flex-wrap items-center justify-center text-sm sm:justify-start md:text-base">
+                                <div className="relative mr-1 size-7 md:size-10">
                                     <Image
                                         src={getRankEmblem(dodge.rankTier)}
                                         alt={dodge.rankTier}
@@ -138,10 +138,10 @@ export default async function DodgeList({
                                 </div>
                                 {dodge.lp}LP
                             </div>
-                            <div className="flex items-center text-left text-xl">
+                            <div className="flex items-center justify-center text-left text-sm sm:justify-start md:text-base">
                                 -{dodge.lpLost}LP
                             </div>
-                            <div className="flex items-center justify-end text-right text-xl">
+                            <div className="flex flex-wrap items-center justify-end text-right text-sm md:text-base">
                                 {format(new Date(dodge.time), "HH:mm dd/MM")}
                             </div>
                         </div>

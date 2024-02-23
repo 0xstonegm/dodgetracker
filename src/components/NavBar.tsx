@@ -12,7 +12,7 @@ function NavBar() {
             </div>
             <div className="flex">
                 <Link href="/about">
-                    <div className="text-xl">About</div>
+                    <div className="text-lg md:text-2xl">About</div>
                 </Link>
             </div>
         </div>

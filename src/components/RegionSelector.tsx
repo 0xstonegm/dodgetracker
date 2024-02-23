@@ -16,7 +16,7 @@ export default function RegionSelector() {
     return (
         <>
             <select
-                className="ml-2 rounded-md bg-zinc-700"
+                className="ml-2 rounded-md bg-zinc-700 text-sm md:text-base"
                 defaultValue={userRegion}
                 onChange={handleChange}
             >

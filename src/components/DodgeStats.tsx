@@ -14,9 +14,9 @@ export default async function DodgeStats({
     }
 
     return (
-        <div className="m-16 rounded-md border-2 border-zinc-900 p-2">
-            <h2 className="text-xl font-bold">Dodge Statistics</h2>
-            <div className="px-2">
+        <div className="rounded-md border-2 border-zinc-900 p-2">
+            <h2 className="font-bold md:text-xl">Dodge Statistics</h2>
+            <div className="px-2 text-sm">
                 <p className="flex justify-between border-b-[1px] border-zinc-900">
                     <div>Last 24h:</div>
                     <div>{dodgeStats.last24Hours}</div>
