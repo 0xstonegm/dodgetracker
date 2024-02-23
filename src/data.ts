@@ -1,15 +1,21 @@
-import { RowDataPacket, createPool } from "mysql2/promise";
+import { Pool, RowDataPacket, createPool } from "mysql2/promise";
 import { Dodge, DodgeCounts, Summoner, Tier } from "./types"; // Assuming Dodge is properly defined to match the query results
 
 import * as dotenv from "dotenv";
 dotenv.config();
 
-const pool = createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: "dodgetracker",
-});
+let globalPool: Pool | undefined = undefined;
+async function getDBConnection(): Promise<Pool> {
+    if (typeof globalPool !== "undefined") return globalPool;
+
+    globalPool = createPool({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: "dodgetracker",
+    });
+    return globalPool;
+}
 
 export function profileIconUrl(profileIconID: number): string {
     return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${profileIconID}.jpg`;
@@ -50,7 +56,9 @@ export async function getDodges(riotRegion?: string): Promise<Dodge[]> {
         query += ` ORDER BY d.created_at DESC`;
 
         // Execute the query with the conditional parameters
-        const [rows, _] = await pool.query(query, queryParams);
+        const [rows, _] = await (
+            await getDBConnection()
+        ).query(query, queryParams);
 
         // Assuming the rows directly match the structure of Dodge[]
         return rows as Dodge[];
@@ -88,7 +96,9 @@ export async function getDodgesByPlayer(
             d.created_at DESC;
         `;
 
-        const [rows, _] = await pool.query(query, [gameName, tagLine]);
+        const [rows, _] = await (
+            await getDBConnection()
+        ).query(query, [gameName, tagLine]);
         return rows as Dodge[];
     } catch (error) {
         console.error(error);
@@ -124,10 +134,9 @@ export async function getSummoner(
         `;
 
         // Execute the query with the parameters
-        const [rows, _] = (await pool.query(query, [
-            gameName,
-            tagLine,
-        ])) as RowDataPacket[][];
+        const [rows, _] = (await (
+            await getDBConnection()
+        ).query(query, [gameName, tagLine])) as RowDataPacket[][];
 
         switch (rows.length) {
             case 0:
@@ -178,10 +187,9 @@ export async function getDodgeCounts(
             COUNT(d.dodge_id) > 0;
     `;
 
-        const [rows, _] = (await pool.query(query, [
-            gameName,
-            tagLine,
-        ])) as RowDataPacket[][];
+        const [rows, _] = (await (
+            await getDBConnection()
+        ).query(query, [gameName, tagLine])) as RowDataPacket[][];
 
         switch (rows.length) {
             case 0:
