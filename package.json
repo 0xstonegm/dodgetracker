@@ -9,6 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@vercel/analytics": "^1.2.2",
         "aws-lambda": "^1.0.7",
         "axios": "^1.6.7",
         "date-fns": "^3.3.1",
