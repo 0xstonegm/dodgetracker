@@ -40,7 +40,13 @@ export default async function Summoner({
     return (
         <main>
             <section className="flex min-h-[20vh] flex-wrap items-center justify-center border-b-4 border-zinc-900 bg-zinc-600">
-                <Suspense fallback={<LoadingSpinner></LoadingSpinner>}>
+                <Suspense
+                    fallback={
+                        <div className="size-16">
+                            <LoadingSpinner />
+                        </div>
+                    }
+                >
                     <div className="m-2 md:mx-14">
                         <ProfileCard gameName={gameName} tagLine={tagLine} />
                     </div>
@@ -53,7 +59,9 @@ export default async function Summoner({
             <Suspense
                 fallback={
                     <div className="flex h-[70vh] items-center justify-center">
-                        <LoadingSpinner></LoadingSpinner>
+                        <div className="size-16">
+                            <LoadingSpinner />
+                        </div>
                     </div>
                 }
             >

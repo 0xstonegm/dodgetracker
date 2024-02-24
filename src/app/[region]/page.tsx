@@ -31,7 +31,9 @@ export default function Region({ params, searchParams }: RegionProps) {
             <Suspense
                 fallback={
                     <div className="flex h-[75vh] items-center justify-center">
-                        <LoadingSpinner></LoadingSpinner>
+                        <div className="size-16">
+                            <LoadingSpinner />
+                        </div>
                     </div>
                 }
             >
