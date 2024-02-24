@@ -28,7 +28,7 @@ export default function RefreshButton() {
 
     return (
         <Button
-            disabled={isPending}
+            disabled={isPending || isDone}
             className="min-h-6 min-w-12 text-sm md:min-h-10 md:min-w-16 md:text-lg"
             onClick={() => {
                 setButtonClicked(true);
