@@ -5,7 +5,14 @@ import { usePathname } from "next/navigation";
 import React from "react";
 
 export default function Logo() {
-    const currentUserRegion = usePathname().split("/")[1];
+    let currentUserRegion = usePathname().split("/")[1];
+    currentUserRegion = (function () {
+        // TODO: redirect to correct region
+        if (currentUserRegion === "about") {
+            return "";
+        }
+        return currentUserRegion;
+    })();
 
     return (
         <Link href={`/${currentUserRegion}`}>
