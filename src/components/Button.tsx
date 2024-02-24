@@ -1,10 +1,11 @@
 "use client";
 
 export interface ButtonProps {
-    label: string;
+    label?: string;
     onClick?: () => void;
     disabled?: boolean;
     className?: string;
+    children?: React.ReactNode;
 }
 
 export const Button = ({
@@ -12,6 +13,7 @@ export const Button = ({
     onClick,
     disabled,
     className,
+    children,
 }: ButtonProps) => {
     const enabledClass = !disabled
         ? "hover:bg-zinc-600 cursor-pointer"
@@ -23,7 +25,7 @@ export const Button = ({
             disabled={disabled}
             onClick={onClick ?? (() => {})}
         >
-            {label}
+            {children ?? label}
         </button>
     );
 };
