@@ -1,5 +1,12 @@
 import { Pool, RowDataPacket, createPool } from "mysql2/promise";
-import { Dodge, DodgeCounts, Summoner, Tier } from "./types"; // Assuming Dodge is properly defined to match the query results
+import {
+    Dodge,
+    DodgeCounts,
+    Leaderboard,
+    LeaderboardEntry,
+    Summoner,
+    Tier,
+} from "./types"; // Assuming Dodge is properly defined to match the query results
 
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -201,6 +208,51 @@ export async function getDodgeCounts(
                     `Expected 0 or 1 dodge counts, but received ${rows.length} dodge counts.`,
                 );
         }
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function getLeaderboard(
+    riotRegion: string,
+): Promise<Leaderboard | null> {
+    try {
+        const query = `
+            SELECT
+                r.game_name AS gameName,
+                r.tag_line AS tagLine,
+                s.region AS riotRegion,
+                p.rank_tier AS rankTier,
+                p.current_lp AS currentLP,
+                p.games_played AS gamesPlayed,
+                COUNT(*) AS numberOfDodges,
+                s.profile_icon_id AS profileIconID
+            FROM
+                dodges d
+                JOIN summoners s ON d.summoner_id = s.summoner_id
+                AND d.region = s.region
+                JOIN apex_tier_players p ON s.summoner_id = p.summoner_id
+                AND s.region = p.region
+                JOIN riot_ids r ON s.puuid = r.puuid
+            WHERE
+                d.region = ?
+            GROUP BY
+                r.game_name,
+                r.tag_line
+            ORDER BY
+                numberOfDodges DESC,
+                p.games_played ASC
+        `;
+
+        const [rows, _] = (await (
+            await getDBConnection()
+        ).query(query, riotRegion)) as RowDataPacket[][];
+
+        if (rows.length === 0) return null;
+        return {
+            entries: rows as LeaderboardEntry[],
+        };
     } catch (error) {
         console.error(error);
         return null;

@@ -33,3 +33,18 @@ export interface DodgeCounts {
     last7Days: number;
     last30Days: number;
 }
+
+export interface LeaderboardEntry {
+    gameName: string;
+    tagLine: string;
+    riotRegion: string;
+    rankTier: Tier;
+    currentLP: number;
+    gamesPlayed: number;
+    numberOfDodges: number;
+    profileIconID: number;
+}
+
+export interface Leaderboard {
+    entries: LeaderboardEntry[];
+}
