@@ -13,7 +13,12 @@ export default function RegionSelector() {
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         e.preventDefault();
         startTransition(() => {
-            router.push(`/${e.target.value}`);
+            const path = pathname.split("/").slice(2)[0];
+            if (["leaderboard", "about"].includes(path)) {
+                router.push(`/${e.target.value}/${path}`);
+            } else {
+                router.push(`/${e.target.value}`);
+            }
         });
     };
 
