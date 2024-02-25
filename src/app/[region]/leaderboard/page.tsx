@@ -1,6 +1,8 @@
 import Leaderboard from "@/src/components/Leaderboard";
+import LoadingSpinner from "@/src/components/LoadingSpinner";
 import { supportedUserRegions } from "@/src/regions";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function page({
     params,
@@ -24,7 +26,22 @@ export default async function page({
 
     return (
         <section className="p-2">
-            <Leaderboard userRegion={userRegion} pageNumber={pageNumber} />
+            <Suspense
+                fallback={
+                    <div className="flex h-[75vh] items-center justify-center">
+                        <div className="size-16">
+                            <LoadingSpinner />
+                        </div>
+                    </div>
+                }
+            >
+                <div className="mx-auto lg:w-5/6">
+                    <Leaderboard
+                        userRegion={userRegion}
+                        pageNumber={pageNumber}
+                    />
+                </div>
+            </Suspense>
         </section>
     );
 }
