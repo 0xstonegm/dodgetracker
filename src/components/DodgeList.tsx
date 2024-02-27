@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -11,6 +10,7 @@ import { userRegionToRiotRegion } from "../regions";
 import { getDeeplolUrl, getOpggUrl } from "../statSites";
 import { Button } from "./Button";
 import PaginationControls from "./PaginationControls";
+import TimeString from "./TimeString";
 
 interface DodgeListProps {
     pageNumber: number;
@@ -141,7 +141,7 @@ export default async function DodgeList({
                                 -{dodge.lpLost}LP
                             </div>
                             <div className="flex flex-wrap items-center justify-end text-right text-sm md:text-base">
-                                {format(new Date(dodge.time), "HH:mm dd/MM")}
+                                <TimeString utcTime={dodge.time} />
                             </div>
                         </div>
                     </div>

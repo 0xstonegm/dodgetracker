@@ -20,6 +20,7 @@ async function getDBConnection(): Promise<Pool> {
         user: process.env.DB_USER,
         password: process.env.DB_PASS,
         database: "dodgetracker",
+        timezone: "Z",
     });
     return globalPool;
 }
