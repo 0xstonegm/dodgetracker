@@ -1,7 +1,8 @@
 import { Regions } from "twisted/dist/constants";
 import {
-    LeagueItemDTOWithRegionAndTier,
-    constructSummonerAndRegionKey,
+    PlayersFromApiMap,
+    PlayersFromDbMap,
+    SummonerIdAndRegionKey,
 } from "./players";
 import { PoolConnection } from "mysql2/promise";
 import logger from "./logger";
@@ -19,23 +20,14 @@ export interface Dodge {
 const DECAY_LP_LOSS = 75;
 
 export async function getDodges(
-    oldPlayersData: Map<
-        string,
-        {
-            lp: number;
-            wins: number;
-            losses: number;
-        }
-    >,
-    newPlayersData: LeagueItemDTOWithRegionAndTier[],
+    playersFromDb: PlayersFromDbMap,
+    playersFromApi: PlayersFromApiMap,
 ): Promise<Dodge[]> {
     logger.info("Getting dodges...");
     let dodges: Dodge[] = [];
     let notFound = 0;
-    newPlayersData.forEach((newData) => {
-        const oldData = oldPlayersData.get(
-            constructSummonerAndRegionKey(newData.summonerId, newData.region),
-        );
+    playersFromApi.forEach((newData, summonerIdAndRegionKey) => {
+        const oldData = playersFromDb.get(summonerIdAndRegionKey);
         if (oldData) {
             const newGamesPlayed = newData.wins + newData.losses;
             const oldGamesPlayed = oldData.wins + oldData.losses;

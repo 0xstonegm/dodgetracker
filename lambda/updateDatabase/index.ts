@@ -4,6 +4,8 @@ import { PoolConnection, RowDataPacket } from "mysql2/promise";
 import {
     fetchCurrentPlayers,
     getPlayers as getPlayers,
+    registerDemotions,
+    registerPromotions,
     updateAccountsData,
     upsertPlayers,
 } from "./players";
@@ -45,7 +47,7 @@ export async function run() {
         let oldData = await fetchCurrentPlayers(connection);
 
         logger.info(
-            `Fetched ${newData.length} players from API and ${oldData.size} from DB. (diff = ${oldData.size - newData.length})`,
+            `Fetched ${newData.size} players from API and ${oldData.size} from DB. (diff = ${oldData.size - newData.size})`,
         );
 
         let dodges = await getDodges(oldData, newData);
@@ -54,9 +56,12 @@ export async function run() {
             await updateAccountsData(dodges, connection);
             await insertDodges(dodges, connection);
         }
-        if (newData.length > 0) {
+        if (newData.size > 0) {
             await upsertPlayers(newData, connection);
         }
+
+        await registerPromotions(oldData, newData, connection);
+        await registerDemotions(oldData, newData, connection);
 
         await connection.commit();
         logger.info("Transaction successfully committed!");

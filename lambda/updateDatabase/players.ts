@@ -14,10 +14,27 @@ const supportedRegions = [
     Constants.Regions.KOREA,
 ];
 
-export interface LeagueItemDTOWithRegionAndTier extends LeagueItemDTO {
+interface LeagueItemDTOWithRegionAndTier extends LeagueItemDTO {
     region: Regions;
     rankTier: string;
 }
+
+export type SummonerIdAndRegionKey = string;
+
+export type PlayersFromApiMap = Map<
+    SummonerIdAndRegionKey,
+    LeagueItemDTOWithRegionAndTier
+>;
+
+export type PlayersFromDbMap = Map<
+    SummonerIdAndRegionKey,
+    {
+        lp: number;
+        wins: number;
+        losses: number;
+        updatedAt: Date;
+    }
+>;
 
 async function getPlayersForRegion(
     region: Regions,
@@ -70,30 +87,24 @@ async function getPlayersForRegion(
 export function constructSummonerAndRegionKey(
     summonerId: string,
     region: string,
-): string {
+): SummonerIdAndRegionKey {
     return `${summonerId}-${region.toUpperCase()}`;
 }
 
-export async function fetchCurrentPlayers(connection: PoolConnection): Promise<
-    Map<
-        string,
-        {
-            lp: number;
-            wins: number;
-            losses: number;
-        }
-    >
-> {
+export async function fetchCurrentPlayers(
+    connection: PoolConnection,
+): Promise<PlayersFromDbMap> {
     const [rows] = await connection.execute<RowDataPacket[]>(
-        "SELECT summoner_id, current_lp, wins, losses, region FROM apex_tier_players",
+        "SELECT summoner_id, current_lp, wins, losses, region, updated_at FROM apex_tier_players",
     );
 
     let currentPlayersData = new Map<
-        string,
+        SummonerIdAndRegionKey,
         {
             lp: number;
             wins: number;
             losses: number;
+            updatedAt: Date;
         }
     >();
 
@@ -103,24 +114,161 @@ export async function fetchCurrentPlayers(connection: PoolConnection): Promise<
             lp: row.current_lp,
             wins: row.wins,
             losses: row.losses,
+            updatedAt: row.updated_at,
         });
     });
 
     return currentPlayersData;
 }
 
-export async function getPlayers(): Promise<LeagueItemDTOWithRegionAndTier[]> {
+export async function getPlayers(): Promise<PlayersFromApiMap> {
     const promises = supportedRegions.map((region) =>
         getPlayersForRegion(region),
     );
 
     const players = await Promise.all(promises);
 
-    return players.flat();
+    const playersMap = new Map<
+        SummonerIdAndRegionKey,
+        LeagueItemDTOWithRegionAndTier
+    >();
+
+    players.forEach((regionPlayers) => {
+        regionPlayers.forEach((player) => {
+            playersMap.set(
+                constructSummonerAndRegionKey(player.summonerId, player.region),
+                player,
+            );
+        });
+    });
+
+    return playersMap;
+}
+
+async function getDemotions(
+    connection: PoolConnection,
+): Promise<Map<SummonerIdAndRegionKey, [Date]>> {
+    const [rows] = await connection.execute<RowDataPacket[]>(
+        "SELECT summoner_id, region, created_at FROM demotions",
+    );
+    const demotionsMap = new Map<string, [Date]>();
+    rows.forEach((row: any) => {
+        const key = constructSummonerAndRegionKey(row.summoner_id, row.region);
+        if (!demotionsMap.has(key)) {
+            demotionsMap.set(key, [row.created_at]);
+        } else {
+            demotionsMap.get(key)?.push(row.created_at);
+        }
+    });
+
+    return demotionsMap;
+}
+
+export async function registerPromotions(
+    playersFromDb: PlayersFromDbMap,
+    playersFromApi: PlayersFromApiMap,
+    connection: PoolConnection,
+): Promise<void> {
+    const demotionsMap = await getDemotions(connection);
+
+    const promotedPlayers: string[][] = [];
+
+    for (const [key, playerFromApi] of Array.from(playersFromApi.entries())) {
+        const playerFromDb = playersFromDb.get(key);
+
+        if (!playerFromDb) {
+            // If player exists in the API but not in the DB then it's a promotion
+            promotedPlayers.push([
+                playerFromApi.summonerId,
+                playerFromApi.region,
+            ]);
+        } else {
+            // If a player exists in the DB, check if it's a promotion.
+            const demotions = demotionsMap.get(key);
+            if (!demotions) continue;
+
+            for (const demotion of demotions) {
+                if (demotion.getTime() > playerFromDb.updatedAt.getTime()) {
+                    promotedPlayers.push([
+                        playerFromApi.summonerId,
+                        playerFromApi.region,
+                    ]);
+                }
+            }
+        }
+    }
+
+    if (promotedPlayers.length === 0) {
+        logger.info("No promotions to register, skipping...");
+    } else {
+        logger.info(
+            `Registering ${promotedPlayers.length} new players in promotions table...`,
+        );
+        await connection.query(
+            `
+                INSERT INTO promotions (summoner_id, region)
+                VALUES ?
+            `,
+            [promotedPlayers],
+        );
+    }
+}
+
+export async function registerDemotions(
+    playersFromDb: PlayersFromDbMap,
+    playersFromApi: PlayersFromApiMap,
+    connection: PoolConnection,
+): Promise<void> {
+    const playersNotInApi: Map<SummonerIdAndRegionKey, Date> = new Map();
+
+    playersFromDb.forEach((playerFromDb, key) => {
+        const playerFromApi = playersFromApi.get(key);
+        if (!playerFromApi) {
+            playersNotInApi.set(key, playerFromDb.updatedAt);
+        }
+    });
+
+    const demotionsMap = await getDemotions(connection);
+
+    const demotedPlayers: string[][] = Array.from(playersNotInApi)
+        .filter(([key, updatedAt]) => {
+            const demotions = demotionsMap.get(key);
+            if (!demotions) return true; // if there are no demotions, then the player is demoted
+
+            for (const demotion of demotions) {
+                if (demotion.getTime() > updatedAt.getTime()) {
+                    // if there exists a demotion with a date after the last update, then a new demotion is not needed
+                    return false;
+                }
+            }
+            // if there are no demotions with a date after the last update, then the player is demoted
+            return true;
+        })
+        .map(([key, _]) => {
+            const lastDashIndex = key.lastIndexOf("-");
+            const summonerId = key.slice(0, lastDashIndex);
+            const region = key.slice(lastDashIndex + 1);
+            return [summonerId, region];
+        });
+
+    if (demotedPlayers.length === 0) {
+        logger.info("No demotions to register, skipping...");
+    } else {
+        logger.info(
+            `Registering ${demotedPlayers.length} players in demotions table...`,
+        );
+        await connection.query(
+            `
+                INSERT INTO demotions (summoner_id, region)
+                VALUES ?
+            `,
+            [demotedPlayers],
+        );
+    }
 }
 
 export async function upsertPlayers(
-    players: LeagueItemDTOWithRegionAndTier[],
+    players: PlayersFromApiMap,
     connection: PoolConnection,
 ): Promise<void> {
     const query = `
@@ -135,7 +283,7 @@ export async function upsertPlayers(
         updated_at = NOW();
     `;
 
-    const playersToUpsert = players.map((player) => {
+    const playersToUpsert = Array.from(players.values()).map((player) => {
         return [
             player.summonerId,
             player.region,
