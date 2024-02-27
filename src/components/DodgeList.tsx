@@ -138,7 +138,7 @@ export default async function DodgeList({
                             <div className="flex items-center justify-center text-left text-sm sm:justify-start md:text-base">
                                 -{dodge.lpLost}LP
                             </div>
-                            <div className="flex flex-wrap items-center justify-end text-right text-sm md:text-base">
+                            <div className="flex flex-wrap items-center justify-end text-right text-xs md:text-base">
                                 <TimeString utcTime={dodge.time} />
                             </div>
                         </div>
