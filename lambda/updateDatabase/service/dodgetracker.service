@@ -5,7 +5,7 @@ After=network.target
 
 [Service]
 User=isak102
-ExecStart=/bin/bash /home/isak102/Code/dodgetracker/scripts/run_backend.sh
+ExecStart=/usr/bin/bash /home/isak102/Code/dodgetracker/scripts/run_backend.sh
 Restart=always
 
 [Install]

@@ -2,15 +2,18 @@
 set -e
 
 PROJECT_ROOT_DIR=$(realpath "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/../")
+NODE_BIN="/home/isak102/.nvm/versions/node/v21.6.2/bin/node"
 
 cd "$PROJECT_ROOT_DIR"
 
+source .env
+
 echo "Building backend..."
-node "build-backend.js"
+$NODE_BIN "build-backend.js"
 echo "Build completed."
 
 echo "Starting backend..."
-node "lambda/updateDatabase/dist/main.js"
+$NODE_BIN "lambda/updateDatabase/dist/main.js"
 echo "Backend finished running."
 
 cd -
