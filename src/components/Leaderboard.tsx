@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./Button";
 import { getLeaderboard, getRankEmblem, profileIconUrl } from "../data";
-import { userRegionToRiotRegion } from "../regions";
+import { riotRegionToUserRegion, userRegionToRiotRegion } from "../regions";
 import { getDeeplolUrl, getOpggUrl } from "../statSites";
 import { notFound } from "next/navigation";
 import PaginationControls from "./PaginationControls";
@@ -46,14 +46,14 @@ export default async function Leaderboard({
             {visibleEntries.map((entry, index) => (
                 <div key={index}>
                     <div className="flex border-b border-zinc-900 p-2">
-                        <p className="flex items-center justify-center pr-3 text-lg font-bold">
+                        <p className="flex w-8 items-center justify-center pr-3 font-bold md:text-lg">
                             {(pageNumber - 1) * entriesPerPage + index + 1}.
                         </p>
                         <div className="flex flex-grow flex-col">
                             <div className="grid grid-cols-[2.5fr,0.7fr,0.7fr] gap-2">
-                                <section className="flex flex-wrap items-center ">
+                                <section className="flex flex-wrap items-center md:text-xl">
                                     <Link
-                                        href={`/euw/${entry.gameName}-${entry.tagLine}`}
+                                        href={`/${riotRegionToUserRegion(entry.riotRegion)}/${entry.gameName}-${entry.tagLine}`}
                                     >
                                         <div className="flex items-center justify-center sm:justify-start">
                                             <div className="relative size-10 self-center md:size-12">
@@ -71,10 +71,44 @@ export default async function Leaderboard({
                                             <div className="break-all pl-2 font-bold underline-offset-4 hover:underline">
                                                 {entry.gameName}#{entry.tagLine}
                                             </div>
+                                            <div className="hidden md:flex md:items-center md:justify-center">
+                                                <div className="pl-2">
+                                                    <a
+                                                        href={getOpggUrl(
+                                                            entry.riotRegion,
+                                                            entry.gameName,
+                                                            entry.tagLine,
+                                                        )}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
+                                                    >
+                                                        <Button
+                                                            label="OP.GG"
+                                                            className="text-xs text-zinc-400"
+                                                        />
+                                                    </a>
+                                                </div>
+                                                <div className="pl-1">
+                                                    <a
+                                                        href={getDeeplolUrl(
+                                                            entry.riotRegion,
+                                                            entry.gameName,
+                                                            entry.tagLine,
+                                                        )}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        <Button
+                                                            label="DEEPLOL.GG"
+                                                            className="text-xs text-zinc-400"
+                                                        />
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </Link>
                                 </section>
-                                <div className="flex flex-col items-center justify-center">
+                                <div className="flex flex-col items-center justify-center md:flex-row md:justify-start">
                                     <div className="relative mr-1 size-7 md:size-10">
                                         <Image
                                             src={getRankEmblem(entry.rankTier)}
@@ -85,7 +119,7 @@ export default async function Leaderboard({
                                             unoptimized // save vercel bandwidth
                                         />
                                     </div>
-                                    <p className="text-xs">
+                                    <p className="text-xs md:text-base">
                                         {entry.currentLP} LP
                                     </p>
                                 </div>
@@ -94,7 +128,7 @@ export default async function Leaderboard({
                                     <p className="text-xs">dodges</p>
                                 </div>
                             </div>
-                            <div className="flex items-center justify-center pt-1">
+                            <div className="flex items-center justify-center md:hidden">
                                 <div className="pl-2">
                                     <a
                                         href={getOpggUrl(
