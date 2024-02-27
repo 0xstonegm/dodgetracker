@@ -38,3 +38,5 @@ next-env.d.ts
 .env*
 .aws-sam
 .netlify
+lambda/updateDatabase/dist
+.logs

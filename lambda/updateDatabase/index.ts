@@ -9,6 +9,7 @@ import {
 } from "./players";
 import { pool } from "./db";
 import { getDodges, insertDodges } from "./dodges";
+import logger from "./logger";
 
 dotenv.config();
 
@@ -28,13 +29,13 @@ async function checkAccountsAndSummonersCount(connection: PoolConnection) {
         )[0][0].count,
     );
     if (summonersCount !== accountsCount) {
-        console.warn(
+        logger.warn(
             `Summoners count (${summonersCount}) and accounts count (${accountsCount}) do not match!`,
         );
     }
 }
 
-export const handler: Handler = async () => {
+export async function run() {
     let connection: PoolConnection | null = null;
     try {
         connection = await pool.getConnection();
@@ -43,7 +44,7 @@ export const handler: Handler = async () => {
         let newData = await getPlayers();
         let oldData = await fetchCurrentPlayers(connection);
 
-        console.log(
+        logger.info(
             `Fetched ${newData.length} players from API and ${oldData.size} from DB. (diff = ${oldData.size - newData.length})`,
         );
 
@@ -58,14 +59,14 @@ export const handler: Handler = async () => {
         }
 
         await connection.commit();
-        console.log("Transaction successfully committed!");
+        logger.info("Transaction successfully committed!");
 
         await checkAccountsAndSummonersCount(connection);
     } catch (error) {
         if (connection) {
             await connection.rollback();
         }
-        console.error("Transaction failed and rolled back", error);
+        logger.error("Transaction failed and rolled back", error);
         return {
             statusCode: 500,
             body: JSON.stringify({
@@ -85,4 +86,8 @@ export const handler: Handler = async () => {
             message: "Database updated successfully.",
         }),
     };
+}
+
+export const handler: Handler = async () => {
+    return run();
 };

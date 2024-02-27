@@ -4,6 +4,7 @@ import {
     constructSummonerAndRegionKey,
 } from "./players";
 import { PoolConnection } from "mysql2/promise";
+import logger from "./logger";
 
 export interface Dodge {
     summonerId: string;
@@ -20,7 +21,7 @@ export async function getDodges(
     oldPlayersData: Map<string, { lp: number; gamesPlayed: number }>,
     newPlayersData: LeagueItemDTOWithRegionAndTier[],
 ): Promise<Dodge[]> {
-    console.log("Getting dodges...");
+    logger.info("Getting dodges...");
     let dodges: Dodge[] = [];
     let notFound = 0;
     newPlayersData.forEach((newData) => {
@@ -47,8 +48,8 @@ export async function getDodges(
             notFound++;
         }
     });
-    console.log(`Old data not found for ${notFound} players`);
-    console.log(`Found ${dodges.length} dodges`);
+    logger.info(`Old data not found for ${notFound} players`);
+    logger.info(`Found ${dodges.length} dodges`);
     return dodges;
 }
 

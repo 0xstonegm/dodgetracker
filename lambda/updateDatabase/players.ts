@@ -4,6 +4,7 @@ import { Regions, regionToRegionGroup } from "twisted/dist/constants/regions";
 import { LeagueItemDTO } from "twisted/dist/models-dto";
 import { Dodge } from "./dodges";
 import { RowDataPacket, PoolConnection } from "mysql2/promise";
+import logger from "./logger";
 
 const supportedRegions = [
     Constants.Regions.EU_WEST,
@@ -135,7 +136,7 @@ export async function upsertPlayers(
     if (playersToUpsert.length > 0) {
         await connection.query(query, [playersToUpsert]);
     } else {
-        console.log("No new players to upsert, skipping...");
+        logger.info("No new players to upsert, skipping...");
     }
 }
 
@@ -165,11 +166,11 @@ export async function updateAccountsData(
             return lolApi.Summoner.getById(dodge.summonerId, dodge.region);
         });
 
-    console.log(
+    logger.info(
         `${dodges.length - summonersToFetch.size}/${dodges.length} of the summoners data already in DB.`,
     );
 
-    console.log(
+    logger.info(
         `Fetching summoner data for ${summonersToFetch.size} summoners...`,
     );
     const summonerResults = await Promise.all(promises);
@@ -215,7 +216,7 @@ export async function updateAccountsData(
             [summonersToInsert],
         );
     } else {
-        console.log(
+        logger.info(
             "No new summoners to insert into summoners table, skipping...",
         );
     }
@@ -228,7 +229,7 @@ export async function updateAccountsData(
         );
     });
 
-    console.log(`Fetching account data for ${puuids.length} accounts...`);
+    logger.info(`Fetching account data for ${puuids.length} accounts...`);
     let accountResults = await Promise.all(accountInfoPromises);
 
     let accountsToUpsert = accountResults.map((result) => {
@@ -256,9 +257,9 @@ export async function updateAccountsData(
             [accountsToUpsert],
         );
     } else {
-        console.log(
+        logger.info(
             "No new accounts to upsert into riot_ids table, skipping...",
         );
     }
-    console.log("All summoner and account data updated.");
+    logger.info("All summoner and account data updated.");
 }
