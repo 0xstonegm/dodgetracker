@@ -1,12 +1,10 @@
-import { getRankEmblem, getSummoner, profileIconUrl } from "@/src/data";
-import { supportedUserRegions } from "@/src/regions";
-import { notFound } from "next/navigation";
-import React, { Suspense } from "react";
-import Image from "next/image";
 import DodgeList from "@/src/components/DodgeList";
+import DodgeStats from "@/src/components/DodgeStats";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
 import ProfileCard from "@/src/components/ProfileCard";
-import DodgeStats from "@/src/components/DodgeStats";
+import { supportedUserRegions } from "@/src/regions";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function Summoner({
     params,

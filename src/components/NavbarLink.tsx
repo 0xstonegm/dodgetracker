@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
 
 export default function NavbarLink({ path }: { path: string }) {
     let currentUserRegion = usePathname().split("/")[1];

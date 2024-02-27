@@ -1,17 +1,16 @@
-import React from "react";
+import { format } from "date-fns";
+import Image from "next/image";
+import Link from "next/link";
 import {
     getDodges,
     getDodgesByPlayer,
     getRankEmblem,
     profileIconUrl,
 } from "../data";
-import { format } from "date-fns";
-import PaginationControls from "./PaginationControls";
-import Image from "next/image";
 import { userRegionToRiotRegion } from "../regions";
-import { Button } from "./Button";
 import { getDeeplolUrl, getOpggUrl } from "../statSites";
-import Link from "next/link";
+import { Button } from "./Button";
+import PaginationControls from "./PaginationControls";
 
 interface DodgeListProps {
     pageNumber: number;

@@ -1,6 +1,6 @@
 "use client";
-import { FC } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { FC } from "react";
 import { Button } from "./Button";
 
 interface PaginationControlsProps {

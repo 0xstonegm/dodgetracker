@@ -1,9 +1,9 @@
+import { PoolConnection, RowDataPacket } from "mysql2/promise";
 import { Constants } from "twisted";
-import { lolApi, riotApi } from "./api";
 import { Regions, regionToRegionGroup } from "twisted/dist/constants/regions";
 import { LeagueItemDTO } from "twisted/dist/models-dto";
+import { lolApi, riotApi } from "./api";
 import { Dodge } from "./dodges";
-import { RowDataPacket, PoolConnection } from "mysql2/promise";
 import logger from "./logger";
 
 const supportedRegions = [

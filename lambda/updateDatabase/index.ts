@@ -1,17 +1,17 @@
 import { Handler } from "aws-lambda";
 import * as dotenv from "dotenv";
 import { PoolConnection, RowDataPacket } from "mysql2/promise";
+import pool from "./db";
+import { getDodges, insertDodges } from "./dodges";
+import logger from "./logger";
 import {
     fetchCurrentPlayers,
-    getPlayers as getPlayers,
+    getPlayers,
     registerDemotions,
     registerPromotions,
     updateAccountsData,
     upsertPlayers,
 } from "./players";
-import pool from "./db";
-import { getDodges, insertDodges } from "./dodges";
-import logger from "./logger";
 
 dotenv.config();
 

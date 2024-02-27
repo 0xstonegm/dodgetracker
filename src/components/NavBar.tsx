@@ -1,8 +1,7 @@
 import Link from "next/link";
-import React from "react";
-import RegionSelector from "./RegionSelector";
 import Logo from "./Logo";
 import NavbarLink from "./NavbarLink";
+import RegionSelector from "./RegionSelector";
 
 function NavBar() {
     return (

@@ -1,8 +1,6 @@
-import React from "react";
-import { getRankEmblem, getSummoner, profileIconUrl } from "../data";
-import { notFound } from "next/navigation";
 import Image from "next/image";
-import { Tier } from "../types";
+import { notFound } from "next/navigation";
+import { getRankEmblem, getSummoner, profileIconUrl } from "../data";
 
 export default async function ProfileCard({
     gameName,

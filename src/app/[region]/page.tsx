@@ -1,9 +1,9 @@
 import DodgeList from "@/src/components/DodgeList";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
 import RefreshButton from "@/src/components/RefreshButton";
-import React, { Suspense } from "react";
 import { supportedUserRegions } from "@/src/regions";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 interface RegionProps {
     params: {

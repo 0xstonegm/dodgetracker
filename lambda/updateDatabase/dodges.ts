@@ -1,11 +1,7 @@
-import { Regions } from "twisted/dist/constants";
-import {
-    PlayersFromApiMap,
-    PlayersFromDbMap,
-    SummonerIdAndRegionKey,
-} from "./players";
 import { PoolConnection } from "mysql2/promise";
+import { Regions } from "twisted/dist/constants";
 import logger from "./logger";
+import { PlayersFromApiMap, PlayersFromDbMap } from "./players";
 
 export interface Dodge {
     summonerId: string;

@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "./Button";
+import { notFound } from "next/navigation";
 import { getLeaderboard, getRankEmblem, profileIconUrl } from "../data";
 import { riotRegionToUserRegion, userRegionToRiotRegion } from "../regions";
 import { getDeeplolUrl, getOpggUrl } from "../statSites";
-import { notFound } from "next/navigation";
+import { Button } from "./Button";
 import PaginationControls from "./PaginationControls";
 
 export default async function Leaderboard({

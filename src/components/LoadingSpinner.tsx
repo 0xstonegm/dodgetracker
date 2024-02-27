@@ -1,5 +1,3 @@
-import React from "react";
-
 // TODO: find way to center spinner
 function LoadingSpinner() {
     return (

@@ -1,11 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button } from "./Button";
-import { useTransition } from "react";
-import { useState, useEffect } from "react";
-import LoadingSpinner from "./LoadingSpinner";
+import { useEffect, useState, useTransition } from "react";
 import { MdDone } from "react-icons/md";
+import { Button } from "./Button";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function RefreshButton() {
     const router = useRouter();
