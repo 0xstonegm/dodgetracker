@@ -71,42 +71,42 @@ export default async function Leaderboard({
                                             <div className="break-all pl-2 font-bold underline-offset-4 hover:underline">
                                                 {entry.gameName}#{entry.tagLine}
                                             </div>
-                                            <div className="hidden md:flex md:items-center md:justify-center">
-                                                <div className="pl-2">
-                                                    <a
-                                                        href={getOpggUrl(
-                                                            entry.riotRegion,
-                                                            entry.gameName,
-                                                            entry.tagLine,
-                                                        )}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
-                                                    >
-                                                        <Button
-                                                            label="OP.GG"
-                                                            className="text-xs text-zinc-400"
-                                                        />
-                                                    </a>
-                                                </div>
-                                                <div className="pl-1">
-                                                    <a
-                                                        href={getDeeplolUrl(
-                                                            entry.riotRegion,
-                                                            entry.gameName,
-                                                            entry.tagLine,
-                                                        )}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        <Button
-                                                            label="DEEPLOL.GG"
-                                                            className="text-xs text-zinc-400"
-                                                        />
-                                                    </a>
-                                                </div>
-                                            </div>
                                         </div>
                                     </Link>
+                                    <div className="hidden md:flex md:items-center md:justify-center">
+                                        <div className="pl-2">
+                                            <a
+                                                href={getOpggUrl(
+                                                    entry.riotRegion,
+                                                    entry.gameName,
+                                                    entry.tagLine,
+                                                )}
+                                                target="_blank"
+                                                rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
+                                            >
+                                                <Button
+                                                    label="OP.GG"
+                                                    className="text-xs text-zinc-400"
+                                                />
+                                            </a>
+                                        </div>
+                                        <div className="pl-1">
+                                            <a
+                                                href={getDeeplolUrl(
+                                                    entry.riotRegion,
+                                                    entry.gameName,
+                                                    entry.tagLine,
+                                                )}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <Button
+                                                    label="DEEPLOL.GG"
+                                                    className="text-xs text-zinc-400"
+                                                />
+                                            </a>
+                                        </div>
+                                    </div>
                                 </section>
                                 <div className="flex flex-col items-center justify-center md:flex-row md:justify-start">
                                     <div className="relative mr-1 size-7 md:size-10">
