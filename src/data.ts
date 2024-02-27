@@ -127,7 +127,8 @@ export async function getSummoner(
                 s.profile_icon_id as profileIconID,
                 p.rank_tier as rankTier,
                 p.current_lp as currentLP,
-                p.games_played as gamesPlayed,
+                p.wins,
+                p.losses,
                 p.updated_at as lastUpdateTime,
                 (p.updated_at = (SELECT MAX(updated_at) FROM apex_tier_players)) as isInLatestUpdate
             FROM
@@ -225,7 +226,8 @@ export async function getLeaderboard(
                 s.region AS riotRegion,
                 p.rank_tier AS rankTier,
                 p.current_lp AS currentLP,
-                p.games_played AS gamesPlayed,
+                p.wins,
+                p.losses,
                 COUNT(*) AS numberOfDodges,
                 s.profile_icon_id AS profileIconID
             FROM
@@ -242,7 +244,7 @@ export async function getLeaderboard(
                 r.tag_line
             ORDER BY
                 numberOfDodges DESC,
-                p.games_played ASC
+                (p.wins + p.losses) ASC
         `;
 
         const [rows, _] = (await (

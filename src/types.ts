@@ -23,7 +23,8 @@ export interface Summoner {
     profileIconID: number;
     rankTier: Tier;
     currentLP: number;
-    gamesPlayed: number; // TODO: change DB to store wins and losses separately
+    wins: number;
+    losses: number;
     lastUpdateTime: Date;
     isInLatestUpdate: boolean;
 }
@@ -40,7 +41,8 @@ export interface LeaderboardEntry {
     riotRegion: string;
     rankTier: Tier;
     currentLP: number;
-    gamesPlayed: number;
+    wins: number;
+    losses: number;
     numberOfDodges: number;
     profileIconID: number;
 }
