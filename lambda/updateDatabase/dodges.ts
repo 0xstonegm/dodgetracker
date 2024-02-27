@@ -12,13 +12,21 @@ export interface Dodge {
     lp_after: number;
     region: Regions;
     rankTier: string;
-    atGamesPlayed: number;
+    atWins: number;
+    atLosses: number;
 }
 
 const DECAY_LP_LOSS = 75;
 
 export async function getDodges(
-    oldPlayersData: Map<string, { lp: number; gamesPlayed: number }>,
+    oldPlayersData: Map<
+        string,
+        {
+            lp: number;
+            wins: number;
+            losses: number;
+        }
+    >,
     newPlayersData: LeagueItemDTOWithRegionAndTier[],
 ): Promise<Dodge[]> {
     logger.info("Getting dodges...");
@@ -30,9 +38,10 @@ export async function getDodges(
         );
         if (oldData) {
             const newGamesPlayed = newData.wins + newData.losses;
+            const oldGamesPlayed = oldData.wins + oldData.losses;
             if (
                 newData.leaguePoints < oldData.lp &&
-                newGamesPlayed == oldData.gamesPlayed &&
+                newGamesPlayed == oldGamesPlayed &&
                 oldData.lp - newData.leaguePoints != DECAY_LP_LOSS
             ) {
                 dodges.push({
@@ -41,7 +50,8 @@ export async function getDodges(
                     lp_after: newData.leaguePoints,
                     region: newData.region,
                     rankTier: newData.rankTier,
-                    atGamesPlayed: oldData.gamesPlayed,
+                    atWins: newData.wins,
+                    atLosses: newData.losses,
                 });
             }
         } else {
@@ -58,7 +68,7 @@ export async function insertDodges(
     connection: PoolConnection,
 ): Promise<void> {
     const query = `
-        INSERT INTO dodges (summoner_id, lp_before, lp_after, region, rank_tier, at_games_played)
+        INSERT INTO dodges (summoner_id, lp_before, lp_after, region, rank_tier, at_wins, at_losses)
         VALUES ?
     `;
 

@@ -7,7 +7,7 @@ import {
     updateAccountsData,
     upsertPlayers,
 } from "./players";
-import { pool } from "./db";
+import pool from "./db";
 import { getDodges, insertDodges } from "./dodges";
 import logger from "./logger";
 

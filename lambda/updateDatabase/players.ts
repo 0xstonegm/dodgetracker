@@ -74,23 +74,35 @@ export function constructSummonerAndRegionKey(
     return `${summonerId}-${region.toUpperCase()}`;
 }
 
-export async function fetchCurrentPlayers(
-    connection: PoolConnection,
-): Promise<Map<string, { lp: number; gamesPlayed: number }>> {
+export async function fetchCurrentPlayers(connection: PoolConnection): Promise<
+    Map<
+        string,
+        {
+            lp: number;
+            wins: number;
+            losses: number;
+        }
+    >
+> {
     const [rows] = await connection.execute<RowDataPacket[]>(
-        "SELECT summoner_id, current_lp, games_played, region FROM apex_tier_players",
+        "SELECT summoner_id, current_lp, wins, losses, region FROM apex_tier_players",
     );
 
     let currentPlayersData = new Map<
         string,
-        { lp: number; gamesPlayed: number }
+        {
+            lp: number;
+            wins: number;
+            losses: number;
+        }
     >();
 
     rows.forEach((row: any) => {
         const key = constructSummonerAndRegionKey(row.summoner_id, row.region);
         currentPlayersData.set(key, {
             lp: row.current_lp,
-            gamesPlayed: row.games_played,
+            wins: row.wins,
+            losses: row.losses,
         });
     });
 
@@ -112,13 +124,14 @@ export async function upsertPlayers(
     connection: PoolConnection,
 ): Promise<void> {
     const query = `
-        INSERT INTO apex_tier_players (summoner_id, region, summoner_name, rank_tier, current_lp, games_played)
+        INSERT INTO apex_tier_players (summoner_id, region, summoner_name, rank_tier, current_lp, wins, losses)
         VALUES ?
         ON DUPLICATE KEY UPDATE
         summoner_name = VALUES(summoner_name),
         rank_tier = VALUES(rank_tier),
         current_lp = VALUES(current_lp),
-        games_played = VALUES(games_played),
+        wins = VALUES(wins),
+        losses = VALUES(losses),
         updated_at = NOW();
     `;
 
@@ -129,7 +142,8 @@ export async function upsertPlayers(
             player.summonerName,
             player.rankTier,
             player.leaguePoints,
-            player.wins + player.losses,
+            player.wins,
+            player.losses,
         ];
     });
 

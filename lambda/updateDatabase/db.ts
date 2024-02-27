@@ -1,6 +1,6 @@
 import { createPool } from "mysql2/promise";
 
-export const pool = createPool({
+const pool = createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
@@ -9,3 +9,5 @@ export const pool = createPool({
     connectionLimit: 10,
     queueLimit: 0,
 });
+
+export default pool;
