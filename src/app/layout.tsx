@@ -1,3 +1,4 @@
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -20,6 +21,7 @@ export default function RootLayout({
             <body className={`${inter.className} bg-zinc-700 text-zinc-300`}>
                 <NavBar />
                 {children}
+                <GoogleAnalytics gaId="G-MDBY12TWLN" />
                 <Analytics />
             </body>
         </html>
