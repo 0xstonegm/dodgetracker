@@ -99,10 +99,9 @@ export default async function DodgeList({
                                                     target="_blank"
                                                     rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
                                                 >
-                                                    <Button
-                                                        label="OP.GG"
-                                                        className="text-xs text-zinc-400"
-                                                    />
+                                                    <Button className="text-xs text-zinc-400">
+                                                        OP.GG
+                                                    </Button>
                                                 </a>
                                             </div>
                                             <div className="pl-1">
@@ -115,10 +114,9 @@ export default async function DodgeList({
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                 >
-                                                    <Button
-                                                        label="DEEPLOL.GG"
-                                                        className="text-xs text-zinc-400"
-                                                    />
+                                                    <Button className="text-xs text-zinc-400">
+                                                        DEEPLOL.GG
+                                                    </Button>
                                                 </a>
                                             </div>
                                         </>

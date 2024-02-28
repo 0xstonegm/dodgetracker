@@ -1,19 +1,17 @@
 "use client";
 
-export interface ButtonProps {
-    label?: string;
-    onClick?: () => void;
+export interface ButtonProps
+    extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    // You can still add custom props if needed, for example:
     disabled?: boolean;
-    className?: string;
-    children?: React.ReactNode;
+    customClassName?: string; // Example custom prop, if you need one
 }
 
 export const Button = ({
-    label,
-    onClick,
     disabled,
     className,
     children,
+    ...props
 }: ButtonProps) => {
     const enabledClass = !disabled
         ? "hover:bg-zinc-600 cursor-pointer"
@@ -21,11 +19,10 @@ export const Button = ({
 
     return (
         <button
+            {...props}
             className={`rounded-md bg-zinc-800 p-1 align-middle ${enabledClass} ${className}`}
-            disabled={disabled}
-            onClick={onClick ?? (() => {})}
         >
-            {children ?? label}
+            {children}
         </button>
     );
 };
