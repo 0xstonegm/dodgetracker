@@ -1,6 +1,12 @@
 import { run } from "./index";
 import logger from "./logger";
 
+function timeout(ms: number) {
+    return new Promise((_, reject) =>
+        setTimeout(() => reject(new Error(`Timed out after ${ms}ms`)), ms),
+    );
+}
+
 async function main() {
     while (true) {
         // START TIMING
@@ -10,7 +16,7 @@ async function main() {
             "----------------------------RUNNING DATABASE UPDATE----------------------------",
         );
         try {
-            await run();
+            await Promise.race([run(), timeout(30 * 1000)]);
             logger.info("Database updated successfully");
         } catch (error) {
             logger.error("Database update failed", error);
