@@ -6,6 +6,8 @@ import { MdDone } from "react-icons/md";
 import { Button } from "./Button";
 import LoadingSpinner from "./LoadingSpinner";
 
+const updateIntervalSecs = 15;
+
 export default function RefreshButton() {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
@@ -14,6 +16,11 @@ export default function RefreshButton() {
 
     const [buttonClicked, setButtonClicked] = useState(false);
     const [isDone, setIsDone] = useState(false);
+
+    function getAutoFetch(): boolean {
+        const value = localStorage.getItem("autoFetch");
+        return value === "true";
+    }
 
     useEffect(() => {
         if (!isPending && buttonClicked) {
@@ -24,6 +31,20 @@ export default function RefreshButton() {
             return () => clearTimeout(timeoutId);
         }
     }, [isPending, buttonClicked]);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (getAutoFetch()) {
+                setButtonClicked(true);
+                startTransition(() => {
+                    router.refresh();
+                    setIsDone(true);
+                });
+            }
+        }, updateIntervalSecs * 1000);
+
+        return () => clearInterval(intervalId);
+    }, [router]);
 
     return (
         <Button

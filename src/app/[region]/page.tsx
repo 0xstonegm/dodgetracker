@@ -1,3 +1,4 @@
+import AutoFetchSwitch from "@/src/components/AutoFetchSwitch";
 import DodgeList from "@/src/components/DodgeList";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
 import RefreshButton from "@/src/components/RefreshButton";
@@ -30,11 +31,13 @@ export default function Region({ params, searchParams }: RegionProps) {
                         </header>
                         <RefreshButton />
                     </div>
-                    <p className="m-2 text-center text-sm">
+                    <p className="m-2 px-2 text-center">
                         The database is updated automatically every ~10 seconds.
-                        Use the Fetch button to fetch the latest dodges from the
-                        database.
+                        Press the fetch button to fetch the latest dodges from
+                        the database or enable auto-fetch to automatically fetch
+                        the latest dodges every 15 seconds.
                     </p>
+                    <AutoFetchSwitch />
                 </div>
             </div>
             <Suspense
