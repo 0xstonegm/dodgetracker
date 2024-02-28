@@ -23,10 +23,19 @@ export default function Region({ params, searchParams }: RegionProps) {
     return (
         <>
             <div className="flex items-center justify-center">
-                <header className="p-2 text-center text-2xl font-bold md:text-4xl">
-                    Dodges
-                </header>
-                <RefreshButton />
+                <div className="flex flex-col items-center">
+                    <div className="flex items-center justify-center">
+                        <header className="m-2 text-center text-2xl font-bold md:text-4xl">
+                            Dodges
+                        </header>
+                        <RefreshButton />
+                    </div>
+                    <p className="m-2 text-center text-sm">
+                        The database is updated automatically every ~10 seconds.
+                        Use the Fetch button to fetch the latest dodges from the
+                        database.
+                    </p>
+                </div>
             </div>
             <Suspense
                 fallback={
