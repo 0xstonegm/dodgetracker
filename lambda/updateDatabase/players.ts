@@ -171,7 +171,7 @@ export async function registerPromotions(
 ): Promise<void> {
     const demotionsMap = await getDemotions(connection);
 
-    const promotedPlayers: string[][] = [];
+    const promotedPlayers: (string | number)[][] = [];
 
     for (const [key, playerFromApi] of Array.from(playersFromApi.entries())) {
         const playerFromDb = playersFromDb.get(key);
@@ -181,6 +181,8 @@ export async function registerPromotions(
             promotedPlayers.push([
                 playerFromApi.summonerId,
                 playerFromApi.region,
+                playerFromApi.wins,
+                playerFromApi.losses,
             ]);
         } else {
             // If a player exists in the DB, check if it's a promotion.
@@ -192,6 +194,8 @@ export async function registerPromotions(
                     promotedPlayers.push([
                         playerFromApi.summonerId,
                         playerFromApi.region,
+                        playerFromApi.wins,
+                        playerFromApi.losses,
                     ]);
                 }
             }
@@ -206,7 +210,7 @@ export async function registerPromotions(
         );
         await connection.query(
             `
-                INSERT INTO promotions (summoner_id, region)
+                INSERT INTO promotions (summoner_id, region, at_wins, at_losses)
                 VALUES ?
             `,
             [promotedPlayers],
@@ -219,24 +223,31 @@ export async function registerDemotions(
     playersFromApi: PlayersFromApiMap,
     connection: PoolConnection,
 ): Promise<void> {
-    const playersNotInApi: Map<SummonerIdAndRegionKey, Date> = new Map();
+    const playersNotInApi: Map<
+        SummonerIdAndRegionKey,
+        { updatedAt: Date; wins: number; losses: number }
+    > = new Map();
 
     playersFromDb.forEach((playerFromDb, key) => {
         const playerFromApi = playersFromApi.get(key);
         if (!playerFromApi) {
-            playersNotInApi.set(key, playerFromDb.updatedAt);
+            playersNotInApi.set(key, {
+                updatedAt: playerFromDb.updatedAt,
+                wins: playerFromDb.wins,
+                losses: playerFromDb.losses,
+            });
         }
     });
 
     const demotionsMap = await getDemotions(connection);
 
-    const demotedPlayers: string[][] = Array.from(playersNotInApi)
-        .filter(([key, updatedAt]) => {
+    const demotedPlayers = Array.from(playersNotInApi)
+        .filter(([key, player]) => {
             const demotions = demotionsMap.get(key);
             if (!demotions) return true; // if there are no demotions, then the player is demoted
 
             for (const demotion of demotions) {
-                if (demotion.getTime() > updatedAt.getTime()) {
+                if (demotion.getTime() > player.updatedAt.getTime()) {
                     // if there exists a demotion with a date after the last update, then a new demotion is not needed
                     return false;
                 }
@@ -244,11 +255,11 @@ export async function registerDemotions(
             // if there are no demotions with a date after the last update, then the player is demoted
             return true;
         })
-        .map(([key, _]) => {
+        .map(([key, player]) => {
             const lastDashIndex = key.lastIndexOf("-");
             const summonerId = key.slice(0, lastDashIndex);
             const region = key.slice(lastDashIndex + 1);
-            return [summonerId, region];
+            return [summonerId, region, player.wins, player.losses];
         });
 
     if (demotedPlayers.length === 0) {
@@ -259,7 +270,7 @@ export async function registerDemotions(
         );
         await connection.query(
             `
-                INSERT INTO demotions (summoner_id, region)
+                INSERT INTO demotions (summoner_id, region, at_wins, at_losses)
                 VALUES ?
             `,
             [demotedPlayers],
