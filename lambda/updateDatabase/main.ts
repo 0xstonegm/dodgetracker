@@ -1,3 +1,4 @@
+import pool from "./db";
 import { run } from "./index";
 import logger from "./logger";
 
@@ -8,18 +9,30 @@ function timeout(ms: number) {
 }
 
 async function main() {
+    const connection = await pool.getConnection();
+
     while (true) {
         // START TIMING
         const startTime = new Date();
-
         logger.info(
             "----------------------------RUNNING DATABASE UPDATE----------------------------",
         );
+
+        await connection.beginTransaction();
+        logger.info("Transaction started...");
+
         try {
-            await Promise.race([run(), timeout(30 * 1000)]);
-            logger.info("Database updated successfully");
+            await Promise.race([run(connection), timeout(30 * 1000)]);
+            connection.commit();
+            logger.info(
+                "Database updated successfully, transaction committed.",
+            );
         } catch (error) {
-            logger.error("Database update failed", error);
+            logger.error(
+                "Database update failed, transaction rolled back:",
+                error,
+            );
+            connection.rollback();
         }
 
         if (global.gc) {
@@ -30,6 +43,8 @@ async function main() {
         const endTime = new Date();
         const timeDiff = endTime.getTime() - startTime.getTime();
         logger.info(`PERFORMANCE: Database update took ${timeDiff} ms\n`);
+
+        // TODO: handle SIGINT and SIGTERM
     }
 }
 
