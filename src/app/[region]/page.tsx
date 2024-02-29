@@ -49,7 +49,7 @@ export default function Region({ params, searchParams }: RegionProps) {
                     </div>
                 }
             >
-                <div className="mx-auto lg:w-5/6">
+                <div className="mx-auto md:w-5/6 lg:w-3/4">
                     <DodgeList
                         pageNumber={pageNumber}
                         userRegion={params.region}

@@ -59,7 +59,7 @@ export default async function DodgeList({
                         key={dodge.dodgeID}
                         className="border-b border-zinc-900 py-2"
                     >
-                        <div className="grid grid-cols-[3fr,1fr,0.25fr,1.5fr] gap-1 md:gap-5">
+                        <div className="grid grid-cols-[3fr,1.2fr,0.9fr,0.8fr] gap-1 md:grid-cols-[2fr,0.8fr,0.3fr,0.6fr] md:gap-2">
                             <div className="md:text-xl">
                                 <div className="flex flex-wrap items-center">
                                     <Link
@@ -133,12 +133,12 @@ export default async function DodgeList({
                                         unoptimized // save vercel bandwidth
                                     />
                                 </div>
-                                {dodge.lp}LP
+                                {dodge.lp} LP
                             </div>
                             <div className="flex items-center justify-center text-left text-sm sm:justify-start md:text-base">
-                                -{dodge.lpLost}LP
+                                -{dodge.lpLost} LP
                             </div>
-                            <div className="flex flex-wrap items-center justify-end text-right text-xs md:text-base">
+                            <div className="flex flex-wrap items-center justify-end text-right text-xs md:text-sm">
                                 <TimeString utcTime={dodge.time} />
                             </div>
                         </div>
