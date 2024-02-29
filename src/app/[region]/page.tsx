@@ -3,10 +3,11 @@ import DodgeList from "@/src/components/DodgeList";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
 import RefreshButton from "@/src/components/RefreshButton";
 import { supportedUserRegions } from "@/src/regions";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-interface RegionProps {
+interface Props {
     params: {
         region: string;
     };
@@ -15,7 +16,13 @@ interface RegionProps {
     };
 }
 
-export default function Region({ params, searchParams }: RegionProps) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    return {
+        title: `${params.region.toUpperCase()}`,
+    };
+}
+
+export default function Region({ params, searchParams }: Props) {
     const pageNumber = parseInt(searchParams.page ?? "1", 10);
     if (supportedUserRegions.has(params.region) === false) {
         redirect("/euw");

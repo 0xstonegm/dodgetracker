@@ -17,8 +17,8 @@ type Props = {
 // TODO: add page number ?
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
-        title: `${params.region.toUpperCase()} Leaderboard`,
-        description: `Leaderboard of players with the most dodges in master+ EUW`,
+        title: `Leaderboard - ${params.region.toUpperCase()}`,
+        description: `Leaderboard of players with the most dodges in master+ in League of Legends`,
     };
 }
 

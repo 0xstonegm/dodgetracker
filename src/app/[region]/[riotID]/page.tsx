@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     return {
         title: `${gameName}#${tagLine} (${params.region.toUpperCase()}) - Dodge History`,
-        description: `Dodge history of ${gameName}#${tagLine} (${params.region.toUpperCase()})`,
+        description: `Dodge history of ${gameName}#${tagLine} (${params.region.toUpperCase()}) in League of Legends`,
     };
 }
 
