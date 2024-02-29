@@ -50,3 +50,10 @@ export interface LeaderboardEntry {
 export interface Leaderboard {
     entries: LeaderboardEntry[];
 }
+
+export interface Account {
+    gameName: string;
+    tagLine: string;
+    riotRegion: string;
+    lastDodgeTime: Date;
+}

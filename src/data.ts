@@ -1,5 +1,6 @@
 import { Pool, RowDataPacket, createPool } from "mysql2/promise";
 import {
+    Account,
     Dodge,
     DodgeCounts,
     Leaderboard,
@@ -259,6 +260,38 @@ export async function getLeaderboard(
     } catch (error) {
         console.error(error);
         return null;
+    }
+}
+
+export async function getAccounts(): Promise<Account[]> {
+    try {
+        const query = `
+            SELECT
+                r.game_name AS gameName,
+                r.tag_line AS tagLine,
+                s.region AS riotRegion,
+                (
+                    SELECT
+                        MAX(d.created_at)
+                    FROM
+                        dodges d
+                    WHERE
+                        d.summoner_id = s.summoner_id
+                        AND d.region = s.region
+                ) AS lastDodgeTime
+            FROM
+                riot_ids r
+                JOIN summoners s ON r.puuid = s.puuid
+        `;
+
+        const [rows, _] = (await (
+            await getDBConnection()
+        ).query(query)) as RowDataPacket[][];
+
+        return rows as Account[];
+    } catch (error) {
+        console.error(error);
+        return [];
     }
 }
 
