@@ -1,16 +1,13 @@
 import Image from "next/image";
-import { notFound } from "next/navigation";
-import { getRankEmblem, getSummoner, profileIconUrl } from "../data";
+import { getRankEmblem, profileIconUrl } from "../data";
+import { Summoner } from "../types";
 
 export default async function ProfileCard({
-    gameName,
-    tagLine,
+    summoner,
 }: {
-    gameName: string;
-    tagLine: string;
+    summoner: Summoner;
 }) {
     // TODO: show more information if summoner not found
-    const summoner = (await getSummoner(gameName, tagLine)) ?? notFound();
 
     return (
         <section>
