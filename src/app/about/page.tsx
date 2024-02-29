@@ -1,3 +1,10 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "About",
+    description: "About Dodgetracker",
+};
+
 export default function About() {
     return (
         <div className="flex h-[90vh] items-center justify-center">
