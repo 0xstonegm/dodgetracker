@@ -4,32 +4,44 @@ import LoadingSpinner from "@/src/components/LoadingSpinner";
 import ProfileCard from "@/src/components/ProfileCard";
 import { getSummoner } from "@/src/data";
 import { supportedUserRegions } from "@/src/regions";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { MdErrorOutline } from "react-icons/md";
 
 // FIXME: Add metadata
 
-export default async function Summoner({
-    params,
-}: {
+export type Props = {
     params: {
         region: string;
         riotID: string;
     };
-}) {
-    const [gameName, tagLine] = (function () {
-        if (params.riotID.indexOf("-") === -1) {
-            return [params.riotID, ""];
-        }
+};
 
-        const decodedString = decodeURIComponent(params.riotID);
-        const lastDashIdx = decodedString.lastIndexOf("-");
-        return [
-            decodedString.substring(0, lastDashIdx),
-            decodedString.substring(lastDashIdx + 1),
-        ];
-    })();
+function riotIDToGameNameAndTagLine(riotID: string): [string, string] {
+    if (riotID.indexOf("-") === -1) {
+        return [riotID, ""];
+    }
+
+    const decodedString = decodeURIComponent(riotID);
+    const lastDashIdx = decodedString.lastIndexOf("-");
+    return [
+        decodedString.substring(0, lastDashIdx),
+        decodedString.substring(lastDashIdx + 1),
+    ];
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const [gameName, tagLine] = riotIDToGameNameAndTagLine(params.riotID);
+
+    return {
+        title: `${gameName}#${tagLine} (${params.region.toUpperCase()}) - Dodge History`,
+        description: `Dodge history of ${gameName}#${tagLine} (${params.region.toUpperCase()})`,
+    };
+}
+
+export default async function Summoner({ params }: Props) {
+    const [gameName, tagLine] = riotIDToGameNameAndTagLine(params.riotID);
 
     const region = (function () {
         if (!supportedUserRegions.has(params.region)) {
