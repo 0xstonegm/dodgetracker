@@ -18,6 +18,10 @@ export default function RefreshButton() {
     const [isDone, setIsDone] = useState(false);
 
     function getAutoFetch(): boolean {
+        if (typeof window === "undefined") {
+            return false;
+        }
+
         const value = localStorage.getItem("autoFetch");
         return value === "true";
     }

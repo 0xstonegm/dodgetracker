@@ -5,6 +5,10 @@ import { Switch } from "./ui/switch";
 
 export default function AutoFetchSwitch() {
     const [autoFetch, setAutoFetch] = useState(() => {
+        if (typeof window === "undefined") {
+            return false;
+        }
+
         const value = localStorage.getItem("autoFetch");
         return value === "true";
     });
