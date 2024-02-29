@@ -121,9 +121,11 @@ export default async function Leaderboard({
                                         {entry.currentLP} LP
                                     </p>
                                 </div>
-                                <div className="flex flex-col items-center justify-center">
-                                    <p>{entry.numberOfDodges}</p>
-                                    <p className="text-xs">dodges</p>
+                                <div className="flex justify-end">
+                                    <div className="flex w-fit flex-col items-center justify-center">
+                                        <p>{entry.numberOfDodges}</p>
+                                        <p className="text-xs">dodges</p>
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex items-center justify-center md:hidden">
@@ -163,7 +165,7 @@ export default async function Leaderboard({
                 </div>
             ))}
             {totalPageCount > 1 && (
-                <div className="flex justify-center">
+                <div className="flex justify-center pt-2">
                     <PaginationControls
                         currentPage={pageNumber}
                         hasNextPage={endEntryIdx < leaderboard.entries.length}
