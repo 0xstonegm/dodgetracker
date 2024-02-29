@@ -8,7 +8,14 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Dodgetracker",
+    title: {
+        default: "Dodgetracker",
+        template: "%s - Dodgetracker",
+    },
+    description: "Track master+ dodges in League of Legends",
+    twitter: {
+        card: "summary_large_image",
+    },
 };
 
 export default function RootLayout({

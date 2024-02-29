@@ -8,6 +8,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { MdErrorOutline } from "react-icons/md";
 
+// FIXME: Add metadata
+
 export default async function Summoner({
     params,
 }: {

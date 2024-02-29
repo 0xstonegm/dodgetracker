@@ -1,20 +1,28 @@
 import Leaderboard from "@/src/components/Leaderboard";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
 import { supportedUserRegions } from "@/src/regions";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-export default async function page({
-    params,
-    searchParams,
-}: {
+type Props = {
     params: {
         region: string;
     };
     searchParams: {
         page?: string;
     };
-}) {
+};
+
+// TODO: add page number ?
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    return {
+        title: `${params.region.toUpperCase()} Leaderboard`,
+        description: `Leaderboard of players with the most dodges in master+ EUW`,
+    };
+}
+
+export default async function page({ params, searchParams }: Props) {
     const userRegion = (function () {
         if (!supportedUserRegions.has(params.region)) {
             // TODO: show error message instead ?
