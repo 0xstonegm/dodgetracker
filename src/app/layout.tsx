@@ -8,6 +8,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+    metadataBase: new URL("https://www.dodgetracker.com"),
     title: {
         default: "Dodgetracker",
         template: "%s - Dodgetracker",
