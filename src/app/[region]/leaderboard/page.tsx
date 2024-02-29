@@ -26,6 +26,10 @@ export default async function page({
 
     return (
         <section className="p-2">
+            <p className="flex items-center justify-center text-sm md:text-base">
+                Leaderboard of the players with the most dodges in{" "}
+                {userRegion.toUpperCase()}:
+            </p>
             <Suspense
                 fallback={
                     <div className="flex h-[75vh] items-center justify-center">
