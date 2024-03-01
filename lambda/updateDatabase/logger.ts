@@ -25,8 +25,10 @@ const logger: LoggerType = isLambda
           ),
           transports: [
               new DailyRotateFile({
-                  filename: `${projectRoot}/.logs/dodgetracker-%DATE%.log`, // TODO: verify if it works when directory doesnt exist
-                  datePattern: "YYYY-MM-DD",
+                  filename: `${projectRoot}/.logs/%DATE%_dodgetracker.log`,
+                  datePattern: "DD-MM-YYYY",
+                  createSymlink: true,
+                  symlinkName: "CURRENT.log",
                   maxSize: "20m",
                   maxFiles: "7d",
               }),
