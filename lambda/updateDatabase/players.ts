@@ -318,30 +318,11 @@ export async function updateAccountsData(
     dodges: Dodge[],
     connection: PoolConnection,
 ): Promise<void> {
-    const [rows] = await connection.execute<RowDataPacket[]>(
-        `
-            SELECT summoner_id, region FROM summoners;
-        `,
-    );
-
-    const existingSummonerIds = new Map();
-    rows.forEach((row) => {
-        existingSummonerIds.set(row.summoner_id, row.region);
-    });
-
     let summonersToFetch = new Map<string, string>();
-    let promises = dodges
-        .filter((dodge) => {
-            return existingSummonerIds.get(dodge.summonerId) != dodge.region;
-        })
-        .map((dodge) => {
-            summonersToFetch.set(dodge.summonerId, dodge.region);
-            return lolApi.Summoner.getById(dodge.summonerId, dodge.region);
-        });
-
-    logger.info(
-        `${dodges.length - summonersToFetch.size}/${dodges.length} of the summoners data already in DB.`,
-    );
+    let promises = dodges.map((dodge) => {
+        summonersToFetch.set(dodge.summonerId, dodge.region);
+        return lolApi.Summoner.getById(dodge.summonerId, dodge.region);
+    });
 
     logger.info(
         `Fetching summoner data for ${summonersToFetch.size} summoners...`,
