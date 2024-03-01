@@ -9,8 +9,6 @@ function timeout(ms: number) {
 }
 
 async function main() {
-    const connection = await pool.getConnection();
-
     while (true) {
         // START TIMING
         const startTime = new Date();
@@ -18,33 +16,33 @@ async function main() {
             "----------------------------RUNNING DATABASE UPDATE----------------------------",
         );
 
+        logger.info("Getting database connection...");
+        const connection = await pool.getConnection();
+        logger.info("Database connection acquired.");
         await connection.beginTransaction();
         logger.info("Transaction started...");
 
         try {
             await Promise.race([run(connection), timeout(30 * 1000)]);
-            connection.commit();
             logger.info(
-                "Database updated successfully, transaction committed.",
+                "Database updated successfully, comitting transaction...",
             );
+            connection.commit();
+            connection.release();
+            logger.info("Transaction committed.");
         } catch (error) {
             logger.error(
-                "Database update failed, transaction rolled back:",
+                "Database update failed, rolling back transaction:",
                 error,
             );
             connection.rollback();
-        }
-
-        if (global.gc) {
-            logger.info("Garbage collecting");
-            global.gc();
+            connection.release();
+            logger.info("Transaction rolled back.");
         }
 
         const endTime = new Date();
         const timeDiff = endTime.getTime() - startTime.getTime();
         logger.info(`PERFORMANCE: Database update took ${timeDiff} ms\n`);
-
-        // TODO: handle SIGINT and SIGTERM
     }
 }
 
