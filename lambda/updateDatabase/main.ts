@@ -40,6 +40,12 @@ async function main() {
             logger.info("Transaction rolled back.");
         }
 
+        try {
+            await pool.query("FLUSH BINARY LOGS");
+        } catch (error) {
+            logger.error("Failed to flush binary logs:", error);
+        }
+
         const endTime = new Date();
         const timeDiff = endTime.getTime() - startTime.getTime();
         logger.info(`PERFORMANCE: Database update took ${timeDiff} ms\n`);
