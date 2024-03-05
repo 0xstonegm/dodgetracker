@@ -55,7 +55,7 @@ export default async function Leaderboard({
                                     <Link
                                         href={`/${riotRegionToUserRegion(entry.riotRegion)}/${entry.gameName}-${entry.tagLine}`}
                                     >
-                                        <div className="flex items-center justify-center sm:justify-start">
+                                        <div className="mr-2 flex items-center justify-center sm:justify-start">
                                             <div className="relative size-10 self-center md:size-12">
                                                 <Image
                                                     alt="Profile Icon"
@@ -74,7 +74,20 @@ export default async function Leaderboard({
                                         </div>
                                     </Link>
                                     <div className="hidden md:flex md:items-center md:justify-center">
-                                        <div className="pl-2">
+                                        {entry.lolprosSlug && (
+                                            <div className="mr-1">
+                                                <Link
+                                                    href={`https://lolpros.gg/player/${entry.lolprosSlug}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
+                                                >
+                                                    <button className="rounded-md bg-yellow-800 p-1 align-middle text-xs font-medium text-zinc-200 shadow-md shadow-zinc-800 hover:bg-yellow-700">
+                                                        LOLPROS.GG
+                                                    </button>
+                                                </Link>
+                                            </div>
+                                        )}
+                                        <div>
                                             <a
                                                 href={getOpggUrl(
                                                     entry.riotRegion,
@@ -129,7 +142,20 @@ export default async function Leaderboard({
                                 </div>
                             </div>
                             <div className="flex items-center justify-center md:hidden">
-                                <div className="pl-2">
+                                {entry.lolprosSlug && (
+                                    <div className="mr-1">
+                                        <Link
+                                            href={`https://lolpros.gg/player/${entry.lolprosSlug}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
+                                        >
+                                            <button className="rounded-md bg-yellow-800 p-1 align-middle text-xs font-medium text-zinc-200 shadow-md shadow-zinc-800 hover:bg-yellow-700">
+                                                LOLPROS.GG
+                                            </button>
+                                        </Link>
+                                    </div>
+                                )}
+                                <div className="mr-1">
                                     <a
                                         href={getOpggUrl(
                                             entry.riotRegion,
@@ -144,7 +170,7 @@ export default async function Leaderboard({
                                         </Button>
                                     </a>
                                 </div>
-                                <div className="pl-1">
+                                <div className="mr-1">
                                     <a
                                         href={getDeeplolUrl(
                                             entry.riotRegion,
