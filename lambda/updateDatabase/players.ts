@@ -329,7 +329,7 @@ export async function updateAccountsData(
     );
     const summonerResults = await Promise.all(promises);
 
-    let puuids: string[] = [];
+    let puuidsAndRegion: string[][] = [];
     let summonersToInsert = summonerResults.map((result) => {
         if (result && result.response) {
             let summonerData = result.response;
@@ -341,7 +341,7 @@ export async function updateAccountsData(
                 );
             }
 
-            puuids.push(summonerData.puuid);
+            puuidsAndRegion.push([summonerData.puuid, region]);
             return [
                 summonerData.puuid,
                 summonerData.id,
@@ -375,27 +375,37 @@ export async function updateAccountsData(
         );
     }
 
-    let accountInfoPromises = puuids.map((puuid) => {
+    let accountInfoPromises = puuidsAndRegion.map((puuid) => {
         if (!puuid) throw new Error("Puuid not found");
         return riotApi.Account.getByPUUID(
-            puuid,
+            puuid[0],
             regionToRegionGroup(Regions.EU_WEST), // nearest region
         );
     });
 
-    logger.info(`Fetching account data for ${puuids.length} accounts...`);
+    logger.info(
+        `Fetching account data for ${puuidsAndRegion.length} accounts...`,
+    );
     let accountResults = await Promise.all(accountInfoPromises);
 
-    let accountsToUpsert = accountResults.map((result) => {
-        if (result && result.response) {
-            let accountData = result.response;
-            return [
-                accountData.puuid,
-                accountData.gameName,
-                accountData.tagLine,
-            ];
-        } else {
-            throw new Error("Account not found");
+    let accountsToUpsert: [puuid: string, gameName: string, tagLine: string][] =
+        accountResults.map((result) => {
+            if (result && result.response) {
+                let accountData = result.response;
+                return [
+                    accountData.puuid,
+                    accountData.gameName,
+                    accountData.tagLine,
+                ];
+            } else {
+                throw new Error("Account not found");
+            }
+        });
+
+    let euwAccounts: string[][] = [];
+    accountsToUpsert.forEach((account, index) => {
+        if (puuidsAndRegion[index][1] === Regions.EU_WEST) {
+            euwAccounts.push(account);
         }
     });
 
@@ -415,5 +425,61 @@ export async function updateAccountsData(
             "No new accounts to upsert into riot_ids table, skipping...",
         );
     }
+
+    // TODO: break this into a separate function
+    const lolprosPromises = euwAccounts.map((account) =>
+        getLolprosSlug(account[1], account[2]),
+    );
+    const lolprosSlugs: (string | null)[] = await Promise.all(lolprosPromises);
+
+    const slugsToUpsert: [puuid: string, slug: string][] = [];
+    lolprosSlugs.forEach((slug, index) => {
+        if (slug) {
+            slugsToUpsert.push([euwAccounts[index][0], slug]);
+        }
+    });
+
+    if (slugsToUpsert.length > 0) {
+        await connection.query(
+            `
+            INSERT INTO riot_ids (puuid, lolpros_slug)
+            VALUES ? ON DUPLICATE KEY UPDATE
+            lolpros_slug = VALUES(lolpros_slug),
+            updated_at = NOW();
+        `,
+            [slugsToUpsert],
+        );
+        logger.info(
+            `${slugsToUpsert.length} LolPros.gg slugs upserted into riot_ids table.`,
+        );
+    } else {
+        logger.info(
+            "No LolPros.gg slugs to upsert into riot_ids table, skipping...",
+        );
+    }
+
     logger.info("All summoner and account data updated.");
+}
+
+async function getLolprosSlug(
+    gameName: string,
+    tagLine: string,
+): Promise<string | null> {
+    const url = `https://api.lolpros.gg/es/search?query=${encodeURIComponent(`${gameName}#${tagLine}`)}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error("LolPros API request failed!");
+    }
+
+    const data = await response.json();
+    if (data.length === 0) {
+        return null;
+    }
+
+    const slug = data[0].slug;
+    if (!slug) {
+        return null;
+    }
+
+    return slug;
 }
