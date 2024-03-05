@@ -81,7 +81,7 @@ export default async function Leaderboard({
                                                     target="_blank"
                                                     rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
                                                 >
-                                                    <button className="rounded-md bg-yellow-800 p-1 align-middle text-xs font-medium text-zinc-200 shadow-md shadow-zinc-800 hover:bg-yellow-700">
+                                                    <button className="rounded-md bg-yellow-800 p-1 align-middle text-xs font-medium text-zinc-200 shadow-sm shadow-zinc-800 hover:bg-yellow-700">
                                                         LOLPROS.GG
                                                     </button>
                                                 </Link>
@@ -149,7 +149,7 @@ export default async function Leaderboard({
                                             target="_blank"
                                             rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
                                         >
-                                            <button className="rounded-md bg-yellow-800 p-1 align-middle text-xs font-medium text-zinc-200 shadow-md shadow-zinc-800 hover:bg-yellow-700">
+                                            <button className="rounded-md bg-yellow-800 p-1 align-middle text-xs font-medium text-zinc-200 shadow-sm shadow-zinc-800 hover:bg-yellow-700">
                                                 LOLPROS.GG
                                             </button>
                                         </Link>
