@@ -380,7 +380,16 @@ export async function updateAccountsData(
         return riotApi.Account.getByPUUID(
             puuid[0],
             regionToRegionGroup(Regions.EU_WEST), // nearest region
-        );
+        )
+            .then((response) => {
+                return response;
+            })
+            .catch((error) => {
+                logger.error(
+                    `Error fetching account data for ${puuid[0]}: ${error}`,
+                );
+                return null;
+            });
     });
 
     logger.info(
@@ -388,26 +397,32 @@ export async function updateAccountsData(
     );
     let accountResults = await Promise.all(accountInfoPromises);
 
-    let accountsToUpsert: [puuid: string, gameName: string, tagLine: string][] =
-        accountResults.map((result) => {
-            if (result && result.response) {
-                let accountData = result.response;
-                return [
-                    accountData.puuid,
-                    accountData.gameName,
-                    accountData.tagLine,
-                ];
-            } else {
-                throw new Error("Account not found");
-            }
-        });
+    let accountsToUpsert: (
+        | [puuid: string, gameName: string, tagLine: string]
+        | null
+    )[] = accountResults.map((result) => {
+        if (result && result.response) {
+            let accountData = result.response;
+            return [
+                accountData.puuid,
+                accountData.gameName,
+                accountData.tagLine,
+            ];
+        } else {
+            return null;
+        }
+    });
 
     let euwAccounts: string[][] = [];
     accountsToUpsert.forEach((account, index) => {
+        if (!account) return;
+
         if (puuidsAndRegion[index][1] === Regions.EU_WEST) {
             euwAccounts.push(account);
         }
     });
+
+    accountsToUpsert = accountsToUpsert.filter((account) => account !== null);
 
     if (accountsToUpsert.length > 0) {
         await connection.query(
