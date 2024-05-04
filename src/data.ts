@@ -64,6 +64,7 @@ export async function getDodges(riotRegion?: string): Promise<Dodge[]> {
 
         // Add the order by clause outside the condition
         query += ` ORDER BY d.created_at DESC`;
+        query += ` LIMIT 25000`;
 
         // Execute the query with the conditional parameters
         const [rows, _] = await (
