@@ -48,6 +48,7 @@ export default function Region({ params, searchParams }: Props) {
                 </div>
             </div>
             <Suspense
+                key={`${params.region}-${pageNumber}`}
                 fallback={
                     <div className="flex h-[75vh] items-center justify-center">
                         <div className="size-16">

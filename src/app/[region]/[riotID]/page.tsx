@@ -108,6 +108,7 @@ export default async function Summoner({ params }: Props) {
             </section>
 
             <Suspense
+                key={`${gameName}#${tagLine}-${region}`}
                 fallback={
                     <div className="flex h-[70vh] items-center justify-center">
                         <div className="size-16">

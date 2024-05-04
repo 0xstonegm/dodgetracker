@@ -38,6 +38,7 @@ export default async function page({ params, searchParams }: Props) {
                 Players with the most dodges in {userRegion.toUpperCase()}
             </p>
             <Suspense
+                key={`${userRegion}-${pageNumber}`}
                 fallback={
                     <div className="flex h-[75vh] items-center justify-center">
                         <div className="size-16">
