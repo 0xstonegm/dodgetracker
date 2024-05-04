@@ -1,5 +1,6 @@
 "use client";
 
+import { sendGTMEvent } from "@next/third-parties/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { MdDone } from "react-icons/md";
@@ -41,6 +42,7 @@ export default function RefreshButton() {
             if (getAutoFetch()) {
                 setButtonClicked(true);
                 startTransition(() => {
+                    sendGTMEvent({ event: "auto_fetch" });
                     router.refresh();
                     setIsDone(true);
                 });
@@ -60,6 +62,8 @@ export default function RefreshButton() {
                     router.refresh();
                     setIsDone(true);
                 });
+
+                sendGTMEvent({ event: "fetch_clicked" });
             }}
         >
             <div className="flex items-center justify-center">
