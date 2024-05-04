@@ -249,6 +249,7 @@ export async function getLeaderboard(
             ORDER BY
                 numberOfDodges DESC,
                 (p.wins + p.losses) ASC
+            LIMIT 5000;
         `;
 
         const [rows, _] = (await (

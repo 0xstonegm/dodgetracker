@@ -35,7 +35,7 @@ export default async function page({ params, searchParams }: Props) {
     return (
         <section className="p-2">
             <p className="flex items-center justify-center text-sm md:text-lg">
-                Players with the most dodges in {userRegion.toUpperCase()}:
+                Players with the most dodges in {userRegion.toUpperCase()}
             </p>
             <Suspense
                 fallback={
