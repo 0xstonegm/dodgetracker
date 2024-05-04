@@ -20,6 +20,7 @@ const PaginationControls: FC<PaginationControlsProps> = ({
     const pathname = usePathname();
     const goToPage = (newPage: number) => {
         router.push(`${pathname}?page=${newPage}`);
+        window.scrollTo(0, 0);
     };
 
     return (
