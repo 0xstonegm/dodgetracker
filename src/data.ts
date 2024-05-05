@@ -1,12 +1,12 @@
 import { Pool, RowDataPacket, createPool } from "mysql2/promise";
 import {
-    Account,
-    Dodge,
-    DodgeCounts,
-    Leaderboard,
-    LeaderboardEntry,
-    Summoner,
-    Tier,
+  Account,
+  Dodge,
+  DodgeCounts,
+  Leaderboard,
+  LeaderboardEntry,
+  Summoner,
+  Tier,
 } from "./types"; // Assuming Dodge is properly defined to match the query results
 
 import * as dotenv from "dotenv";
@@ -14,26 +14,26 @@ dotenv.config();
 
 let globalPool: Pool | undefined = undefined;
 async function getDBConnection(): Promise<Pool> {
-    if (typeof globalPool !== "undefined") return globalPool;
+  if (typeof globalPool !== "undefined") return globalPool;
 
-    globalPool = createPool({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASS,
-        database: "dodgetracker",
-        timezone: "Z",
-    });
-    return globalPool;
+  globalPool = createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: "dodgetracker",
+    timezone: "Z",
+  });
+  return globalPool;
 }
 
 export function profileIconUrl(profileIconID: number): string {
-    return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${profileIconID}.jpg`;
+  return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${profileIconID}.jpg`;
 }
 
 export async function getDodges(riotRegion?: string): Promise<Dodge[]> {
-    try {
-        // Initialize the base query
-        let query = `
+  try {
+    // Initialize the base query
+    let query = `
             SELECT
                 d.dodge_id as dodgeID,
                 r.game_name as gameName,
@@ -53,38 +53,36 @@ export async function getDodges(riotRegion?: string): Promise<Dodge[]> {
                 riot_ids r ON s.puuid = r.puuid
         `;
 
-        // Declare an array to hold the parameters for the query
-        const queryParams = [];
+    // Declare an array to hold the parameters for the query
+    const queryParams = [];
 
-        // Check if region parameter is provided and modify the query and parameters accordingly
-        if (riotRegion) {
-            query += ` WHERE d.region = ?`; // Add the WHERE clause to filter by region
-            queryParams.push(riotRegion); // Add the region value to the parameters array
-        }
-
-        // Add the order by clause outside the condition
-        query += ` ORDER BY d.created_at DESC`;
-        query += ` LIMIT 25000`;
-
-        // Execute the query with the conditional parameters
-        const [rows, _] = await (
-            await getDBConnection()
-        ).query(query, queryParams);
-
-        // Assuming the rows directly match the structure of Dodge[]
-        return rows as Dodge[];
-    } catch (error) {
-        console.error(error);
-        return [];
+    // Check if region parameter is provided and modify the query and parameters accordingly
+    if (riotRegion) {
+      query += ` WHERE d.region = ?`; // Add the WHERE clause to filter by region
+      queryParams.push(riotRegion); // Add the region value to the parameters array
     }
+
+    // Add the order by clause outside the condition
+    query += ` ORDER BY d.created_at DESC`;
+    query += ` LIMIT 25000`;
+
+    // Execute the query with the conditional parameters
+    const [rows, _] = await (await getDBConnection()).query(query, queryParams);
+
+    // Assuming the rows directly match the structure of Dodge[]
+    return rows as Dodge[];
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
 export async function getDodgesByPlayer(
-    gameName: string,
-    tagLine: string,
+  gameName: string,
+  tagLine: string,
 ): Promise<Dodge[]> {
-    try {
-        const query = `
+  try {
+    const query = `
         SELECT
             d.dodge_id as dodgeID,
             r.game_name as gameName,
@@ -107,23 +105,23 @@ export async function getDodgesByPlayer(
             d.created_at DESC;
         `;
 
-        const [rows, _] = await (
-            await getDBConnection()
-        ).query(query, [gameName, tagLine]);
-        return rows as Dodge[];
-    } catch (error) {
-        console.error(error);
-        return [];
-    }
+    const [rows, _] = await (
+      await getDBConnection()
+    ).query(query, [gameName, tagLine]);
+    return rows as Dodge[];
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
 export async function getSummoner(
-    gameName: string,
-    tagLine: string,
+  gameName: string,
+  tagLine: string,
 ): Promise<Summoner | null> {
-    try {
-        // Initialize the query
-        const query = `
+  try {
+    // Initialize the query
+    const query = `
             SELECT
                 r.game_name as gameName,
                 r.tag_line as tagLine,
@@ -145,33 +143,33 @@ export async function getSummoner(
                 r.game_name = ? AND r.tag_line = ?;
         `;
 
-        // Execute the query with the parameters
-        const [rows, _] = (await (
-            await getDBConnection()
-        ).query(query, [gameName, tagLine])) as RowDataPacket[][];
+    // Execute the query with the parameters
+    const [rows, _] = (await (
+      await getDBConnection()
+    ).query(query, [gameName, tagLine])) as RowDataPacket[][];
 
-        switch (rows.length) {
-            case 0:
-                return null;
-            case 1:
-                return rows[0] as Summoner;
-            default:
-                throw new Error(
-                    `Expected 0 or 1 summoners, but received ${rows.length} summoners.`,
-                );
-        }
-    } catch (error) {
-        console.error(error);
+    switch (rows.length) {
+      case 0:
         return null;
+      case 1:
+        return rows[0] as Summoner;
+      default:
+        throw new Error(
+          `Expected 0 or 1 summoners, but received ${rows.length} summoners.`,
+        );
     }
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
 
 export async function getDodgeCounts(
-    gameName: string,
-    tagLine: string,
+  gameName: string,
+  tagLine: string,
 ): Promise<DodgeCounts | null> {
-    try {
-        const query = `
+  try {
+    const query = `
         SELECT
             COUNT(
                 CASE
@@ -199,31 +197,31 @@ export async function getDodgeCounts(
             COUNT(d.dodge_id) > 0;
     `;
 
-        const [rows, _] = (await (
-            await getDBConnection()
-        ).query(query, [gameName, tagLine])) as RowDataPacket[][];
+    const [rows, _] = (await (
+      await getDBConnection()
+    ).query(query, [gameName, tagLine])) as RowDataPacket[][];
 
-        switch (rows.length) {
-            case 0:
-                return null;
-            case 1:
-                return rows[0] as DodgeCounts;
-            default:
-                throw new Error(
-                    `Expected 0 or 1 dodge counts, but received ${rows.length} dodge counts.`,
-                );
-        }
-    } catch (error) {
-        console.error(error);
+    switch (rows.length) {
+      case 0:
         return null;
+      case 1:
+        return rows[0] as DodgeCounts;
+      default:
+        throw new Error(
+          `Expected 0 or 1 dodge counts, but received ${rows.length} dodge counts.`,
+        );
     }
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
 
 export async function getLeaderboard(
-    riotRegion: string,
+  riotRegion: string,
 ): Promise<Leaderboard | null> {
-    try {
-        const query = `
+  try {
+    const query = `
             SELECT
                 r.game_name AS gameName,
                 r.tag_line AS tagLine,
@@ -253,23 +251,23 @@ export async function getLeaderboard(
             LIMIT 5000;
         `;
 
-        const [rows, _] = (await (
-            await getDBConnection()
-        ).query(query, riotRegion)) as RowDataPacket[][];
+    const [rows, _] = (await (
+      await getDBConnection()
+    ).query(query, riotRegion)) as RowDataPacket[][];
 
-        if (rows.length === 0) return null;
-        return {
-            entries: rows as LeaderboardEntry[],
-        };
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
+    if (rows.length === 0) return null;
+    return {
+      entries: rows as LeaderboardEntry[],
+    };
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
 
 export async function getAccounts(): Promise<Account[]> {
-    try {
-        const query = `
+  try {
+    const query = `
             SELECT
                 r.game_name AS gameName,
                 r.tag_line AS tagLine,
@@ -288,18 +286,18 @@ export async function getAccounts(): Promise<Account[]> {
                 JOIN summoners s ON r.puuid = s.puuid
         `;
 
-        const [rows, _] = (await (
-            await getDBConnection()
-        ).query(query)) as RowDataPacket[][];
+    const [rows, _] = (await (
+      await getDBConnection()
+    ).query(query)) as RowDataPacket[][];
 
-        return rows as Account[];
-    } catch (error) {
-        console.error(error);
-        return [];
-    }
+    return rows as Account[];
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
 export function getRankEmblem(rankTier: Tier) {
-    const rankTierStr = rankTier.toLowerCase();
-    return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/${rankTierStr}.svg`;
+  const rankTierStr = rankTier.toLowerCase();
+  return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/${rankTierStr}.svg`;
 }

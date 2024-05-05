@@ -1,66 +1,66 @@
 name: Deploy AWS Lambda
 
 on:
-    push:
-        branches:
-            - master
-        paths:
-            - "lambda/**"
-            - "template.yaml"
+  push:
+    branches:
+      - master
+    paths:
+      - "lambda/**"
+      - "template.yaml"
 
 jobs:
-    build-deploy:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
 
-            # Set up Python
-            - uses: actions/setup-python@v2
-              with:
-                  python-version: "3.8" # Specify the Python version
+      # Set up Python
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8" # Specify the Python version
 
-            # Set up Node.js and cache dependencies
-            - name: Set up Node.js
-              uses: actions/setup-node@v2
-              with:
-                  node-version: "20" # Specify the Node.js version to use
+      # Set up Node.js and cache dependencies
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20" # Specify the Node.js version to use
 
-            # Install Node.js dependencies
-            - name: Install Node.js dependencies
-              run: npm install
+      # Install Node.js dependencies
+      - name: Install Node.js dependencies
+        run: npm install
 
-            - name: Install esbuild globally
-              run: npm install esbuild -g
+      - name: Install esbuild globally
+        run: npm install esbuild -g
 
-            # Set up AWS SAM CLI
-            - uses: aws-actions/setup-sam@v1
+      # Set up AWS SAM CLI
+      - uses: aws-actions/setup-sam@v1
 
-            # Configure AWS credentials from GitHub Secrets
-            - uses: aws-actions/configure-aws-credentials@v1
-              with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: eu-north-1
+      # Configure AWS credentials from GitHub Secrets
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-north-1
 
-            # Build your application with AWS SAM
-            # The --use-container flag is removed since dependencies are handled by npm install
-            - name: SAM Build
-              run: sam build --debug
+      # Build your application with AWS SAM
+      # The --use-container flag is removed since dependencies are handled by npm install
+      - name: SAM Build
+        run: sam build --debug
 
-            # Deploy your application with AWS SAM
-            - name: SAM Deploy
-              run: >-
-                  sam deploy
-                  --no-confirm-changeset
-                  --no-fail-on-empty-changeset
-                  --stack-name dodgetracker
-                  --region eu-north-1
-                  --resolve-s3
-                  --parameter-overrides
-                  DBHOST=${{ secrets.DB_HOST }}
-                  DBUSER=${{ secrets.DB_USER }}
-                  DBPASS=${{ secrets.DB_PASS }}
-                  DBPORT=${{ secrets.DB_PORT }}
-                  RIOTAPIKEY=${{ secrets.RIOT_API_KEY }}
-                  --capabilities
-                  CAPABILITY_IAM
+      # Deploy your application with AWS SAM
+      - name: SAM Deploy
+        run: >-
+          sam deploy
+          --no-confirm-changeset
+          --no-fail-on-empty-changeset
+          --stack-name dodgetracker
+          --region eu-north-1
+          --resolve-s3
+          --parameter-overrides
+          DBHOST=${{ secrets.DB_HOST }}
+          DBUSER=${{ secrets.DB_USER }}
+          DBPASS=${{ secrets.DB_PASS }}
+          DBPORT=${{ secrets.DB_PORT }}
+          RIOTAPIKEY=${{ secrets.RIOT_API_KEY }}
+          --capabilities
+          CAPABILITY_IAM

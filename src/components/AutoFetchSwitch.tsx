@@ -4,45 +4,42 @@ import { useEffect, useState } from "react";
 import { Switch } from "./ui/switch";
 
 export default function AutoFetchSwitch() {
-    const [autoFetch, setAutoFetch] = useState(() => {
-        if (typeof window === "undefined") {
-            return false;
-        }
-
-        const value = localStorage.getItem("autoFetch");
-        return value === "true";
-    });
-
-    function setAndStoreAutoFetch(value: boolean) {
-        localStorage.setItem("autoFetch", value.toString());
-        setAutoFetch(value);
+  const [autoFetch, setAutoFetch] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
     }
 
-    // Sync autoFetch between tabs
-    useEffect(() => {
-        // Handler to update state based on localStorage changes
-        const handleStorageChange = (event: StorageEvent) => {
-            if (event.key === "autoFetch") {
-                setAutoFetch(event.newValue === "true");
-            }
-        };
+    const value = localStorage.getItem("autoFetch");
+    return value === "true";
+  });
 
-        // Add event listener for storage changes
-        window.addEventListener("storage", handleStorageChange);
+  function setAndStoreAutoFetch(value: boolean) {
+    localStorage.setItem("autoFetch", value.toString());
+    setAutoFetch(value);
+  }
 
-        // Cleanup function to remove the event listener
-        return () => {
-            window.removeEventListener("storage", handleStorageChange);
-        };
-    }, []);
+  // Sync autoFetch between tabs
+  useEffect(() => {
+    // Handler to update state based on localStorage changes
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "autoFetch") {
+        setAutoFetch(event.newValue === "true");
+      }
+    };
 
-    return (
-        <div className="flex items-center justify-center text-sm">
-            <p className="pr-2">Auto-fetch</p>
-            <Switch
-                checked={autoFetch}
-                onCheckedChange={setAndStoreAutoFetch}
-            />
-        </div>
-    );
+    // Add event listener for storage changes
+    window.addEventListener("storage", handleStorageChange);
+
+    // Cleanup function to remove the event listener
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  return (
+    <div className="flex items-center justify-center text-sm">
+      <p className="pr-2">Auto-fetch</p>
+      <Switch checked={autoFetch} onCheckedChange={setAndStoreAutoFetch} />
+    </div>
+  );
 }

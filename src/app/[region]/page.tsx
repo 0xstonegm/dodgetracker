@@ -8,62 +8,62 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 interface Props {
-    params: {
-        region: string;
-    };
-    searchParams: {
-        page?: string;
-    };
+  params: {
+    region: string;
+  };
+  searchParams: {
+    page?: string;
+  };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    return {
-        title: `${params.region.toUpperCase()}`,
-    };
+  return {
+    title: `${params.region.toUpperCase()}`,
+  };
 }
 
 export default function Region({ params, searchParams }: Props) {
-    const pageNumber = parseInt(searchParams.page ?? "1", 10);
-    if (supportedUserRegions.has(params.region) === false) {
-        redirect("/euw");
-    }
+  const pageNumber = parseInt(searchParams.page ?? "1", 10);
+  if (supportedUserRegions.has(params.region) === false) {
+    redirect("/euw");
+  }
 
-    return (
-        <>
-            <div className="flex items-center justify-center">
-                <div className="flex flex-col items-center">
-                    <div className="flex items-center justify-center">
-                        <header className="m-2 text-center text-2xl font-bold md:text-4xl">
-                            Dodges
-                        </header>
-                        <RefreshButton />
-                    </div>
-                    <p className="m-2 px-2 text-center">
-                        The database is updated automatically every ~10 seconds.
-                        Press the fetch button to fetch the latest dodges from
-                        the database or enable auto-fetch to automatically fetch
-                        the latest dodges every 15 seconds.
-                    </p>
-                    <AutoFetchSwitch />
-                </div>
+  return (
+    <>
+      <div className="flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <div className="flex items-center justify-center">
+            <header className="m-2 text-center text-2xl font-bold md:text-4xl">
+              Dodges
+            </header>
+            <RefreshButton />
+          </div>
+          <p className="m-2 px-2 text-center">
+            The database is updated automatically every ~10 seconds. Press the
+            fetch button to fetch the latest dodges from the database or enable
+            auto-fetch to automatically fetch the latest dodges every 15
+            seconds.
+          </p>
+          <AutoFetchSwitch />
+        </div>
+      </div>
+      <Suspense
+        key={`${params.region}-${pageNumber}`}
+        fallback={
+          <div className="flex h-[75vh] items-center justify-center">
+            <div className="size-16">
+              <LoadingSpinner />
             </div>
-            <Suspense
-                key={`${params.region}-${pageNumber}`}
-                fallback={
-                    <div className="flex h-[75vh] items-center justify-center">
-                        <div className="size-16">
-                            <LoadingSpinner />
-                        </div>
-                    </div>
-                }
-            >
-                <div className="mx-auto md:w-5/6 lg:w-3/4">
-                    <DodgeList
-                        pageNumber={pageNumber}
-                        userRegion={params.region}
-                    ></DodgeList>
-                </div>
-            </Suspense>
-        </>
-    );
+          </div>
+        }
+      >
+        <div className="mx-auto md:w-5/6 lg:w-3/4">
+          <DodgeList
+            pageNumber={pageNumber}
+            userRegion={params.region}
+          ></DodgeList>
+        </div>
+      </Suspense>
+    </>
+  );
 }

@@ -1,61 +1,61 @@
 export enum Tier {
-    MASTER = "MASTER",
-    GRANDMASTER = "GRANDMASTER",
-    CHALLENGER = "CHALLENGER",
+  MASTER = "MASTER",
+  GRANDMASTER = "GRANDMASTER",
+  CHALLENGER = "CHALLENGER",
 }
 
 export interface Dodge {
-    dodgeID: number;
-    gameName: string;
-    tagLine: string;
-    lolprosSlug: string | null;
-    profileIconID: number;
-    riotRegion: string;
-    rankTier: Tier;
-    lp: number;
-    lpLost: number;
-    time: Date;
+  dodgeID: number;
+  gameName: string;
+  tagLine: string;
+  lolprosSlug: string | null;
+  profileIconID: number;
+  riotRegion: string;
+  rankTier: Tier;
+  lp: number;
+  lpLost: number;
+  time: Date;
 }
 
 export interface Summoner {
-    gameName: string;
-    tagLine: string;
-    summonerLevel: number;
-    profileIconID: number;
-    rankTier: Tier;
-    currentLP: number;
-    wins: number;
-    losses: number;
-    lastUpdateTime: Date;
-    isInLatestUpdate: boolean;
+  gameName: string;
+  tagLine: string;
+  summonerLevel: number;
+  profileIconID: number;
+  rankTier: Tier;
+  currentLP: number;
+  wins: number;
+  losses: number;
+  lastUpdateTime: Date;
+  isInLatestUpdate: boolean;
 }
 
 export interface DodgeCounts {
-    last24Hours: number;
-    last7Days: number;
-    last30Days: number;
+  last24Hours: number;
+  last7Days: number;
+  last30Days: number;
 }
 
 export interface LeaderboardEntry {
-    gameName: string;
-    tagLine: string;
-    riotRegion: string;
-    lolprosSlug: string | null;
-    rankTier: Tier;
-    currentLP: number;
-    wins: number;
-    losses: number;
-    numberOfDodges: number;
-    profileIconID: number;
+  gameName: string;
+  tagLine: string;
+  riotRegion: string;
+  lolprosSlug: string | null;
+  rankTier: Tier;
+  currentLP: number;
+  wins: number;
+  losses: number;
+  numberOfDodges: number;
+  profileIconID: number;
 }
 
 export interface Leaderboard {
-    entries: LeaderboardEntry[];
+  entries: LeaderboardEntry[];
 }
 
 export interface Account {
-    gameName: string;
-    tagLine: string;
-    riotRegion: string;
-    lastDodgeTime: Date;
+  gameName: string;
+  tagLine: string;
+  riotRegion: string;
+  lastDodgeTime: Date;
 }
