@@ -2,6 +2,7 @@ import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import NavBar from "../components/NavBar";
 import { supportedUserRegions } from "../regions";
 import "./globals.css";
@@ -32,15 +33,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <CSPostHogProvider>
-        <body className={`${inter.className} bg-zinc-700 text-zinc-300`}>
-          <NavBar />
-          {children}
-          <GoogleAnalytics gaId={process.env.GA_ID || ""} />
-          <GoogleTagManager gtmId={process.env.GTM_ID || ""} />
-          <Analytics />
-        </body>
-      </CSPostHogProvider>
+      <Suspense>
+        <CSPostHogProvider>
+          <body className={`${inter.className} bg-zinc-700 text-zinc-300`}>
+            <NavBar />
+            {children}
+            <GoogleAnalytics gaId={process.env.GA_ID || ""} />
+            <GoogleTagManager gtmId={process.env.GTM_ID || ""} />
+            <Analytics />
+          </body>
+        </CSPostHogProvider>
+      </Suspense>
     </html>
   );
 }
