@@ -3,9 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLeaderboard, getRankEmblem, profileIconUrl } from "../data";
 import { riotRegionToUserRegion, userRegionToRiotRegion } from "../regions";
-import { getDeeplolUrl, getOpggUrl } from "../statSites";
-import { Button } from "./Button";
+import { StatSite } from "../statSites";
 import PaginationControls from "./PaginationControls";
+import StatSiteButton from "./StatSiteButton";
 
 export default async function Leaderboard({
   userRegion,
@@ -67,44 +67,30 @@ export default async function Leaderboard({
                   <div className="hidden md:flex md:items-center md:justify-center">
                     {entry.lolprosSlug && (
                       <div className="mr-1">
-                        <Link
-                          href={`https://lolpros.gg/player/${entry.lolprosSlug}`}
-                          target="_blank"
-                          rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
-                        >
-                          <button className="rounded-md bg-yellow-800 p-1 align-middle text-xs font-medium text-zinc-200 shadow-sm shadow-zinc-800 hover:bg-yellow-700">
-                            LOLPROS.GG
-                          </button>
-                        </Link>
+                        <StatSiteButton
+                          riotRegion={entry.riotRegion}
+                          gameName={entry.gameName}
+                          tagLine={entry.tagLine}
+                          statSite={StatSite.LOLPROS}
+                          lolProsSlug={entry.lolprosSlug}
+                        />
                       </div>
                     )}
                     <div>
-                      <a
-                        href={getOpggUrl(
-                          entry.riotRegion,
-                          entry.gameName,
-                          entry.tagLine,
-                        )}
-                        target="_blank"
-                        rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
-                      >
-                        <Button className="text-xs text-zinc-400">OP.GG</Button>
-                      </a>
+                      <StatSiteButton
+                        statSite={StatSite.OPGG}
+                        riotRegion={entry.riotRegion}
+                        gameName={entry.gameName}
+                        tagLine={entry.tagLine}
+                      />
                     </div>
                     <div className="pl-1">
-                      <a
-                        href={getDeeplolUrl(
-                          entry.riotRegion,
-                          entry.gameName,
-                          entry.tagLine,
-                        )}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Button className="text-xs text-zinc-400">
-                          DEEPLOL.GG
-                        </Button>
-                      </a>
+                      <StatSiteButton
+                        statSite={StatSite.DEEPLOL}
+                        riotRegion={entry.riotRegion}
+                        gameName={entry.gameName}
+                        tagLine={entry.tagLine}
+                      />
                     </div>
                   </div>
                 </section>
@@ -131,44 +117,30 @@ export default async function Leaderboard({
               <div className="flex items-center justify-center md:hidden">
                 {entry.lolprosSlug && (
                   <div className="mr-1">
-                    <Link
-                      href={`https://lolpros.gg/player/${entry.lolprosSlug}`}
-                      target="_blank"
-                      rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
-                    >
-                      <button className="rounded-md bg-yellow-800 p-1 align-middle text-xs font-medium text-zinc-200 shadow-sm shadow-zinc-800 hover:bg-yellow-700">
-                        LOLPROS.GG
-                      </button>
-                    </Link>
+                    <StatSiteButton
+                      riotRegion={entry.riotRegion}
+                      gameName={entry.gameName}
+                      tagLine={entry.tagLine}
+                      statSite={StatSite.LOLPROS}
+                      lolProsSlug={entry.lolprosSlug}
+                    />
                   </div>
                 )}
                 <div className="mr-1">
-                  <a
-                    href={getOpggUrl(
-                      entry.riotRegion,
-                      entry.gameName,
-                      entry.tagLine,
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
-                  >
-                    <Button className="text-xs text-zinc-400">OP.GG</Button>
-                  </a>
+                  <StatSiteButton
+                    statSite={StatSite.OPGG}
+                    riotRegion={entry.riotRegion}
+                    gameName={entry.gameName}
+                    tagLine={entry.tagLine}
+                  />
                 </div>
                 <div className="mr-1">
-                  <a
-                    href={getDeeplolUrl(
-                      entry.riotRegion,
-                      entry.gameName,
-                      entry.tagLine,
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button className="text-xs text-zinc-400">
-                      DEEPLOL.GG
-                    </Button>
-                  </a>
+                  <StatSiteButton
+                    statSite={StatSite.DEEPLOL}
+                    riotRegion={entry.riotRegion}
+                    gameName={entry.gameName}
+                    tagLine={entry.tagLine}
+                  />
                 </div>
               </div>
             </div>

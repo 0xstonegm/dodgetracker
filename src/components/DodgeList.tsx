@@ -7,9 +7,9 @@ import {
   profileIconUrl,
 } from "../data";
 import { userRegionToRiotRegion } from "../regions";
-import { getDeeplolUrl, getOpggUrl } from "../statSites";
-import { Button } from "./Button";
+import { StatSite } from "../statSites";
 import PaginationControls from "./PaginationControls";
+import StatSiteButton from "./StatSiteButton";
 import TimeString from "./TimeString";
 
 interface DodgeListProps {
@@ -84,47 +84,29 @@ export default async function DodgeList({
                     <>
                       {dodge.lolprosSlug && (
                         <div className="mr-1">
-                          <Link
-                            href={`https://lolpros.gg/player/${dodge.lolprosSlug}`}
-                            target="_blank"
-                            rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
-                          >
-                            <button className="rounded-md bg-yellow-800 p-1 align-middle text-xs font-medium text-zinc-200 shadow-sm shadow-zinc-800 hover:bg-yellow-700">
-                              LOLPROS.GG
-                            </button>
-                          </Link>
+                          <StatSiteButton
+                            riotRegion={dodge.riotRegion}
+                            gameName={dodge.gameName}
+                            tagLine={dodge.tagLine}
+                            statSite={StatSite.LOLPROS}
+                            lolProsSlug={dodge.lolprosSlug}
+                          />
                         </div>
                       )}
                       <div className="mr-1">
-                        <a
-                          href={getOpggUrl(
-                            dodge.riotRegion,
-                            dodge.gameName,
-                            dodge.tagLine,
-                          )}
-                          target="_blank"
-                          rel="noopener noreferrer" // It's a good practice to include this when using target="_blank"
-                        >
-                          <Button className="text-xs text-zinc-400">
-                            OP.GG
-                          </Button>
-                        </a>
+                        <StatSiteButton
+                          riotRegion={dodge.riotRegion}
+                          gameName={dodge.gameName}
+                          tagLine={dodge.tagLine}
+                          statSite={StatSite.OPGG}
+                        />
                       </div>
-                      <div>
-                        <a
-                          href={getDeeplolUrl(
-                            dodge.riotRegion,
-                            dodge.gameName,
-                            dodge.tagLine,
-                          )}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Button className="text-xs text-zinc-400">
-                            DEEPLOL.GG
-                          </Button>
-                        </a>
-                      </div>
+                      <StatSiteButton
+                        riotRegion={dodge.riotRegion}
+                        gameName={dodge.gameName}
+                        tagLine={dodge.tagLine}
+                        statSite={StatSite.DEEPLOL}
+                      />
                     </>
                   )}
                 </div>
