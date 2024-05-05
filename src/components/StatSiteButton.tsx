@@ -1,3 +1,5 @@
+"use client";
+
 import { twMerge } from "tailwind-merge";
 import { StatSite, getDeeplolUrl, getOpggUrl } from "../statSites";
 import { Button } from "./Button";

@@ -1,5 +1,6 @@
 "use client";
 
+import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { Switch } from "./ui/switch";
 
@@ -14,6 +15,7 @@ export default function AutoFetchSwitch() {
   });
 
   function setAndStoreAutoFetch(value: boolean) {
+    posthog.capture("auto_fetch_switch", { enabled: value });
     localStorage.setItem("autoFetch", value.toString());
     setAutoFetch(value);
   }

@@ -2,6 +2,7 @@
 
 import { sendGTMEvent } from "@next/third-parties/google";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { useEffect, useState, useTransition } from "react";
 import { MdDone } from "react-icons/md";
 import { Button } from "./Button";
@@ -43,6 +44,8 @@ export default function RefreshButton() {
         setButtonClicked(true);
         startTransition(() => {
           sendGTMEvent({ event: "auto_fetch" });
+          posthog.capture("auto_fetch");
+
           router.refresh();
           setIsDone(true);
         });
@@ -64,6 +67,7 @@ export default function RefreshButton() {
         });
 
         sendGTMEvent({ event: "fetch_clicked" });
+        posthog.capture("fetch_clicked");
       }}
     >
       <div className="flex items-center justify-center">

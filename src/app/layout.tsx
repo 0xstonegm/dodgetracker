@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import NavBar from "../components/NavBar";
 import { supportedUserRegions } from "../regions";
 import "./globals.css";
+import { CSPostHogProvider } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,13 +32,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-zinc-700 text-zinc-300`}>
-        <NavBar />
-        {children}
-        <GoogleAnalytics gaId={process.env.GA_ID || ""} />
-        <GoogleTagManager gtmId={process.env.GTM_ID || ""} />
-        <Analytics />
-      </body>
+      <CSPostHogProvider>
+        <body className={`${inter.className} bg-zinc-700 text-zinc-300`}>
+          <NavBar />
+          {children}
+          <GoogleAnalytics gaId={process.env.GA_ID || ""} />
+          <GoogleTagManager gtmId={process.env.GTM_ID || ""} />
+          <Analytics />
+        </body>
+      </CSPostHogProvider>
     </html>
   );
 }
