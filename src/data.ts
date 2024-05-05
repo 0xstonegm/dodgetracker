@@ -38,7 +38,7 @@ export async function getDodges(riotRegion?: string): Promise<Dodge[]> {
                 d.dodge_id as dodgeID,
                 r.game_name as gameName,
                 r.tag_line as tagLine,
-                r.lolpros_slug as lolprosSlug,
+                r.lolpros_slug as lolProsSlug,
                 s.profile_icon_id as profileIconID,
                 d.region as riotRegion,
                 d.rank_tier as rankTier,
@@ -225,7 +225,7 @@ export async function getLeaderboard(
             SELECT
                 r.game_name AS gameName,
                 r.tag_line AS tagLine,
-                r.lolpros_slug AS lolprosSlug,
+                r.lolpros_slug AS lolProsSlug,
                 s.region AS riotRegion,
                 p.rank_tier AS rankTier,
                 p.current_lp AS currentLP,

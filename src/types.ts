@@ -8,7 +8,7 @@ export interface Dodge {
   dodgeID: number;
   gameName: string;
   tagLine: string;
-  lolprosSlug: string | null;
+  lolProsSlug: string | null;
   profileIconID: number;
   riotRegion: string;
   rankTier: Tier;
@@ -40,7 +40,7 @@ export interface LeaderboardEntry {
   gameName: string;
   tagLine: string;
   riotRegion: string;
-  lolprosSlug: string | null;
+  lolProsSlug: string | null;
   rankTier: Tier;
   currentLP: number;
   wins: number;

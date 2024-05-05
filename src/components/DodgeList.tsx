@@ -82,14 +82,14 @@ export default async function DodgeList({
                   </Link>
                   {statSiteButtons && (
                     <>
-                      {dodge.lolprosSlug && (
+                      {dodge.lolProsSlug && (
                         <div className="mr-1">
                           <StatSiteButton
                             riotRegion={dodge.riotRegion}
                             gameName={dodge.gameName}
                             tagLine={dodge.tagLine}
                             statSite={StatSite.LOLPROS}
-                            lolProsSlug={dodge.lolprosSlug}
+                            lolProsSlug={dodge.lolProsSlug}
                           />
                         </div>
                       )}

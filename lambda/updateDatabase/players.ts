@@ -435,10 +435,10 @@ export async function updateAccountsData(
   const lolprosPromises = euwAccounts.map((account) =>
     getLolprosSlug(account[1], account[2]),
   );
-  const lolprosSlugs: (string | null)[] = await Promise.all(lolprosPromises);
+  const lolProsSlugs: (string | null)[] = await Promise.all(lolprosPromises);
 
   const slugsToUpsert: [puuid: string, slug: string][] = [];
-  lolprosSlugs.forEach((slug, index) => {
+  lolProsSlugs.forEach((slug, index) => {
     if (slug) {
       slugsToUpsert.push([euwAccounts[index][0], slug]);
     }

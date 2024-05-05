@@ -65,14 +65,14 @@ export default async function Leaderboard({
                     </div>
                   </Link>
                   <div className="hidden md:flex md:items-center md:justify-center">
-                    {entry.lolprosSlug && (
+                    {entry.lolProsSlug && (
                       <div className="mr-1">
                         <StatSiteButton
                           riotRegion={entry.riotRegion}
                           gameName={entry.gameName}
                           tagLine={entry.tagLine}
                           statSite={StatSite.LOLPROS}
-                          lolProsSlug={entry.lolprosSlug}
+                          lolProsSlug={entry.lolProsSlug}
                         />
                       </div>
                     )}
@@ -115,14 +115,14 @@ export default async function Leaderboard({
                 </div>
               </div>
               <div className="flex items-center justify-center md:hidden">
-                {entry.lolprosSlug && (
+                {entry.lolProsSlug && (
                   <div className="mr-1">
                     <StatSiteButton
                       riotRegion={entry.riotRegion}
                       gameName={entry.gameName}
                       tagLine={entry.tagLine}
                       statSite={StatSite.LOLPROS}
-                      lolProsSlug={entry.lolprosSlug}
+                      lolProsSlug={entry.lolProsSlug}
                     />
                   </div>
                 )}
