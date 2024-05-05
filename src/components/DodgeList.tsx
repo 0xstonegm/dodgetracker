@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import {
   getDodges,
   getDodgesByPlayer,
@@ -9,6 +8,7 @@ import {
 import { userRegionToRiotRegion } from "../regions";
 import { StatSite } from "../statSites";
 import PaginationControls from "./PaginationControls";
+import ProfileLink from "./ProfileLink";
 import StatSiteButton from "./StatSiteButton";
 import TimeString from "./TimeString";
 
@@ -59,11 +59,9 @@ export default async function DodgeList({
             <div className="grid grid-cols-[3fr,1.2fr,0.9fr,0.8fr] gap-1 md:grid-cols-[2fr,0.8fr,0.3fr,0.6fr] md:gap-2">
               <div className="md:text-xl">
                 <div className="flex flex-wrap items-center">
-                  <Link
+                  <ProfileLink
                     href={`/${userRegion}/${dodge.gameName}-${dodge.tagLine}`}
-                    style={{
-                      pointerEvents: profileLink ? "auto" : "none",
-                    }}
+                    profileLink={profileLink}
                   >
                     <div className="mr-2 flex items-center justify-center sm:justify-start">
                       <div className="relative size-10 self-center md:size-12">
@@ -79,7 +77,7 @@ export default async function DodgeList({
                         {dodge.gameName}#{dodge.tagLine}
                       </div>
                     </div>
-                  </Link>
+                  </ProfileLink>
                   {statSiteButtons && (
                     <>
                       {dodge.lolProsSlug && (
