@@ -47,7 +47,7 @@ export default async function page({ params, searchParams }: Props) {
           </div>
         }
       >
-        <div className="mx-auto md:w-5/6 lg:w-3/4">
+        <div className="mx-auto lg:w-3/4">
           <Leaderboard userRegion={userRegion} pageNumber={pageNumber} />
         </div>
       </Suspense>
