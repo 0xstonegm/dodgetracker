@@ -5,6 +5,7 @@ import {
   getRankEmblem,
   profileIconUrl,
 } from "../data";
+import { cn } from "../lib/utils";
 import { userRegionToRiotRegion } from "../regions";
 import { StatSite } from "../statSites";
 import PaginationControls from "./PaginationControls";
@@ -122,7 +123,17 @@ export default async function DodgeList({
                 {dodge.lp} LP
               </div>
               <div className="flex items-center justify-center text-left text-sm sm:justify-start md:text-base">
-                -{dodge.lpLost} LP
+                <p
+                  className={cn(
+                    "rounded-xl bg-opacity-35 p-1 text-xs md:px-2 md:text-sm",
+                    {
+                      "bg-yellow-400": dodge.lpLost <= 5,
+                      "bg-red-400": dodge.lpLost > 5,
+                    },
+                  )}
+                >
+                  -{dodge.lpLost} LP
+                </p>
               </div>
               <div className="flex flex-wrap items-center justify-end text-right text-xs md:text-sm">
                 <TimeString utcTime={dodge.time} />
