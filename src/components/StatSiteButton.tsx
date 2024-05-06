@@ -1,6 +1,6 @@
 "use client";
 
-import { twMerge } from "tailwind-merge";
+import { cn } from "../lib/utils";
 import { StatSite, getDeeplolUrl, getOpggUrl } from "../statSites";
 import { Button } from "./Button";
 
@@ -13,7 +13,10 @@ export interface StatSiteButtonProps
   lolProsSlug?: string; /// If the stat site is lolPros, then this is the slug
 }
 
-export default function StatSiteButton(props: StatSiteButtonProps) {
+export default function StatSiteButton({
+  className,
+  ...props
+}: StatSiteButtonProps) {
   let url = (function () {
     switch (props.statSite) {
       case StatSite.OPGG:
@@ -25,22 +28,20 @@ export default function StatSiteButton(props: StatSiteButtonProps) {
     }
   })();
 
-  let className = (function () {
-    let className = "text-xs text-zinc-400";
-    if (props.statSite === StatSite.LOLPROS) {
-      className =
-        "rounded-md bg-yellow-800 p-1 align-middle text-xs font-medium text-zinc-200 shadow-sm shadow-zinc-800 hover:bg-yellow-700";
-    }
-
-    if (props.className !== undefined) {
-      return twMerge(className, props.className);
-    }
-    return className;
-  })();
-
   return (
     <a href={url} target="_blank" rel="noopener noreferrer">
-      <Button className={className}>{props.statSite}</Button>
+      <Button
+        className={cn(
+          "text-xs text-zinc-400",
+          {
+            "rounded-md bg-yellow-800 p-1 align-middle text-xs font-medium text-zinc-200 shadow-sm shadow-zinc-800 enabled:hover:bg-yellow-700":
+              props.statSite === StatSite.LOLPROS,
+          },
+          className,
+        )}
+      >
+        {props.statSite}
+      </Button>
     </a>
   );
 }

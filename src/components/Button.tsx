@@ -1,28 +1,19 @@
 "use client";
 
-import { twMerge } from "tailwind-merge";
+import { cn } from "../lib/utils";
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  // You can still add custom props if needed, for example:
-  disabled?: boolean;
-  customClassName?: string; // Example custom prop, if you need one
-}
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
-export const Button = (props: ButtonProps) => {
-  const enabledClass = !props.disabled
-    ? "hover:bg-zinc-600 cursor-pointer"
-    : "cursor-not-allowed";
-
-  let className = "rounded-md bg-zinc-800 p-1 align-middle";
-
-  let customClasses = twMerge(
-    twMerge(className, enabledClass),
-    props.className,
-  );
-
+export const Button = ({ className, ...props }: ButtonProps) => {
   return (
-    <button {...props} className={customClasses}>
+    <button
+      className={cn(
+        "rounded-md bg-zinc-800 p-1 align-middle enabled:cursor-pointer enabled:hover:bg-zinc-600 disabled:cursor-not-allowed",
+        className,
+      )}
+      {...props}
+    >
       {props.children}
     </button>
   );
