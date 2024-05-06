@@ -127,8 +127,10 @@ export default async function DodgeList({
                   className={cn(
                     "rounded-xl bg-opacity-35 p-1 text-xs md:px-2 md:text-sm",
                     {
-                      "bg-yellow-400": dodge.lpLost <= 5,
-                      "bg-red-400": dodge.lpLost > 5,
+                      "border-2 border-yellow-400 border-opacity-30 bg-yellow-400":
+                        dodge.lpLost <= 5,
+                      "border-2 border-red-400 border-opacity-30 bg-red-400":
+                        dodge.lpLost > 5,
                     },
                   )}
                 >
