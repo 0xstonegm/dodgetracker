@@ -63,7 +63,7 @@ export default async function DodgeList({
                     href={`/${userRegion}/${dodge.gameName}-${dodge.tagLine}`}
                     profileLink={profileLink}
                   >
-                    <div className="mr-2 flex items-center justify-center sm:justify-start">
+                    <div className="mr-2 flex origin-right transform items-center justify-center underline-offset-4 transition-transform hover:scale-105 hover:underline sm:justify-start">
                       <div className="relative size-10 self-center md:size-12">
                         <Image
                           alt="Profile Icon"
@@ -73,7 +73,7 @@ export default async function DodgeList({
                           unoptimized // save vercel bandwidth
                         ></Image>
                       </div>
-                      <div className="break-all pl-2 font-bold underline-offset-4 hover:underline">
+                      <div className="break-all pl-2 font-bold">
                         {dodge.gameName}#{dodge.tagLine}
                       </div>
                     </div>
