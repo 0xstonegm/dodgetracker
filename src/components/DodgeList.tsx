@@ -125,7 +125,7 @@ export default async function DodgeList({
               <div className="flex items-center justify-center text-left text-sm sm:justify-start md:text-base">
                 <p
                   className={cn(
-                    "rounded-xl bg-opacity-35 p-1 text-xs md:px-2 md:text-sm",
+                    "text-nowrap rounded-xl bg-opacity-35 p-1 text-xs md:px-2 md:text-sm",
                     {
                       "border-2 border-yellow-400 border-opacity-30 bg-yellow-400":
                         dodge.lpLost <= 5,
