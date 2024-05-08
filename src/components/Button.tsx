@@ -9,7 +9,7 @@ export const Button = ({ className, ...props }: ButtonProps) => {
   return (
     <button
       className={cn(
-        "rounded-md bg-zinc-800 p-1 align-middle enabled:cursor-pointer enabled:hover:bg-zinc-600 disabled:cursor-not-allowed",
+        "rounded-md bg-zinc-800 p-1 align-middle transition-colors ease-in-out enabled:cursor-pointer enabled:hover:bg-zinc-600 disabled:cursor-not-allowed",
         className,
       )}
       {...props}
