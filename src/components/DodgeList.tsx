@@ -64,7 +64,7 @@ export default async function DodgeList({
                     href={`/${userRegion}/${dodge.gameName}-${dodge.tagLine}`}
                     profileLink={profileLink}
                   >
-                    <div className="mr-2 flex origin-right transform items-center justify-center underline-offset-4 transition-transform hover:scale-105 hover:underline sm:justify-start">
+                    <div className="mr-2 flex origin-right transform items-center justify-center underline-offset-4 transition-transform hover:underline sm:justify-start md:hover:scale-105">
                       <div className="relative size-10 self-center md:size-12">
                         <Image
                           alt="Profile Icon"
