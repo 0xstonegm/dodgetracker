@@ -39,22 +39,21 @@ export default async function Leaderboard({
       {visibleEntries.map((entry, index) => (
         <div key={index}>
           <div className="flex border-b border-zinc-900 p-2">
-            <p className="flex w-8 items-center justify-center pr-3 font-bold md:text-lg">
-              {(pageNumber - 1) * entriesPerPage + index + 1}.
-            </p>
             <div className="flex flex-grow flex-col">
-              <div className="grid grid-cols-[2.5fr,0.7fr,0.7fr] gap-2">
+              <div className="grid grid-cols-[0.15fr,2.5fr,0.7fr,0.7fr] gap-2">
+                <p className="flex items-center justify-center font-bold md:text-lg">
+                  {(pageNumber - 1) * entriesPerPage + index + 1}.
+                </p>
                 <section className="flex flex-wrap items-center md:text-xl">
                   <Link
                     href={`/${riotRegionToUserRegion(entry.riotRegion)}/${entry.gameName}-${entry.tagLine}`}
                   >
                     <div className="mr-2 flex items-center justify-center sm:justify-start">
-                      <div className="relative size-10 self-center md:size-12">
+                      <div className="relative size-8 self-center md:size-12">
                         <Image
                           alt="Profile Icon"
                           src={profileIconUrl(entry.profileIconID)}
-                          fill
-                          objectFit="contain"
+                          layout="fill"
                           quality={100}
                           unoptimized // save vercel bandwidth
                         ></Image>
@@ -64,10 +63,11 @@ export default async function Leaderboard({
                       </div>
                     </div>
                   </Link>
-                  <div className="hidden md:flex md:items-center md:justify-center">
+                  <div className="flex md:items-center md:justify-center">
                     {entry.lolProsSlug && (
                       <div className="mr-1">
                         <StatSiteButton
+                          className="text-xs"
                           riotRegion={entry.riotRegion}
                           gameName={entry.gameName}
                           tagLine={entry.tagLine}
@@ -99,8 +99,7 @@ export default async function Leaderboard({
                     <Image
                       src={getRankEmblem(entry.rankTier)}
                       alt={entry.rankTier}
-                      fill
-                      objectFit="contain"
+                      layout="fill"
                       quality={100}
                       unoptimized // save vercel bandwidth
                     />
@@ -112,35 +111,6 @@ export default async function Leaderboard({
                     <p>{entry.numberOfDodges}</p>
                     <p className="text-xs">dodges</p>
                   </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-center md:hidden">
-                {entry.lolProsSlug && (
-                  <div className="mr-1">
-                    <StatSiteButton
-                      riotRegion={entry.riotRegion}
-                      gameName={entry.gameName}
-                      tagLine={entry.tagLine}
-                      statSite={StatSite.LOLPROS}
-                      lolProsSlug={entry.lolProsSlug}
-                    />
-                  </div>
-                )}
-                <div className="mr-1">
-                  <StatSiteButton
-                    statSite={StatSite.OPGG}
-                    riotRegion={entry.riotRegion}
-                    gameName={entry.gameName}
-                    tagLine={entry.tagLine}
-                  />
-                </div>
-                <div className="mr-1">
-                  <StatSiteButton
-                    statSite={StatSite.DEEPLOL}
-                    riotRegion={entry.riotRegion}
-                    gameName={entry.gameName}
-                    tagLine={entry.tagLine}
-                  />
                 </div>
               </div>
             </div>
