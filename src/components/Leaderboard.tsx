@@ -1,10 +1,10 @@
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLeaderboard, getRankEmblem, profileIconUrl } from "../data";
-import { riotRegionToUserRegion, userRegionToRiotRegion } from "../regions";
+import { userRegionToRiotRegion } from "../regions";
 import { StatSite } from "../statSites";
 import PaginationControls from "./PaginationControls";
+import ProfileLink from "./ProfileLink";
 import StatSiteButton from "./StatSiteButton";
 
 export default async function Leaderboard({
@@ -45,10 +45,11 @@ export default async function Leaderboard({
                   {(pageNumber - 1) * entriesPerPage + index + 1}.
                 </p>
                 <section className="flex flex-wrap items-center md:text-xl">
-                  <Link
-                    href={`/${riotRegionToUserRegion(entry.riotRegion)}/${entry.gameName}-${entry.tagLine}`}
+                  <ProfileLink
+                    href={`/${userRegion}/${entry.gameName}-${entry.tagLine}`}
+                    profileLink={true}
                   >
-                    <div className="mr-2 flex items-center justify-center sm:justify-start">
+                    <div className="mr-2 flex items-center justify-center underline-offset-4 sm:justify-start md:hover:underline">
                       <div className="relative size-8 self-center md:size-12">
                         <Image
                           alt="Profile Icon"
@@ -62,7 +63,7 @@ export default async function Leaderboard({
                         {entry.gameName}#{entry.tagLine}
                       </div>
                     </div>
-                  </Link>
+                  </ProfileLink>
                   <div className="flex md:items-center md:justify-center">
                     {entry.lolProsSlug && (
                       <div className="mr-1">
