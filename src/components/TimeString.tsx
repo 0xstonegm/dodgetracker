@@ -44,7 +44,7 @@ export default function TimeString({ utcTime: utcTime }: { utcTime: Date }) {
   }, []); // Empty dependency array means this effect runs only once on mount
 
   return (
-    <p title={`Dodge time:\n${utcTime.toLocaleString()}`}>
+    <p title={`Dodge detected at:\n${utcTime.toLocaleString()}`}>
       {timeToString(utcTime)}
     </p>
   );
