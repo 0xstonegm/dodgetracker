@@ -53,64 +53,62 @@ export default async function DodgeList({
   const visibleDodgeEntries = dodges.slice(startEntryIdx, endEntryIdx);
 
   return (
-    <div>
-      <div className="p-2">
+    <>
+      <ul className="p-2">
         {visibleDodgeEntries.map((dodge, _) => (
-          <div key={dodge.dodgeID} className="border-b border-zinc-900 py-2">
+          <li key={dodge.dodgeID} className="border-b border-zinc-900 py-2">
             <div className="grid grid-cols-[3fr,1.2fr,0.9fr,0.8fr] gap-1 md:grid-cols-[2fr,0.8fr,0.3fr,0.6fr] md:gap-2">
-              <div className="md:text-xl">
-                <div className="flex flex-wrap items-center">
-                  <ProfileLink
-                    href={`/${userRegion}/${dodge.gameName}-${dodge.tagLine}`}
-                    profileLink={profileLink}
-                  >
-                    <div className="mr-2 flex origin-right transform items-center justify-center underline-offset-4 transition-transform hover:underline sm:justify-start md:hover:scale-105">
-                      <div className="relative size-10 self-center md:size-12">
-                        <Image
-                          alt="Profile Icon"
-                          src={profileIconUrl(dodge.profileIconID)}
-                          fill
-                          quality={100}
-                          unoptimized // save vercel bandwidth
-                        ></Image>
-                      </div>
-                      <div className="break-all pl-2 font-bold">
-                        {dodge.gameName}#{dodge.tagLine}
-                      </div>
+              <section className="flex flex-wrap items-center md:text-xl">
+                <ProfileLink
+                  href={`/${userRegion}/${dodge.gameName}-${dodge.tagLine}`}
+                  profileLink={profileLink}
+                >
+                  <section className="mr-2 flex origin-right transform items-center justify-center underline-offset-4 transition-transform hover:underline sm:justify-start md:hover:scale-105">
+                    <div className="relative size-10 self-center md:size-12">
+                      <Image
+                        alt="Profile Icon"
+                        src={profileIconUrl(dodge.profileIconID)}
+                        fill
+                        quality={100}
+                        unoptimized // save vercel bandwidth
+                      ></Image>
                     </div>
-                  </ProfileLink>
-                  {statSiteButtons && (
-                    <>
-                      {dodge.lolProsSlug && (
-                        <div className="mr-1">
-                          <StatSiteButton
-                            riotRegion={dodge.riotRegion}
-                            gameName={dodge.gameName}
-                            tagLine={dodge.tagLine}
-                            statSite={StatSite.LOLPROS}
-                            lolProsSlug={dodge.lolProsSlug}
-                          />
-                        </div>
-                      )}
+                    <p className="break-all pl-2 font-bold">
+                      {dodge.gameName}#{dodge.tagLine}
+                    </p>
+                  </section>
+                </ProfileLink>
+                {statSiteButtons && (
+                  <>
+                    {dodge.lolProsSlug && (
                       <div className="mr-1">
                         <StatSiteButton
                           riotRegion={dodge.riotRegion}
                           gameName={dodge.gameName}
                           tagLine={dodge.tagLine}
-                          statSite={StatSite.OPGG}
+                          statSite={StatSite.LOLPROS}
+                          lolProsSlug={dodge.lolProsSlug}
                         />
                       </div>
+                    )}
+                    <div className="mr-1">
                       <StatSiteButton
                         riotRegion={dodge.riotRegion}
                         gameName={dodge.gameName}
                         tagLine={dodge.tagLine}
-                        statSite={StatSite.DEEPLOL}
+                        statSite={StatSite.OPGG}
                       />
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center justify-center text-sm sm:justify-start md:text-base">
+                    </div>
+                    <StatSiteButton
+                      riotRegion={dodge.riotRegion}
+                      gameName={dodge.gameName}
+                      tagLine={dodge.tagLine}
+                      statSite={StatSite.DEEPLOL}
+                    />
+                  </>
+                )}
+              </section>
+              <section className="flex flex-wrap items-center justify-center text-sm sm:justify-start md:text-base">
                 <div className="relative mr-1 size-7 md:size-10">
                   <Image
                     src={getRankEmblem(dodge.rankTier)}
@@ -121,8 +119,8 @@ export default async function DodgeList({
                   />
                 </div>
                 {dodge.lp} LP
-              </div>
-              <div className="flex items-center justify-center text-left text-sm sm:justify-start md:text-base">
+              </section>
+              <section className="flex items-center justify-center text-left text-sm sm:justify-start md:text-base">
                 <p
                   className={cn(
                     "text-nowrap rounded-xl bg-opacity-35 p-1 text-xs md:px-2 md:text-sm",
@@ -136,14 +134,14 @@ export default async function DodgeList({
                 >
                   -{dodge.lpLost} LP
                 </p>
-              </div>
-              <div className="flex flex-wrap items-center justify-end text-right text-xs md:text-sm">
+              </section>
+              <section className="flex flex-wrap items-center justify-end text-right text-xs md:text-sm">
                 <TimeString utcTime={dodge.time} />
-              </div>
+              </section>
             </div>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
       {totalPageCount > 1 && (
         <div className="flex justify-center">
           <PaginationControls
@@ -154,6 +152,6 @@ export default async function DodgeList({
           />
         </div>
       )}
-    </div>
+    </>
   );
 }

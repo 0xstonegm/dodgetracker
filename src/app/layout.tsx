@@ -35,7 +35,7 @@ export default function RootLayout({
       <CSPostHogProvider>
         <body className={`${inter.className} bg-zinc-700 text-zinc-300`}>
           <NavBar />
-          {children}
+          <main>{children}</main>
           <GoogleAnalytics gaId={process.env.GA_ID || ""} />
           <GoogleTagManager gtmId={process.env.GTM_ID || ""} />
           <Analytics />

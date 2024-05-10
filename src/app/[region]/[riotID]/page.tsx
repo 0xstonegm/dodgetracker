@@ -55,7 +55,7 @@ export default async function Summoner({ params }: Props) {
   if (summoner === null) {
     return (
       <>
-        <main className="flex h-[70vh] items-center justify-center text-center">
+        <section className="flex h-[70vh] items-center justify-center text-center">
           <div className="m-2 flex flex-col items-center justify-center rounded-lg bg-zinc-800 px-2">
             <h1 className="flex items-center py-4 text-xl font-bold md:text-3xl">
               <MdErrorOutline className="mr-1 size-6 md:mr-2 md:size-10" />
@@ -80,13 +80,13 @@ export default async function Summoner({ params }: Props) {
               </li>
             </ul>
           </div>
-        </main>
+        </section>
       </>
     );
   }
 
   return (
-    <main>
+    <section>
       <section className="flex min-h-[20vh] flex-wrap items-center justify-center border-b-4 border-zinc-900 bg-zinc-600">
         <Suspense
           fallback={
@@ -128,6 +128,6 @@ export default async function Summoner({ params }: Props) {
           />
         </div>
       </Suspense>
-    </main>
+    </section>
   );
 }
