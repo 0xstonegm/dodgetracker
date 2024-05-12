@@ -1,0 +1,538 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "5",
+  "dialect": "mysql",
+  "tables": {
+    "apex_tier_players": {
+      "name": "apex_tier_players",
+      "columns": {
+        "summoner_id": {
+          "autoincrement": false,
+          "name": "summoner_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summoner_name": {
+          "autoincrement": false,
+          "name": "summoner_name",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "region": {
+          "autoincrement": false,
+          "name": "region",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rank_tier": {
+          "autoincrement": false,
+          "name": "rank_tier",
+          "type": "enum('MASTER','GRANDMASTER','CHALLENGER')",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "current_lp": {
+          "autoincrement": false,
+          "name": "current_lp",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "(CURRENT_TIMESTAMP)",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "(CURRENT_TIMESTAMP)",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "onUpdate": true
+        },
+        "wins": {
+          "autoincrement": false,
+          "name": "wins",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "losses": {
+          "autoincrement": false,
+          "name": "losses",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "apex_tier_players_summoner_id_region": {
+          "name": "apex_tier_players_summoner_id_region",
+          "columns": [
+            "summoner_id",
+            "region"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {}
+    },
+    "demotions": {
+      "name": "demotions",
+      "columns": {
+        "demotion_id": {
+          "autoincrement": true,
+          "name": "demotion_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summoner_id": {
+          "autoincrement": false,
+          "name": "summoner_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "region": {
+          "autoincrement": false,
+          "name": "region",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "(CURRENT_TIMESTAMP)",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "default": "(CURRENT_TIMESTAMP)",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "onUpdate": true
+        },
+        "at_wins": {
+          "autoincrement": false,
+          "name": "at_wins",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "at_losses": {
+          "autoincrement": false,
+          "name": "at_losses",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "demotions_demotion_id": {
+          "name": "demotions_demotion_id",
+          "columns": [
+            "demotion_id"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {}
+    },
+    "dodges": {
+      "name": "dodges",
+      "columns": {
+        "dodge_id": {
+          "autoincrement": true,
+          "name": "dodge_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summoner_id": {
+          "autoincrement": false,
+          "name": "summoner_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "region": {
+          "autoincrement": false,
+          "name": "region",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lp_before": {
+          "autoincrement": false,
+          "name": "lp_before",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lp_after": {
+          "autoincrement": false,
+          "name": "lp_after",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rank_tier": {
+          "autoincrement": false,
+          "name": "rank_tier",
+          "type": "enum('MASTER','GRANDMASTER','CHALLENGER')",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "(CURRENT_TIMESTAMP)",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "(CURRENT_TIMESTAMP)",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "onUpdate": true
+        },
+        "at_wins": {
+          "autoincrement": false,
+          "name": "at_wins",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "at_losses": {
+          "autoincrement": false,
+          "name": "at_losses",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "dodges_dodge_id": {
+          "name": "dodges_dodge_id",
+          "columns": [
+            "dodge_id"
+          ]
+        }
+      },
+      "indexes": {
+        "summoner_id": {
+          "name": "summoner_id",
+          "columns": [
+            "summoner_id",
+            "region"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "uniqueConstraints": {}
+    },
+    "promotions": {
+      "name": "promotions",
+      "columns": {
+        "promotion_id": {
+          "autoincrement": true,
+          "name": "promotion_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summoner_id": {
+          "autoincrement": false,
+          "name": "summoner_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "region": {
+          "autoincrement": false,
+          "name": "region",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "default": "(CURRENT_TIMESTAMP)",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "default": "(CURRENT_TIMESTAMP)",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "onUpdate": true
+        },
+        "at_wins": {
+          "autoincrement": false,
+          "name": "at_wins",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "at_losses": {
+          "autoincrement": false,
+          "name": "at_losses",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "promotions_promotion_id": {
+          "name": "promotions_promotion_id",
+          "columns": [
+            "promotion_id"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {}
+    },
+    "riot_ids": {
+      "name": "riot_ids",
+      "columns": {
+        "puuid": {
+          "autoincrement": false,
+          "name": "puuid",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "game_name": {
+          "autoincrement": false,
+          "name": "game_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tag_line": {
+          "autoincrement": false,
+          "name": "tag_line",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "(CURRENT_TIMESTAMP)",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "(CURRENT_TIMESTAMP)",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "onUpdate": true
+        },
+        "lolpros_slug": {
+          "autoincrement": false,
+          "name": "lolpros_slug",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {
+        "riot_ids_puuid": {
+          "name": "riot_ids_puuid",
+          "columns": [
+            "puuid"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {}
+    },
+    "summoners": {
+      "name": "summoners",
+      "columns": {
+        "summoner_id": {
+          "autoincrement": false,
+          "name": "summoner_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "region": {
+          "autoincrement": false,
+          "name": "region",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "account_id": {
+          "autoincrement": false,
+          "name": "account_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile_icon_id": {
+          "autoincrement": false,
+          "name": "profile_icon_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "puuid": {
+          "autoincrement": false,
+          "name": "puuid",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summoner_level": {
+          "autoincrement": false,
+          "name": "summoner_level",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "default": "(CURRENT_TIMESTAMP)",
+          "autoincrement": false,
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "default": "(CURRENT_TIMESTAMP)",
+          "autoincrement": false,
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "onUpdate": true
+        }
+      },
+      "compositePrimaryKeys": {
+        "summoners_puuid": {
+          "name": "summoners_puuid",
+          "columns": [
+            "puuid"
+          ]
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "uniqueConstraints": {
+        "summoner_id": {
+          "name": "summoner_id",
+          "columns": [
+            "summoner_id",
+            "region"
+          ]
+        }
+      }
+    }
+  },
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {
+      "apex_tier_players": {
+        "columns": {
+          "created_at": {
+            "isDefaultAnExpression": true
+          },
+          "updated_at": {
+            "isDefaultAnExpression": true
+          }
+        }
+      },
+      "demotions": {
+        "columns": {
+          "created_at": {
+            "isDefaultAnExpression": true
+          },
+          "updated_at": {
+            "isDefaultAnExpression": true
+          }
+        }
+      },
+      "dodges": {
+        "columns": {
+          "created_at": {
+            "isDefaultAnExpression": true
+          },
+          "updated_at": {
+            "isDefaultAnExpression": true
+          }
+        }
+      },
+      "promotions": {
+        "columns": {
+          "created_at": {
+            "isDefaultAnExpression": true
+          },
+          "updated_at": {
+            "isDefaultAnExpression": true
+          }
+        }
+      },
+      "riot_ids": {
+        "columns": {
+          "created_at": {
+            "isDefaultAnExpression": true
+          },
+          "updated_at": {
+            "isDefaultAnExpression": true
+          }
+        }
+      },
+      "summoners": {
+        "columns": {
+          "created_at": {
+            "isDefaultAnExpression": true
+          },
+          "updated_at": {
+            "isDefaultAnExpression": true
+          }
+        }
+      }
+    }
+  }
+}

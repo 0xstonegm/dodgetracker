@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getLeaderboard, getRankEmblem, profileIconUrl } from "../data";
 import { userRegionToRiotRegion } from "../regions";
 import { StatSite } from "../statSites";
+import { Tier } from "../types";
 import PaginationControls from "./PaginationControls";
 import ProfileLink from "./ProfileLink";
 import StatSiteButton from "./StatSiteButton";
@@ -20,7 +21,7 @@ export default async function Leaderboard({
   }
 
   const entriesPerPage = 50;
-  const totalPageCount = Math.ceil(leaderboard.entries.length / entriesPerPage);
+  const totalPageCount = Math.ceil(leaderboard.length / entriesPerPage);
 
   /* Makes sure the pageNumber variable is valid and inside of bounds */
   pageNumber = (function () {
@@ -32,7 +33,7 @@ export default async function Leaderboard({
 
   const startEntryIdx = (Number(pageNumber) - 1) * Number(entriesPerPage);
   const endEntryIdx = startEntryIdx + Number(entriesPerPage);
-  const visibleEntries = leaderboard.entries.slice(startEntryIdx, endEntryIdx);
+  const visibleEntries = leaderboard.slice(startEntryIdx, endEntryIdx);
 
   return (
     <>
@@ -53,7 +54,7 @@ export default async function Leaderboard({
                       <div className="relative size-8 self-center md:size-12">
                         <Image
                           alt="Profile Icon"
-                          src={profileIconUrl(entry.profileIconID)}
+                          src={profileIconUrl(entry.profileIconId || 0)}
                           layout="fill"
                           quality={100}
                           unoptimized // save vercel bandwidth
@@ -70,8 +71,8 @@ export default async function Leaderboard({
                         <StatSiteButton
                           className="text-xs"
                           riotRegion={entry.riotRegion}
-                          gameName={entry.gameName}
-                          tagLine={entry.tagLine}
+                          gameName={entry.gameName || "undefined"}
+                          tagLine={entry.tagLine || "undefined"}
                           statSite={StatSite.LOLPROS}
                           lolProsSlug={entry.lolProsSlug}
                         />
@@ -81,16 +82,16 @@ export default async function Leaderboard({
                       <StatSiteButton
                         statSite={StatSite.OPGG}
                         riotRegion={entry.riotRegion}
-                        gameName={entry.gameName}
-                        tagLine={entry.tagLine}
+                        gameName={entry.gameName || "undefined"}
+                        tagLine={entry.tagLine || "undefined"}
                       />
                     </div>
                     <div className="pl-1">
                       <StatSiteButton
                         statSite={StatSite.DEEPLOL}
                         riotRegion={entry.riotRegion}
-                        gameName={entry.gameName}
-                        tagLine={entry.tagLine}
+                        gameName={entry.gameName || "undefined"}
+                        tagLine={entry.tagLine || "undefined"}
                       />
                     </div>
                   </div>
@@ -98,8 +99,8 @@ export default async function Leaderboard({
                 <div className="flex flex-col items-center justify-center md:flex-row md:justify-start">
                   <div className="relative mr-1 size-7 md:size-10">
                     <Image
-                      src={getRankEmblem(entry.rankTier)}
-                      alt={entry.rankTier}
+                      src={getRankEmblem(entry.rankTier as Tier)}
+                      alt={entry.rankTier || "undefined"}
                       layout="fill"
                       quality={100}
                       unoptimized // save vercel bandwidth

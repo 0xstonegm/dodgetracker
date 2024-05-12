@@ -4,6 +4,7 @@ import LoadingSpinner from "@/src/components/LoadingSpinner";
 import ProfileCard from "@/src/components/ProfileCard";
 import { getSummoner } from "@/src/data";
 import { supportedUserRegions } from "@/src/regions";
+import { Tier } from "@/src/types";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -51,8 +52,8 @@ export default async function Summoner({ params }: Props) {
     return params.region;
   })();
 
-  const summoner = await getSummoner(gameName, tagLine);
-  if (summoner === null) {
+  let result = await getSummoner(gameName, tagLine);
+  if (result.length === 0) {
     return (
       <>
         <section className="flex h-[70vh] items-center justify-center text-center">
@@ -84,6 +85,7 @@ export default async function Summoner({ params }: Props) {
       </>
     );
   }
+  let summoner = result[0];
 
   return (
     <section>
@@ -96,12 +98,19 @@ export default async function Summoner({ params }: Props) {
           }
         >
           <div className="m-2 md:mx-14">
-            <ProfileCard summoner={summoner} />
+            <ProfileCard
+              gameName={summoner.gameName || "undefined"}
+              tagLine={summoner.tagLine || "undefined"}
+              rankTier={summoner.rankTier as Tier}
+              currentLp={summoner.currentLp || -999}
+              profileIconId={summoner.profileIconId || 0}
+              summonerLevel={summoner.summonerLevel || 0}
+            />
           </div>
           <div className="m-2 md:mx-14">
             <DodgeStats
-              gameName={summoner.gameName}
-              tagLine={summoner.tagLine}
+              gameName={summoner.gameName || "undefined"}
+              tagLine={summoner.tagLine || "undefined"}
             />
           </div>
         </Suspense>

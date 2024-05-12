@@ -8,6 +8,7 @@ import {
 import { cn } from "../lib/utils";
 import { userRegionToRiotRegion } from "../regions";
 import { StatSite } from "../statSites";
+import { Tier } from "../types";
 import PaginationControls from "./PaginationControls";
 import ProfileLink from "./ProfileLink";
 import StatSiteButton from "./StatSiteButton";
@@ -56,7 +57,7 @@ export default async function DodgeList({
     <>
       <ul className="p-2">
         {visibleDodgeEntries.map((dodge, _) => (
-          <li key={dodge.dodgeID} className="border-b border-zinc-900 py-2">
+          <li key={dodge.dodgeId} className="border-b border-zinc-900 py-2">
             <div className="grid grid-cols-[3fr,1.2fr,0.9fr,0.8fr] gap-1 md:grid-cols-[2fr,0.8fr,0.3fr,0.6fr] md:gap-2">
               <section className="flex flex-wrap items-center md:text-xl">
                 <ProfileLink
@@ -67,7 +68,7 @@ export default async function DodgeList({
                     <div className="relative size-10 self-center md:size-12">
                       <Image
                         alt="Profile Icon"
-                        src={profileIconUrl(dodge.profileIconID)}
+                        src={profileIconUrl(dodge.profileIconId || 0)}
                         fill
                         quality={100}
                         unoptimized // save vercel bandwidth
@@ -84,8 +85,8 @@ export default async function DodgeList({
                       <div className="mr-1">
                         <StatSiteButton
                           riotRegion={dodge.riotRegion}
-                          gameName={dodge.gameName}
-                          tagLine={dodge.tagLine}
+                          gameName={dodge.gameName || "undefined"}
+                          tagLine={dodge.tagLine || "undefined"}
                           statSite={StatSite.LOLPROS}
                           lolProsSlug={dodge.lolProsSlug}
                         />
@@ -94,15 +95,15 @@ export default async function DodgeList({
                     <div className="mr-1">
                       <StatSiteButton
                         riotRegion={dodge.riotRegion}
-                        gameName={dodge.gameName}
-                        tagLine={dodge.tagLine}
+                        gameName={dodge.gameName || "undefined"}
+                        tagLine={dodge.tagLine || "undefined"}
                         statSite={StatSite.OPGG}
                       />
                     </div>
                     <StatSiteButton
                       riotRegion={dodge.riotRegion}
-                      gameName={dodge.gameName}
-                      tagLine={dodge.tagLine}
+                      gameName={dodge.gameName || "undefined"}
+                      tagLine={dodge.tagLine || "undefined"}
                       statSite={StatSite.DEEPLOL}
                     />
                   </>
@@ -111,8 +112,8 @@ export default async function DodgeList({
               <section className="flex flex-wrap items-center justify-center text-sm sm:justify-start md:text-base">
                 <div className="relative mr-1 size-7 md:size-10">
                   <Image
-                    src={getRankEmblem(dodge.rankTier)}
-                    alt={dodge.rankTier}
+                    src={getRankEmblem(dodge.rankTier as Tier)}
+                    alt={dodge.rankTier || "undefined"}
                     fill
                     quality={100}
                     unoptimized // save vercel bandwidth
