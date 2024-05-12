@@ -1,7 +1,13 @@
 import { Handler } from "aws-lambda";
 import * as dotenv from "dotenv";
-import { PoolConnection, RowDataPacket } from "mysql2/promise";
-import pool from "./db";
+import { ExtractTablesWithRelations, count } from "drizzle-orm";
+import { MySqlTransaction } from "drizzle-orm/mysql-core";
+import {
+  MySql2PreparedQueryHKT,
+  MySql2QueryResultHKT,
+} from "drizzle-orm/mysql2";
+import { db } from "../../db";
+import { riotIds, summoners } from "../../db/schema";
 import { getDodges, insertDodges } from "./dodges";
 import logger from "./logger";
 import {
@@ -15,31 +21,42 @@ import {
 
 dotenv.config();
 
-async function checkAccountsAndSummonersCount(connection: PoolConnection) {
-  let summonersCount = Number(
-    (
-      (await connection.query(
-        `SELECT COUNT(*) AS count FROM summoners;`,
-      )) as RowDataPacket[][]
-    )[0][0].count,
-  );
-  let accountsCount = Number(
-    (
-      (await connection.query(
-        `SELECT COUNT(*) AS count FROM riot_ids;`,
-      )) as RowDataPacket[][]
-    )[0][0].count,
-  );
-  if (summonersCount !== accountsCount) {
+async function checkAccountsAndSummonersCount(
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
+) {
+  let summonersResult = await transaction
+    .select({ count: count() })
+    .from(summoners);
+
+  let accountsResult = await transaction
+    .select({ count: count() })
+    .from(riotIds);
+
+  const summonersCount = summonersResult[0].count;
+  const accountsCount = accountsResult[0].count;
+
+  if (summonersResult[0].count !== accountsResult[0].count) {
     logger.warn(
       `Summoners count (${summonersCount}) and accounts count (${accountsCount}) do not match!`,
     );
   }
 }
 
-export async function run(connection: PoolConnection) {
+export async function run(
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
+) {
   let newData = await getPlayers();
-  let oldData = await fetchCurrentPlayers(connection);
+  let oldData = await fetchCurrentPlayers(transaction);
 
   logger.info(
     `Fetched ${newData.size} players from API and ${oldData.size} from DB. (diff = ${oldData.size - newData.size})`,
@@ -48,42 +65,41 @@ export async function run(connection: PoolConnection) {
   let dodges = await getDodges(oldData, newData);
 
   if (dodges.length > 0) {
-    await updateAccountsData(dodges, connection);
-    await insertDodges(dodges, connection);
+    await updateAccountsData(dodges, transaction);
+    await insertDodges(dodges, transaction);
   }
   if (newData.size > 0) {
-    await upsertPlayers(newData, connection);
+    await upsertPlayers(newData, transaction);
   }
 
-  await registerPromotions(oldData, newData, connection);
-  await registerDemotions(oldData, newData, connection);
+  await registerPromotions(oldData, newData, transaction);
+  await registerDemotions(oldData, newData, transaction);
 
-  await checkAccountsAndSummonersCount(connection);
+  await checkAccountsAndSummonersCount(transaction);
 }
 
 export const handler: Handler = async () => {
-  const connection = await pool.getConnection();
-  try {
-    await connection.beginTransaction();
-    logger.info("Transaction started...");
+  logger.info("Trying to start transaction...");
 
-    await run(connection);
+  return await db.transaction(async (tx) => {
+    try {
+      logger.info("Transaction started...");
 
-    await connection.commit();
-    logger.info("Database updated successfully, transaction committed.");
-    connection.release();
+      await run(tx);
 
-    return {
-      statusCode: 200,
-      body: "Database updated successfully",
-    };
-  } catch (error) {
-    await connection.rollback();
-    logger.error("Database update failed, transaction rolled back:", error);
+      logger.info("Database updated successfully, transaction committed.");
 
-    return {
-      statusCode: 500,
-      body: "Database update failed",
-    };
-  }
+      return {
+        statusCode: 200,
+        body: "Database updated successfully",
+      };
+    } catch (error) {
+      logger.error("Database update failed, transaction rolled back:", error);
+
+      return {
+        statusCode: 500,
+        body: "Database update failed",
+      };
+    }
+  });
 };

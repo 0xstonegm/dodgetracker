@@ -1,10 +1,23 @@
-import { PoolConnection, RowDataPacket } from "mysql2/promise";
+import { ExtractTablesWithRelations, sql } from "drizzle-orm";
+import { MySqlTransaction } from "drizzle-orm/mysql-core";
+import {
+  MySql2PreparedQueryHKT,
+  MySql2QueryResultHKT,
+} from "drizzle-orm/mysql2";
 import { Constants } from "twisted";
 import { Regions, regionToRegionGroup } from "twisted/dist/constants/regions";
 import { LeagueItemDTO } from "twisted/dist/models-dto";
+import {
+  apexTierPlayers,
+  demotions,
+  promotions,
+  riotIds,
+  summoners,
+} from "../../db/schema";
 import { lolApi, riotApi } from "./api";
 import { Dodge } from "./dodges";
 import logger from "./logger";
+import { Tier } from "./types";
 
 const supportedRegions = [
   Constants.Regions.EU_WEST,
@@ -92,11 +105,14 @@ export function constructSummonerAndRegionKey(
 }
 
 export async function fetchCurrentPlayers(
-  connection: PoolConnection,
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
 ): Promise<PlayersFromDbMap> {
-  const [rows] = await connection.execute<RowDataPacket[]>(
-    "SELECT summoner_id, current_lp, wins, losses, region, updated_at FROM apex_tier_players",
-  );
+  const rows = await transaction.select().from(apexTierPlayers);
 
   let currentPlayersData = new Map<
     SummonerIdAndRegionKey,
@@ -108,13 +124,13 @@ export async function fetchCurrentPlayers(
     }
   >();
 
-  rows.forEach((row: any) => {
-    const key = constructSummonerAndRegionKey(row.summoner_id, row.region);
+  rows.forEach((row) => {
+    const key = constructSummonerAndRegionKey(row.summonerId, row.region);
     currentPlayersData.set(key, {
-      lp: row.current_lp,
+      lp: row.currentLp!,
       wins: row.wins,
       losses: row.losses,
-      updatedAt: row.updated_at,
+      updatedAt: row.updatedAt!,
     });
   });
 
@@ -146,18 +162,22 @@ export async function getPlayers(): Promise<PlayersFromApiMap> {
 }
 
 async function getDemotions(
-  connection: PoolConnection,
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
 ): Promise<Map<SummonerIdAndRegionKey, [Date]>> {
-  const [rows] = await connection.execute<RowDataPacket[]>(
-    "SELECT summoner_id, region, created_at FROM demotions",
-  );
+  const rows = await transaction.select().from(demotions);
+
   const demotionsMap = new Map<string, [Date]>();
-  rows.forEach((row: any) => {
-    const key = constructSummonerAndRegionKey(row.summoner_id, row.region);
+  rows.forEach((row) => {
+    const key = constructSummonerAndRegionKey(row.summonerId, row.region);
     if (!demotionsMap.has(key)) {
-      demotionsMap.set(key, [row.created_at]);
+      demotionsMap.set(key, [row.createdAt]);
     } else {
-      demotionsMap.get(key)?.push(row.created_at);
+      demotionsMap.get(key)?.push(row.createdAt);
     }
   });
 
@@ -167,23 +187,33 @@ async function getDemotions(
 export async function registerPromotions(
   playersFromDb: PlayersFromDbMap,
   playersFromApi: PlayersFromApiMap,
-  connection: PoolConnection,
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
 ): Promise<void> {
-  const demotionsMap = await getDemotions(connection);
+  const demotionsMap = await getDemotions(transaction);
 
-  const promotedPlayers: (string | number)[][] = [];
+  const promotedPlayers: {
+    summonerId: string;
+    region: string;
+    atWins: number;
+    atLosses: number;
+  }[] = [];
 
   for (const [key, playerFromApi] of Array.from(playersFromApi.entries())) {
     const playerFromDb = playersFromDb.get(key);
 
     if (!playerFromDb) {
       // If player exists in the API but not in the DB then it's a promotion
-      promotedPlayers.push([
-        playerFromApi.summonerId,
-        playerFromApi.region,
-        playerFromApi.wins,
-        playerFromApi.losses,
-      ]);
+      promotedPlayers.push({
+        summonerId: playerFromApi.summonerId,
+        region: playerFromApi.region,
+        atWins: playerFromApi.wins,
+        atLosses: playerFromApi.losses,
+      });
     } else {
       // If a player exists in the DB, check if it's a promotion.
       const demotions = demotionsMap.get(key);
@@ -191,12 +221,12 @@ export async function registerPromotions(
 
       for (const demotion of demotions) {
         if (demotion.getTime() > playerFromDb.updatedAt.getTime()) {
-          promotedPlayers.push([
-            playerFromApi.summonerId,
-            playerFromApi.region,
-            playerFromApi.wins,
-            playerFromApi.losses,
-          ]);
+          promotedPlayers.push({
+            summonerId: playerFromApi.summonerId,
+            region: playerFromApi.region,
+            atWins: playerFromApi.wins,
+            atLosses: playerFromApi.losses,
+          });
         }
       }
     }
@@ -208,20 +238,19 @@ export async function registerPromotions(
     logger.info(
       `Registering ${promotedPlayers.length} new players in promotions table...`,
     );
-    await connection.query(
-      `
-                INSERT INTO promotions (summoner_id, region, at_wins, at_losses)
-                VALUES ?
-            `,
-      [promotedPlayers],
-    );
+    await transaction.insert(promotions).values(promotedPlayers);
   }
 }
 
 export async function registerDemotions(
   playersFromDb: PlayersFromDbMap,
   playersFromApi: PlayersFromApiMap,
-  connection: PoolConnection,
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
 ): Promise<void> {
   const playersNotInApi: Map<
     SummonerIdAndRegionKey,
@@ -239,9 +268,14 @@ export async function registerDemotions(
     }
   });
 
-  const demotionsMap = await getDemotions(connection);
+  const demotionsMap = await getDemotions(transaction);
 
-  const demotedPlayers = Array.from(playersNotInApi)
+  const demotedPlayers: {
+    summonerId: string;
+    region: string;
+    atWins: number;
+    atLosses: number;
+  }[] = Array.from(playersNotInApi)
     .filter(([key, player]) => {
       const demotions = demotionsMap.get(key);
       if (!demotions) return true; // if there are no demotions, then the player is demoted
@@ -259,7 +293,12 @@ export async function registerDemotions(
       const lastDashIndex = key.lastIndexOf("-");
       const summonerId = key.slice(0, lastDashIndex);
       const region = key.slice(lastDashIndex + 1);
-      return [summonerId, region, player.wins, player.losses];
+      return {
+        summonerId,
+        region,
+        atWins: player.wins,
+        atLosses: player.losses,
+      };
     });
 
   if (demotedPlayers.length === 0) {
@@ -268,46 +307,50 @@ export async function registerDemotions(
     logger.info(
       `Registering ${demotedPlayers.length} players in demotions table...`,
     );
-    await connection.query(
-      `
-                INSERT INTO demotions (summoner_id, region, at_wins, at_losses)
-                VALUES ?
-            `,
-      [demotedPlayers],
-    );
+    await transaction.insert(demotions).values(demotedPlayers);
   }
 }
 
 export async function upsertPlayers(
   players: PlayersFromApiMap,
-  connection: PoolConnection,
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
 ): Promise<void> {
-  const query = `
-        INSERT INTO apex_tier_players (summoner_id, region, summoner_name, rank_tier, current_lp, wins, losses)
-        VALUES ?
-        ON DUPLICATE KEY UPDATE
-        summoner_name = VALUES(summoner_name),
-        rank_tier = VALUES(rank_tier),
-        current_lp = VALUES(current_lp),
-        wins = VALUES(wins),
-        losses = VALUES(losses),
-        updated_at = NOW();
-    `;
-
   const playersToUpsert = Array.from(players.values()).map((player) => {
-    return [
-      player.summonerId,
-      player.region,
-      player.summonerName,
-      player.rankTier,
-      player.leaguePoints,
-      player.wins,
-      player.losses,
-    ];
+    return {
+      summonerId: player.summonerId,
+      summonerName: player.summonerName,
+      region: player.region,
+      rankTier: player.rankTier as Tier,
+      currentLp: player.leaguePoints,
+      wins: player.wins,
+      losses: player.losses,
+    };
   });
 
   if (playersToUpsert.length > 0) {
-    await connection.query(query, [playersToUpsert]);
+    const chunkSize = 20000;
+    for (let i = 0; i < playersToUpsert.length; i += chunkSize) {
+      logger.info(`Upserting chunk ${i}...`);
+      const chunk = playersToUpsert.slice(i, i + chunkSize);
+      await transaction
+        .insert(apexTierPlayers)
+        .values(chunk)
+        .onDuplicateKeyUpdate({
+          set: {
+            summonerName: sql`VALUES(${apexTierPlayers.summonerName})`,
+            rankTier: sql`VALUES(${apexTierPlayers.rankTier})`,
+            currentLp: sql`VALUES(${apexTierPlayers.currentLp})`,
+            wins: sql`VALUES(${apexTierPlayers.wins})`,
+            losses: sql`VALUES(${apexTierPlayers.losses})`,
+            updatedAt: sql`NOW()`,
+          },
+        });
+    }
   } else {
     logger.info("No new players to upsert, skipping...");
   }
@@ -316,7 +359,12 @@ export async function upsertPlayers(
 /* TODO: update account information if it is older than X days */
 export async function updateAccountsData(
   dodges: Dodge[],
-  connection: PoolConnection,
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
 ): Promise<void> {
   let summonersToFetch = new Map<string, string>();
   let promises = dodges.map((dodge) => {
@@ -330,7 +378,14 @@ export async function updateAccountsData(
   const summonerResults = await Promise.all(promises);
 
   let puuidsAndRegion: string[][] = [];
-  let summonersToInsert = summonerResults.map((result) => {
+  let summonersToInsert: {
+    puuid: string;
+    summonerId: string;
+    region: string;
+    accountId: string;
+    profileIconId: number;
+    summonerLevel: number;
+  }[] = summonerResults.map((result) => {
     if (result && result.response) {
       let summonerData = result.response;
 
@@ -342,33 +397,33 @@ export async function updateAccountsData(
       }
 
       puuidsAndRegion.push([summonerData.puuid, region]);
-      return [
-        summonerData.puuid,
-        summonerData.id,
-        region,
-        summonerData.accountId,
-        summonerData.profileIconId,
-        summonerData.summonerLevel,
-      ];
+      return {
+        puuid: summonerData.puuid,
+        summonerId: summonerData.id,
+        region: region,
+        accountId: summonerData.accountId,
+        profileIconId: summonerData.profileIconId,
+        summonerLevel: summonerData.summonerLevel,
+      };
     } else {
       throw new Error("Summoner not found");
     }
   });
 
   if (summonersToInsert.length > 0) {
-    await connection.query(
-      `
-            INSERT INTO summoners (puuid, summoner_id, region, account_id, profile_icon_id, summoner_level)
-            VALUES ? ON DUPLICATE KEY UPDATE
-            summoner_id = VALUES(summoner_id),
-            region = VALUES(region),
-            account_id = VALUES(account_id),
-            profile_icon_id = VALUES(profile_icon_id),
-            summoner_level = VALUES(summoner_level),
-            updated_at = NOW();
-        `,
-      [summonersToInsert],
-    );
+    await transaction
+      .insert(summoners)
+      .values(summonersToInsert)
+      .onDuplicateKeyUpdate({
+        set: {
+          summonerId: sql`VALUES(${summoners.summonerId})`,
+          region: sql`VALUES(${summoners.region})`,
+          accountId: sql`VALUES(${summoners.accountId})`,
+          profileIconId: sql`VALUES(${summoners.profileIconId})`,
+          summonerLevel: sql`VALUES(${summoners.summonerLevel})`,
+          updatedAt: sql`NOW()`,
+        },
+      });
   } else {
     logger.info("No new summoners to insert into summoners table, skipping...");
   }
@@ -393,22 +448,20 @@ export async function updateAccountsData(
   );
   let accountResults = await Promise.all(accountInfoPromises);
 
-  let accountsToUpsert: (
-    | [puuid: string, gameName: string, tagLine: string]
-    | null
-  )[] = accountResults.map((result) => {
-    if (result && result.response) {
-      let accountData = result.response;
-      return [accountData.puuid, accountData.gameName, accountData.tagLine];
-    } else {
-      return null;
-    }
-  });
+  let accountsToUpsert: { puuid: string; gameName: string; tagLine: string }[] =
+    accountResults
+      .filter((result) => result !== null && result.response !== null)
+      .map((result) => {
+        let accountData = result!.response;
+        return {
+          puuid: accountData.puuid,
+          gameName: accountData.gameName,
+          tagLine: accountData.tagLine,
+        };
+      });
 
-  let euwAccounts: string[][] = [];
+  let euwAccounts: { puuid: string; gameName: string; tagLine: string }[] = [];
   accountsToUpsert.forEach((account, index) => {
-    if (!account) return;
-
     if (puuidsAndRegion[index][1] === Regions.EU_WEST) {
       euwAccounts.push(account);
     }
@@ -417,43 +470,50 @@ export async function updateAccountsData(
   accountsToUpsert = accountsToUpsert.filter((account) => account !== null);
 
   if (accountsToUpsert.length > 0) {
-    await connection.query(
-      `
-            INSERT INTO riot_ids (puuid, game_name, tag_line)
-            VALUES ? ON DUPLICATE KEY UPDATE
-            game_name = VALUES(game_name),
-            tag_line = VALUES(tag_line),
-            updated_at = NOW();
-        `,
-      [accountsToUpsert],
-    );
+    await transaction
+      .insert(riotIds)
+      .values(accountsToUpsert)
+      .onDuplicateKeyUpdate({
+        set: {
+          gameName: sql`VALUES(${riotIds.gameName})`,
+          tagLine: sql`VALUES(${riotIds.tagLine})`,
+          updatedAt: sql`NOW()`,
+        },
+      });
   } else {
     logger.info("No new accounts to upsert into riot_ids table, skipping...");
   }
 
   // TODO: break this into a separate function
   const lolprosPromises = euwAccounts.map((account) =>
-    getLolprosSlug(account[1], account[2]),
+    getLolprosSlug(account.gameName, account.tagLine),
   );
   const lolProsSlugs: (string | null)[] = await Promise.all(lolprosPromises);
 
-  const slugsToUpsert: [puuid: string, slug: string][] = [];
+  const slugsToUpsert: { puuid: string; lolprosSlug: string }[] = [];
   lolProsSlugs.forEach((slug, index) => {
     if (slug) {
-      slugsToUpsert.push([euwAccounts[index][0], slug]);
+      slugsToUpsert.push({
+        puuid: euwAccounts[index].puuid,
+        lolprosSlug: slug,
+      });
     }
   });
 
   if (slugsToUpsert.length > 0) {
-    await connection.query(
-      `
-            INSERT INTO riot_ids (puuid, lolpros_slug)
-            VALUES ? ON DUPLICATE KEY UPDATE
-            lolpros_slug = VALUES(lolpros_slug),
-            updated_at = NOW();
-        `,
-      [slugsToUpsert],
+    logger.info(
+      `There are ${slugsToUpsert.length} LolPros.gg slugs to upsert into riot_ids table:`,
+      slugsToUpsert.map((slug) => slug.lolprosSlug).join(", "),
     );
+    await transaction
+      .insert(riotIds)
+      .values(slugsToUpsert)
+      .onDuplicateKeyUpdate({
+        set: {
+          lolprosSlug: sql`VALUES(${riotIds.lolprosSlug})`,
+          updatedAt: sql`NOW()`,
+        },
+      });
     logger.info(
       `${slugsToUpsert.length} LolPros.gg slugs upserted into riot_ids table.`,
     );
@@ -471,6 +531,7 @@ async function getLolprosSlug(
   tagLine: string,
 ): Promise<string | null> {
   const url = `https://api.lolpros.gg/es/search?query=${encodeURIComponent(`${gameName}#${tagLine}`)}`;
+  logger.info(`Lolpros.gg API request: ${url}`);
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error("LolPros API request failed!");

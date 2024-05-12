@@ -1,14 +1,21 @@
-import { PoolConnection } from "mysql2/promise";
+import { ExtractTablesWithRelations } from "drizzle-orm";
+import { MySqlTransaction } from "drizzle-orm/mysql-core";
+import {
+  MySql2PreparedQueryHKT,
+  MySql2QueryResultHKT,
+} from "drizzle-orm/mysql2";
 import { Regions } from "twisted/dist/constants";
+import { dodges } from "../../db/schema";
 import logger from "./logger";
 import { PlayersFromApiMap, PlayersFromDbMap } from "./players";
+import { Tier } from "./types";
 
 export interface Dodge {
   summonerId: string;
-  lp_before: number;
-  lp_after: number;
+  lpBefore: number;
+  lpAfter: number;
   region: Regions;
-  rankTier: string;
+  rankTier: Tier;
   atWins: number;
   atLosses: number;
 }
@@ -34,10 +41,10 @@ export async function getDodges(
       ) {
         dodges.push({
           summonerId: newData.summonerId,
-          lp_before: oldData.lp,
-          lp_after: newData.leaguePoints,
+          lpBefore: oldData.lp,
+          lpAfter: newData.leaguePoints,
           region: newData.region,
-          rankTier: newData.rankTier,
+          rankTier: newData.rankTier as Tier,
           atWins: newData.wins,
           atLosses: newData.losses,
         });
@@ -52,13 +59,13 @@ export async function getDodges(
 }
 
 export async function insertDodges(
-  dodges: Dodge[],
-  connection: PoolConnection,
+  dodgesToInsert: Dodge[],
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
 ): Promise<void> {
-  const query = `
-        INSERT INTO dodges (summoner_id, lp_before, lp_after, region, rank_tier, at_wins, at_losses)
-        VALUES ?
-    `;
-
-  await connection.query(query, [dodges.map((dodge) => Object.values(dodge))]);
+  await transaction.insert(dodges).values(dodgesToInsert);
 }

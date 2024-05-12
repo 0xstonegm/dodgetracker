@@ -1,4 +1,6 @@
-import pool from "./db";
+import { sql } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2/promise";
 import { run } from "./index";
 import logger from "./logger";
 
@@ -8,43 +10,57 @@ function timeout(ms: number) {
   );
 }
 
-async function main() {
-  while (true) {
-    // START TIMING
-    const startTime = new Date();
-    logger.info(
-      "----------------------------RUNNING DATABASE UPDATE----------------------------",
-    );
+// Seconds to wait before timing out the database update and rolling back the transaction
+// This is to prevent the algorithm from getting stuck.
+const timeoutSeconds = 30;
 
-    logger.info("Getting database connection...");
-    const connection = await pool.getConnection();
-    logger.info("Database connection acquired.");
-    await connection.beginTransaction();
+async function main() {
+  // START TIMING
+  const startTime = new Date();
+  logger.info(
+    "----------------------------RUNNING DATABASE UPDATE----------------------------",
+  );
+
+  logger.info("Connecting to database...");
+  const connection = await mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    connectTimeout: 15 * 1000,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+  });
+  const db = drizzle(connection);
+
+  await db.transaction(async (tx): Promise<void> => {
     logger.info("Transaction started...");
 
     try {
-      await Promise.race([run(connection), timeout(30 * 1000)]);
-      logger.info("Database updated successfully, comitting transaction...");
-      connection.commit();
-      connection.release();
-      logger.info("Transaction committed.");
+      await Promise.race([run(tx), timeout(timeoutSeconds * 1000)]);
+      logger.info("Database updated successfully, transaction commited...");
     } catch (error) {
       logger.error("Database update failed, rolling back transaction:", error);
-      connection.rollback();
-      connection.release();
+      await tx.rollback();
       logger.info("Transaction rolled back.");
     }
+  });
 
-    try {
-      await pool.query("FLUSH BINARY LOGS");
-    } catch (error) {
-      logger.error("Failed to flush binary logs:", error);
-    }
+  await db.execute(sql`FLUSH BINARY LOGS`);
 
-    const endTime = new Date();
-    const timeDiff = endTime.getTime() - startTime.getTime();
-    logger.info(`PERFORMANCE: Database update took ${timeDiff} ms\n`);
-  }
+  const endTime = new Date();
+  const timeDiff = endTime.getTime() - startTime.getTime();
+  logger.info(`PERFORMANCE: Database update took ${timeDiff / 1000} seconds`);
+  return;
 }
 
-main();
+main()
+  .then(() => {
+    logger.info("Database update completed successfully");
+    process.exit(0);
+  })
+  .catch((error) => {
+    logger.error("Database update failed:", error);
+    process.exit(1);
+  });

@@ -1,0 +1,5 @@
+export enum Tier {
+  "MASTER" = "MASTER",
+  "GRANDMASTER" = "GRANDMASTER",
+  "CHALLENGER" = "CHALLENGER",
+}
