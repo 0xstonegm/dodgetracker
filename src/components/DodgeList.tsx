@@ -2,6 +2,7 @@ import Image from "next/image";
 import {
   getDodges,
   getDodgesByPlayer,
+  getDodgesCount,
   getRankEmblem,
   profileIconUrl,
 } from "../data";
@@ -23,6 +24,9 @@ interface DodgeListProps {
   profileLink?: boolean;
 }
 
+const pageSize = 50;
+const maxPages = 500;
+
 export default async function DodgeList({
   pageNumber,
   userRegion,
@@ -31,17 +35,17 @@ export default async function DodgeList({
   statSiteButtons = true,
   profileLink = true,
 }: DodgeListProps) {
-  const dodges = await (async function () {
-    if (gameName === undefined || tagLine === undefined) {
-      return getDodges(userRegionToRiotRegion(userRegion));
-    }
-    return getDodgesByPlayer(gameName, tagLine);
-  })();
+  const totalPageCount = Math.ceil(
+    Math.min(
+      maxPages,
+      (await getDodgesCount(
+        userRegionToRiotRegion(userRegion),
+        gameName,
+        tagLine,
+      )) / pageSize,
+    ),
+  );
 
-  const entriesPerPage = 50;
-  const totalPageCount = Math.ceil(dodges.length / entriesPerPage);
-
-  /* Makes sure the pageNumber variable is valid and inside of bounds */
   pageNumber = (function () {
     if (isNaN(pageNumber)) {
       return 1;
@@ -49,14 +53,22 @@ export default async function DodgeList({
     return Math.min(Math.max(pageNumber, 1), totalPageCount);
   })();
 
-  const startEntryIdx = (Number(pageNumber) - 1) * Number(entriesPerPage);
-  const endEntryIdx = startEntryIdx + Number(entriesPerPage);
-  const visibleDodgeEntries = dodges.slice(startEntryIdx, endEntryIdx);
+  const dodges = await (async function () {
+    // TODO: Refactor these two functions into one
+    if (gameName === undefined || tagLine === undefined) {
+      return getDodges(
+        userRegionToRiotRegion(userRegion),
+        pageSize,
+        pageNumber,
+      );
+    }
+    return getDodgesByPlayer(gameName, tagLine, pageSize, pageNumber);
+  })();
 
   return (
     <>
       <ul className="p-2">
-        {visibleDodgeEntries.map((dodge, _) => (
+        {dodges.map((dodge, _) => (
           <li key={dodge.dodgeId} className="border-b border-zinc-900 py-2">
             <div className="grid grid-cols-[3fr,1.2fr,0.9fr,0.8fr] gap-1 md:grid-cols-[2fr,0.8fr,0.3fr,0.6fr] md:gap-2">
               <section className="flex flex-wrap items-center md:text-xl">
@@ -147,8 +159,8 @@ export default async function DodgeList({
         <div className="flex justify-center">
           <PaginationControls
             currentPage={pageNumber}
-            hasNextPage={endEntryIdx < dodges.length}
-            hasPrevPage={startEntryIdx > 0}
+            hasNextPage={pageNumber < totalPageCount}
+            hasPrevPage={pageNumber > 1}
             totalPageCount={totalPageCount}
           />
         </div>

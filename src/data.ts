@@ -8,7 +8,11 @@ export function profileIconUrl(profileIconID: number): string {
   return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${profileIconID}.jpg`;
 }
 
-export async function getDodges(riotRegion: string) {
+export async function getDodges(
+  riotRegion: string,
+  pageSize: number,
+  page: number,
+) {
   return await db
     .select({
       dodgeId: dodges.dodgeId,
@@ -33,10 +37,16 @@ export async function getDodges(riotRegion: string) {
     .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
     .where(eq(dodges.region, riotRegion))
     .orderBy(desc(dodges.createdAt))
-    .limit(25000);
+    .limit(pageSize)
+    .offset(pageSize * (page - 1));
 }
 
-export async function getDodgesByPlayer(gameName: string, tagLine: string) {
+export async function getDodgesByPlayer(
+  gameName: string,
+  tagLine: string,
+  pageSize: number,
+  page: number,
+) {
   return await db
     .select({
       dodgeId: dodges.dodgeId,
@@ -61,7 +71,8 @@ export async function getDodgesByPlayer(gameName: string, tagLine: string) {
     .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
     .where(and(eq(riotIds.gameName, gameName), eq(riotIds.tagLine, tagLine)))
     .orderBy(desc(dodges.createdAt))
-    .limit(25000);
+    .limit(pageSize)
+    .offset(pageSize * (page - 1));
 }
 
 export interface Summoner {
@@ -129,7 +140,11 @@ export async function getDodgeCounts(gameName: string, tagLine: string) {
   }
 }
 
-export async function getLeaderboard(riotRegion: string) {
+export async function getLeaderboard(
+  riotRegion: string,
+  pageSize: number,
+  page: number,
+) {
   return await db
     .select({
       gameName: riotIds.gameName,
@@ -166,7 +181,8 @@ export async function getLeaderboard(riotRegion: string) {
       desc(sql<number>`COUNT(${dodges.dodgeId})`),
       asc(sql<number>`(${apexTierPlayers.wins} + ${apexTierPlayers.losses})`),
     )
-    .limit(5000);
+    .limit(pageSize)
+    .offset(pageSize * (page - 1));
 }
 
 export async function getAccounts() {
@@ -184,4 +200,44 @@ export async function getAccounts() {
 export function getRankEmblem(rankTier: Tier) {
   const rankTierStr = rankTier.toLowerCase();
   return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/${rankTierStr}.svg`;
+}
+
+export async function getDodgesCount(
+  riotRegion: string,
+  gameName?: string,
+  tagLine?: string,
+) {
+  let result;
+
+  if (gameName && tagLine) {
+    result = await db
+      .select({
+        count: sql<number>`COUNT(${dodges.dodgeId})`,
+      })
+      .from(dodges)
+      .innerJoin(
+        summoners,
+        and(
+          eq(dodges.summonerId, summoners.summonerId),
+          eq(dodges.region, summoners.region),
+        ),
+      )
+      .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
+      .where(
+        and(
+          eq(dodges.region, riotRegion),
+          eq(riotIds.gameName, gameName),
+          eq(riotIds.tagLine, tagLine),
+        ),
+      );
+  } else {
+    result = await db
+      .select({
+        count: sql<number>`COUNT(${dodges.dodgeId})`,
+      })
+      .from(dodges)
+      .where(and(eq(dodges.region, riotRegion)));
+  }
+
+  return result[0].count;
 }

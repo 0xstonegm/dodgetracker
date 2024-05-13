@@ -17,6 +17,9 @@ export type Props = {
     region: string;
     riotID: string;
   };
+  searchParams: {
+    page?: string;
+  };
 };
 
 function riotIDToGameNameAndTagLine(riotID: string): [string, string] {
@@ -41,7 +44,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function Summoner({ params }: Props) {
+export default async function Summoner({ params, searchParams }: Props) {
+  const pageNumber = parseInt(searchParams.page ?? "1", 10);
+
   const [gameName, tagLine] = riotIDToGameNameAndTagLine(params.riotID);
 
   const region = (function () {
@@ -129,7 +134,7 @@ export default async function Summoner({ params }: Props) {
         <div className="mx-auto lg:w-5/6">
           <DodgeList
             userRegion={region}
-            pageNumber={1}
+            pageNumber={pageNumber}
             gameName={gameName}
             tagLine={tagLine}
             statSiteButtons={false}
