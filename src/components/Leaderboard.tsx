@@ -54,7 +54,7 @@ export default async function Leaderboard({
                       <div className="relative size-8 self-center md:size-12">
                         <Image
                           alt="Profile Icon"
-                          src={profileIconUrl(entry.profileIconId || 0)}
+                          src={profileIconUrl(entry.profileIconId)}
                           layout="fill"
                           quality={100}
                           unoptimized // save vercel bandwidth
@@ -71,8 +71,8 @@ export default async function Leaderboard({
                         <StatSiteButton
                           className="text-xs"
                           riotRegion={entry.riotRegion}
-                          gameName={entry.gameName || "undefined"}
-                          tagLine={entry.tagLine || "undefined"}
+                          gameName={entry.gameName}
+                          tagLine={entry.tagLine}
                           statSite={StatSite.LOLPROS}
                           lolProsSlug={entry.lolProsSlug}
                         />
@@ -82,16 +82,16 @@ export default async function Leaderboard({
                       <StatSiteButton
                         statSite={StatSite.OPGG}
                         riotRegion={entry.riotRegion}
-                        gameName={entry.gameName || "undefined"}
-                        tagLine={entry.tagLine || "undefined"}
+                        gameName={entry.gameName}
+                        tagLine={entry.tagLine}
                       />
                     </div>
                     <div className="pl-1">
                       <StatSiteButton
                         statSite={StatSite.DEEPLOL}
                         riotRegion={entry.riotRegion}
-                        gameName={entry.gameName || "undefined"}
-                        tagLine={entry.tagLine || "undefined"}
+                        gameName={entry.gameName}
+                        tagLine={entry.tagLine}
                       />
                     </div>
                   </div>
@@ -100,7 +100,7 @@ export default async function Leaderboard({
                   <div className="relative mr-1 size-7 md:size-10">
                     <Image
                       src={getRankEmblem(entry.rankTier as Tier)}
-                      alt={entry.rankTier || "undefined"}
+                      alt={entry.rankTier}
                       layout="fill"
                       quality={100}
                       unoptimized // save vercel bandwidth

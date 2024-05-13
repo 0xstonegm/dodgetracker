@@ -68,7 +68,7 @@ export default async function DodgeList({
                     <div className="relative size-10 self-center md:size-12">
                       <Image
                         alt="Profile Icon"
-                        src={profileIconUrl(dodge.profileIconId || 0)}
+                        src={profileIconUrl(dodge.profileIconId)}
                         fill
                         quality={100}
                         unoptimized // save vercel bandwidth
@@ -85,8 +85,8 @@ export default async function DodgeList({
                       <div className="mr-1">
                         <StatSiteButton
                           riotRegion={dodge.riotRegion}
-                          gameName={dodge.gameName || "undefined"}
-                          tagLine={dodge.tagLine || "undefined"}
+                          gameName={dodge.gameName}
+                          tagLine={dodge.tagLine}
                           statSite={StatSite.LOLPROS}
                           lolProsSlug={dodge.lolProsSlug}
                         />
@@ -95,15 +95,15 @@ export default async function DodgeList({
                     <div className="mr-1">
                       <StatSiteButton
                         riotRegion={dodge.riotRegion}
-                        gameName={dodge.gameName || "undefined"}
-                        tagLine={dodge.tagLine || "undefined"}
+                        gameName={dodge.gameName}
+                        tagLine={dodge.tagLine}
                         statSite={StatSite.OPGG}
                       />
                     </div>
                     <StatSiteButton
                       riotRegion={dodge.riotRegion}
-                      gameName={dodge.gameName || "undefined"}
-                      tagLine={dodge.tagLine || "undefined"}
+                      gameName={dodge.gameName}
+                      tagLine={dodge.tagLine}
                       statSite={StatSite.DEEPLOL}
                     />
                   </>
@@ -113,7 +113,7 @@ export default async function DodgeList({
                 <div className="relative mr-1 size-7 md:size-10">
                   <Image
                     src={getRankEmblem(dodge.rankTier as Tier)}
-                    alt={dodge.rankTier || "undefined"}
+                    alt={dodge.rankTier}
                     fill
                     quality={100}
                     unoptimized // save vercel bandwidth

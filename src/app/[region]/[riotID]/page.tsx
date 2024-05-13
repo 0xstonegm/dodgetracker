@@ -99,18 +99,18 @@ export default async function Summoner({ params }: Props) {
         >
           <div className="m-2 md:mx-14">
             <ProfileCard
-              gameName={summoner.gameName || "undefined"}
-              tagLine={summoner.tagLine || "undefined"}
+              gameName={summoner.gameName}
+              tagLine={summoner.tagLine}
               rankTier={summoner.rankTier as Tier}
-              currentLp={summoner.currentLp || -999}
-              profileIconId={summoner.profileIconId || 0}
-              summonerLevel={summoner.summonerLevel || 0}
+              currentLp={summoner.currentLp}
+              profileIconId={summoner.profileIconId}
+              summonerLevel={summoner.summonerLevel}
             />
           </div>
           <div className="m-2 md:mx-14">
             <DodgeStats
-              gameName={summoner.gameName || "undefined"}
-              tagLine={summoner.tagLine || "undefined"}
+              gameName={summoner.gameName}
+              tagLine={summoner.tagLine}
             />
           </div>
         </Suspense>

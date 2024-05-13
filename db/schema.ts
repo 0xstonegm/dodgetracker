@@ -16,14 +16,19 @@ export const apexTierPlayers = mysqlTable(
     summonerId: varchar("summoner_id", { length: 255 }).notNull(),
     summonerName: varchar("summoner_name", { length: 32 }),
     region: varchar("region", { length: 5 }).notNull(),
-    rankTier: mysqlEnum("rank_tier", ["MASTER", "GRANDMASTER", "CHALLENGER"]),
-    currentLp: int("current_lp"),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+    rankTier: mysqlEnum("rank_tier", [
+      "MASTER",
+      "GRANDMASTER",
+      "CHALLENGER",
+    ]).notNull(),
+    currentLp: int("current_lp").notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" })
       .defaultNow()
-      .onUpdateNow(),
-    wins: int("wins").notNull(),
-    losses: int("losses").notNull(),
+      .onUpdateNow()
+      .notNull(),
+    wins: int("wins").notNull().notNull(),
+    losses: int("losses").notNull().notNull(),
   },
   (table) => {
     return {
@@ -65,13 +70,18 @@ export const dodges = mysqlTable(
     dodgeId: int("dodge_id").autoincrement().notNull(),
     summonerId: varchar("summoner_id", { length: 255 }).notNull(),
     region: varchar("region", { length: 10 }).notNull(),
-    lpBefore: int("lp_before"),
-    lpAfter: int("lp_after"),
-    rankTier: mysqlEnum("rank_tier", ["MASTER", "GRANDMASTER", "CHALLENGER"]),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+    lpBefore: int("lp_before").notNull(),
+    lpAfter: int("lp_after").notNull(),
+    rankTier: mysqlEnum("rank_tier", [
+      "MASTER",
+      "GRANDMASTER",
+      "CHALLENGER",
+    ]).notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" })
       .defaultNow()
-      .onUpdateNow(),
+      .onUpdateNow()
+      .notNull(),
     atWins: int("at_wins").notNull(),
     atLosses: int("at_losses").notNull(),
   },
@@ -114,12 +124,13 @@ export const riotIds = mysqlTable(
   "riot_ids",
   {
     puuid: varchar("puuid", { length: 255 }).notNull(),
-    gameName: varchar("game_name", { length: 255 }),
-    tagLine: varchar("tag_line", { length: 255 }),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+    gameName: varchar("game_name", { length: 255 }).notNull().default(""),
+    tagLine: varchar("tag_line", { length: 255 }).notNull().default(""),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" })
       .defaultNow()
-      .onUpdateNow(),
+      .onUpdateNow()
+      .notNull(),
     lolprosSlug: varchar("lolpros_slug", { length: 255 }),
   },
   (table) => {
@@ -138,13 +149,14 @@ export const summoners = mysqlTable(
     summonerId: varchar("summoner_id", { length: 255 }),
     region: varchar("region", { length: 10 }).notNull(),
     accountId: varchar("account_id", { length: 255 }),
-    profileIconId: int("profile_icon_id"),
+    profileIconId: int("profile_icon_id").notNull(),
     puuid: varchar("puuid", { length: 255 }).notNull(),
-    summonerLevel: bigint("summoner_level", { mode: "number" }),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+    summonerLevel: bigint("summoner_level", { mode: "number" }).notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" })
       .defaultNow()
-      .onUpdateNow(),
+      .onUpdateNow()
+      .notNull(),
   },
   (table) => {
     return {
