@@ -6,8 +6,8 @@ import {
   MySql2PreparedQueryHKT,
   MySql2QueryResultHKT,
 } from "drizzle-orm/mysql2";
-import { db } from "../../db";
-import { riotIds, summoners } from "../../db/schema";
+import { db } from "../db";
+import { riotIds, summoners } from "../db/schema";
 import { getDodges, insertDodges } from "./dodges";
 import logger from "./logger";
 import {

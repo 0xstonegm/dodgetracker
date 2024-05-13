@@ -13,12 +13,12 @@ cd "$PROJECT_ROOT_DIR" || exit
 source .env
 
 echo "Building backend..."
-tsc -p lambda/updateDatabase/tsconfig.json
+tsc -p src/backend/tsconfig.json
 echo "Build completed."
 
 echo "Starting backend..."
 while true; do
-    "$NODE_BIN" lambda/updateDatabase/dist/lambda/updateDatabase/main.js
+    "$NODE_BIN" src/backend/dist/src/backend/main.js
 done
 echo "Backend finished running."
 

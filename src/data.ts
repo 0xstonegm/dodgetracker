@@ -1,7 +1,7 @@
-import { apexTierPlayers, dodges, riotIds, summoners } from "@/db/schema";
+import { apexTierPlayers, dodges, riotIds, summoners } from "@/src/db/schema";
 import "dotenv/config";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
-import { db } from "../db";
+import { db } from "./db";
 import { Tier } from "./types"; // Assuming Dodge is properly defined to match the query results
 
 export function profileIconUrl(profileIconID: number): string {

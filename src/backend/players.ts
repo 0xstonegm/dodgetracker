@@ -13,7 +13,7 @@ import {
   promotions,
   riotIds,
   summoners,
-} from "../../db/schema";
+} from "../db/schema";
 import { lolApi, riotApi } from "./api";
 import { Dodge } from "./dodges";
 import logger from "./logger";

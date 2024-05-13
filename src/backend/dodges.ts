@@ -5,7 +5,7 @@ import {
   MySql2QueryResultHKT,
 } from "drizzle-orm/mysql2";
 import { Regions } from "twisted/dist/constants";
-import { dodges } from "../../db/schema";
+import { dodges } from "../db/schema";
 import logger from "./logger";
 import { PlayersFromApiMap, PlayersFromDbMap } from "./players";
 import { Tier } from "./types";
