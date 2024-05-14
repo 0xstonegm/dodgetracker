@@ -18,7 +18,7 @@ echo "Build completed."
 
 echo "Starting backend..."
 while true; do
-    "$NODE_BIN" src/backend/dist/src/backend/main.js
+    "$NODE_BIN" src/backend/dist/backend/main.js
 done
 echo "Backend finished running."
 
