@@ -55,7 +55,8 @@ export async function run(
     ExtractTablesWithRelations<Record<string, never>>
   >,
 ) {
-  let newData = await getPlayers(transaction);
+  let { playersFromApiMap: newData, erroredRegions } =
+    await getPlayers(transaction);
   let oldData = await fetchCurrentPlayers(transaction);
 
   logger.info(
@@ -73,7 +74,7 @@ export async function run(
   }
 
   await registerPromotions(oldData, newData, transaction);
-  await registerDemotions(oldData, newData, transaction);
+  await registerDemotions(oldData, newData, erroredRegions, transaction);
 
   await checkAccountsAndSummonersCount(transaction);
 }

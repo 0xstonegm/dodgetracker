@@ -19,6 +19,7 @@ import { lolApi, riotApi } from "./api";
 import { Dodge } from "./dodges";
 import logger from "./logger";
 import { Tier } from "./types";
+import { promiseWithTimeout } from "./util";
 
 const supportedRegions = [
   Constants.Regions.EU_WEST,
@@ -47,6 +48,7 @@ export type PlayersFromDbMap = Map<
     wins: number;
     losses: number;
     updatedAt: Date;
+    region: string;
   }
 >;
 
@@ -186,6 +188,7 @@ export async function fetchCurrentPlayers(
       wins: number;
       losses: number;
       updatedAt: Date;
+      region: string;
     }
   >();
 
@@ -196,10 +199,20 @@ export async function fetchCurrentPlayers(
       wins: row.wins,
       losses: row.losses,
       updatedAt: row.updatedAt!,
+      region: row.region,
     });
   });
 
   return currentPlayersData;
+}
+
+export class RegionError extends Error {
+  region: string;
+
+  constructor(message: string, region: string) {
+    super(message);
+    this.region = region;
+  }
 }
 
 export async function getPlayers(
@@ -209,11 +222,16 @@ export async function getPlayers(
     Record<string, never>,
     ExtractTablesWithRelations<Record<string, never>>
   >,
-): Promise<PlayersFromApiMap> {
+): Promise<{
+  playersFromApiMap: PlayersFromApiMap;
+  erroredRegions: string[];
+}> {
   const promises = supportedRegions.map(
-    async (region) => await getPlayersForRegion(region, transaction),
+    (region) =>
+      promiseWithTimeout(getPlayersForRegion(region, transaction), 10 * 1000)
+        .then((data) => ({ status: "success", data }) as const) // Using 'as const' for literal type inference
+        .catch((error) => ({ status: "error", region, error }) as const), // Same here
   );
-
   const players = await Promise.all(promises);
 
   const playersMap = new Map<
@@ -221,16 +239,26 @@ export async function getPlayers(
     LeagueItemDTOWithRegionAndTier
   >();
 
-  players.forEach((regionPlayers) => {
-    regionPlayers.forEach((player) => {
-      playersMap.set(
-        constructSummonerAndRegionKey(player.summonerId, player.region),
-        player,
+  const erroredRegions: string[] = [];
+
+  players.forEach((result) => {
+    if (result.status === "error") {
+      const erroredRegion = result.region;
+      logger.error(
+        `Region ${erroredRegion} errored: ${result.error}, skipping...`,
       );
-    });
+      erroredRegions.push(erroredRegion);
+    } else if (result.status === "success") {
+      result.data.forEach((player) => {
+        playersMap.set(
+          constructSummonerAndRegionKey(player.summonerId, player.region),
+          player,
+        );
+      });
+    }
   });
 
-  return playersMap;
+  return { playersFromApiMap: playersMap, erroredRegions };
 }
 
 async function getDemotions(
@@ -317,6 +345,7 @@ export async function registerPromotions(
 export async function registerDemotions(
   playersFromDb: PlayersFromDbMap,
   playersFromApi: PlayersFromApiMap,
+  regionsToSkip: string[],
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
@@ -329,7 +358,13 @@ export async function registerDemotions(
     { updatedAt: Date; wins: number; losses: number }
   > = new Map();
 
+  if (regionsToSkip.length > 0) {
+    logger.info(`Skipping demotions for ${regionsToSkip.join(", ")}.`);
+  }
+
   playersFromDb.forEach((playerFromDb, key) => {
+    if (regionsToSkip.includes(playerFromDb.region)) return;
+
     const playerFromApi = playersFromApi.get(key);
     if (!playerFromApi) {
       playersNotInApi.set(key, {

@@ -3,12 +3,7 @@ import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
 import { run } from "./index";
 import logger from "./logger";
-
-function timeout(ms: number) {
-  return new Promise((_, reject) =>
-    setTimeout(() => reject(new Error(`Timed out after ${ms}ms`)), ms),
-  );
-}
+import { promiseWithTimeout } from "./util";
 
 // Seconds to wait before timing out the database update and rolling back the transaction
 // This is to prevent the algorithm from getting stuck.
@@ -38,7 +33,7 @@ async function main() {
     logger.info("Transaction started...");
 
     try {
-      await Promise.race([run(tx), timeout(timeoutSeconds * 1000)]);
+      await promiseWithTimeout(run(tx), timeoutSeconds * 1000);
       logger.info("Database updated successfully, transaction commited...");
     } catch (error) {
       logger.error("Database update failed, rolling back transaction:", error);
