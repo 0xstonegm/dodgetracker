@@ -379,7 +379,12 @@ export async function registerDemotions(
     logger.info(
       `Registering ${demotedPlayers.length} players in demotions table...`,
     );
-    await transaction.insert(demotions).values(demotedPlayers);
+    const chunkSize = 20000; // On season reset, there are a lot of demotions
+    for (let i = 0; i < demotedPlayers.length; i += chunkSize) {
+      logger.info(`Inserting chunk ${i}...`);
+      const chunk = demotedPlayers.slice(i, i + chunkSize);
+      await transaction.insert(demotions).values(chunk);
+    }
   }
 }
 
