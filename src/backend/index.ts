@@ -55,7 +55,7 @@ export async function run(
     ExtractTablesWithRelations<Record<string, never>>
   >,
 ) {
-  let newData = await getPlayers();
+  let newData = await getPlayers(transaction);
   let oldData = await fetchCurrentPlayers(transaction);
 
   logger.info(

@@ -10,6 +10,7 @@ import { LeagueItemDTO } from "twisted/dist/models-dto";
 import {
   apexTierPlayers,
   demotions,
+  playerCounts,
   promotions,
   riotIds,
   summoners,
@@ -51,6 +52,12 @@ export type PlayersFromDbMap = Map<
 
 async function getPlayersForRegion(
   region: Regions,
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
 ): Promise<LeagueItemDTOWithRegionAndTier[]> {
   const promises = [
     lolApi.League.getMasterLeagueByQueue(
@@ -80,6 +87,21 @@ async function getPlayersForRegion(
       rankTier,
     }));
 
+  if (
+    master.response?.entries &&
+    grandmaster.response?.entries &&
+    challenger.response?.entries
+  ) {
+    // Update the player count for the given region and rank tier
+    await insertApexTierPlayerCount(
+      region,
+      master.response.entries.length,
+      grandmaster.response.entries.length,
+      challenger.response.entries.length,
+      transaction,
+    );
+  }
+
   // Simplify the check for responses and entries
   const entries = [master, grandmaster, challenger].reduce((acc, league) => {
     if (league.response?.entries) {
@@ -95,6 +117,49 @@ async function getPlayersForRegion(
   }, [] as LeagueItemDTOWithRegionAndTier[]);
 
   return entries;
+}
+
+/**
+ * Will update the player count for the given region and rank tier in the database.
+ *
+ * @param region - The region to insert the player count for
+ * @param masterPlayerCount - Number of players in the MASTER tier
+ * @param grandmasterPlayerCount - Number of players in the GRANDMASTER tier
+ * @param challengerPlayerCount - Number of players in the CHALLENGER tier
+ * @param transaction - The database transaction to execute the query in
+ */
+async function insertApexTierPlayerCount(
+  region: Regions,
+  masterPlayerCount: number,
+  grandmasterPlayerCount: number,
+  challengerPlayerCount: number,
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
+): Promise<void> {
+  logger.info(
+    `Inserting player counts for ${region} [M: ${masterPlayerCount}, GM: ${grandmasterPlayerCount}, C: ${challengerPlayerCount}]`,
+  );
+  await transaction.insert(playerCounts).values([
+    {
+      region,
+      playerCount: masterPlayerCount,
+      rankTier: "MASTER",
+    },
+    {
+      region,
+      playerCount: grandmasterPlayerCount,
+      rankTier: "GRANDMASTER",
+    },
+    {
+      region,
+      playerCount: challengerPlayerCount,
+      rankTier: "CHALLENGER",
+    },
+  ]);
 }
 
 export function constructSummonerAndRegionKey(
@@ -137,9 +202,16 @@ export async function fetchCurrentPlayers(
   return currentPlayersData;
 }
 
-export async function getPlayers(): Promise<PlayersFromApiMap> {
-  const promises = supportedRegions.map((region) =>
-    getPlayersForRegion(region),
+export async function getPlayers(
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
+): Promise<PlayersFromApiMap> {
+  const promises = supportedRegions.map(
+    async (region) => await getPlayersForRegion(region, transaction),
   );
 
   const players = await Promise.all(promises);

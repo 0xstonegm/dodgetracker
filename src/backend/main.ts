@@ -22,14 +22,14 @@ async function main() {
   );
 
   logger.info("Connecting to database...");
-  const connection = await mysql.createConnection({
+  const connection = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     connectTimeout: 15 * 1000,
-    waitForConnections: true,
-    connectionLimit: 10,
+    waitForConnections: false,
+    connectionLimit: 20,
     queueLimit: 0,
   });
   const db = drizzle(connection);

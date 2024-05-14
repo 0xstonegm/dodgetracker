@@ -168,3 +168,26 @@ export const summoners = mysqlTable(
     };
   },
 );
+
+export const playerCounts = mysqlTable(
+  "player_counts",
+  {
+    playerCountId: int("id").autoincrement().notNull(),
+    region: varchar("region", { length: 10 }).notNull(),
+    playerCount: int("player_count").notNull(),
+    rankTier: mysqlEnum("rank_tier", [
+      "MASTER",
+      "GRANDMASTER",
+      "CHALLENGER",
+    ]).notNull(),
+    atTime: timestamp("at_time", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => {
+    return {
+      playerCountsPlayerCountId: primaryKey({
+        columns: [table.playerCountId],
+        name: "player_counts_player_count_id",
+      }),
+    };
+  },
+);
