@@ -79,10 +79,10 @@ export default async function Region({ params, searchParams }: Props) {
           </div>
           <AutoFetchSwitch />
           {totalPlayerCount <= 50 && (
-            <Alert className="mt-2 w-5/6 border-2 border-zinc-900 bg-yellow-400 bg-opacity-35 md:w-full">
+            <Alert className="mt-2 w-5/6 border-2 dark:bg-zinc-800 md:w-full">
               <AlertTitle>
                 <div className="flex items-center text-center">
-                  <Info className="mr-1 size-6" />
+                  <Info className="mr-1 size-6 text-yellow-500" />
                   <p>Few players!</p>
                 </div>
               </AlertTitle>

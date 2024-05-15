@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <CSPostHogProvider>
-        <body className={`${inter.className} bg-zinc-700 text-zinc-300`}>
+        <body className={`${inter.className} dark bg-zinc-700 text-zinc-300`}>
           <NavBar />
           <main>{children}</main>
           <GoogleAnalytics gaId={process.env.GA_ID || ""} />
