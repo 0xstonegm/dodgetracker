@@ -1,4 +1,10 @@
-import { apexTierPlayers, dodges, riotIds, summoners } from "@/src/db/schema";
+import {
+  apexTierPlayers,
+  dodges,
+  playerCounts,
+  riotIds,
+  summoners,
+} from "@/src/db/schema";
 import "dotenv/config";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 import { db } from "./db";
@@ -240,4 +246,33 @@ export async function getDodgesCount(
   }
 
   return result[0].count;
+}
+
+export async function getLatestPlayerCount(riotRegion: string): Promise<{
+  masterCount: number;
+  grandmasterCount: number;
+  challengerCount: number;
+  atTime: Date;
+  riotRegion: string;
+}> {
+  const res = await db
+    .select()
+    .from(playerCounts)
+    .where(
+      and(
+        eq(playerCounts.region, riotRegion),
+        eq(
+          playerCounts.atTime,
+          sql<Date>`(SELECT MAX(${playerCounts.atTime}) FROM ${playerCounts} WHERE ${playerCounts.region} = ${riotRegion})`,
+        ),
+      ),
+    );
+  return {
+    masterCount: res.find((r) => r.rankTier === "MASTER")?.playerCount!,
+    grandmasterCount: res.find((r) => r.rankTier === "GRANDMASTER")
+      ?.playerCount!,
+    challengerCount: res.find((r) => r.rankTier === "CHALLENGER")?.playerCount!,
+    atTime: res[0].atTime,
+    riotRegion: res[0].region,
+  };
 }

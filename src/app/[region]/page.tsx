@@ -2,6 +2,7 @@ import AutoFetchSwitch from "@/src/components/AutoFetchSwitch";
 import DodgeList from "@/src/components/DodgeList";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
 import RefreshButton from "@/src/components/RefreshButton";
+import RegionPlayerCount from "@/src/components/RegionPlayerCount";
 import { supportedUserRegions } from "@/src/regions";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
@@ -30,6 +31,16 @@ export default function Region({ params, searchParams }: Props) {
 
   return (
     <>
+      <div className="flex w-full justify-end">
+        <div className="border-b border-l border-zinc-900 px-2 text-sm">
+          <Suspense
+            fallback={<p>Loading player count...</p>}
+            key={`${params.region}`}
+          >
+            <RegionPlayerCount userRegion={params.region} />
+          </Suspense>
+        </div>
+      </div>
       <div className="flex items-center justify-center">
         <div className="flex flex-col items-center">
           <div className="flex items-center justify-center">
