@@ -5,12 +5,19 @@ import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useEffect, useState, useTransition } from "react";
 import { MdDone } from "react-icons/md";
+import { cn } from "../lib/utils";
 import { Button } from "./Button";
 import LoadingSpinner from "./LoadingSpinner";
 
 const updateIntervalSecs = 15;
 
-export default function RefreshButton() {
+export interface RefreshButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+
+export default function RefreshButton({
+  className,
+  ...props
+}: RefreshButtonProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -58,7 +65,10 @@ export default function RefreshButton() {
   return (
     <Button
       disabled={isPending || isDone}
-      className="min-h-6 min-w-12 text-sm md:min-h-10 md:min-w-16 md:text-lg"
+      className={cn(
+        "min-h-6 min-w-12 text-sm md:min-h-10 md:min-w-16 md:text-lg",
+        className,
+      )}
       onClick={() => {
         setButtonClicked(true);
         startTransition(() => {
@@ -69,6 +79,7 @@ export default function RefreshButton() {
         sendGTMEvent({ event: "fetch_clicked" });
         posthog.capture("fetch_clicked");
       }}
+      {...props}
     >
       <div className="flex items-center justify-center">
         {isPending ? (

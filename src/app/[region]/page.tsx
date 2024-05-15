@@ -3,10 +3,16 @@ import DodgeList from "@/src/components/DodgeList";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
 import RefreshButton from "@/src/components/RefreshButton";
 import RegionPlayerCount from "@/src/components/RegionPlayerCount";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import { supportedUserRegions } from "@/src/regions";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { BsQuestionCircleFill } from "react-icons/bs";
 
 interface Props {
   params: {
@@ -47,14 +53,21 @@ export default function Region({ params, searchParams }: Props) {
             <header className="m-2 text-center text-2xl font-bold md:text-4xl">
               Dodges
             </header>
-            <RefreshButton />
+            <RefreshButton className="mr-2" />
+            <Popover>
+              <PopoverTrigger>
+                <BsQuestionCircleFill className="md:size-6" />
+              </PopoverTrigger>
+              <PopoverContent className="border-zinc-700 bg-zinc-800 text-white">
+                <p>
+                  The database is updated automatically every ~10 seconds. Press
+                  the fetch button to fetch the latest dodges from the database
+                  or enable auto-fetch to automatically fetch the latest dodges
+                  every 15 seconds.
+                </p>
+              </PopoverContent>
+            </Popover>
           </div>
-          <p className="m-2 px-2 text-center">
-            The database is updated automatically every ~10 seconds. Press the
-            fetch button to fetch the latest dodges from the database or enable
-            auto-fetch to automatically fetch the latest dodges every 15
-            seconds.
-          </p>
           <AutoFetchSwitch />
         </div>
       </div>
