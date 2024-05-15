@@ -3,16 +3,18 @@ import DodgeList from "@/src/components/DodgeList";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
 import RefreshButton from "@/src/components/RefreshButton";
 import RegionPlayerCount from "@/src/components/RegionPlayerCount";
+import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/src/components/ui/popover";
-import { supportedUserRegions } from "@/src/regions";
+import { getLatestPlayerCount } from "@/src/data";
+import { supportedUserRegions, userRegionToRiotRegion } from "@/src/regions";
+import { HelpCircleIcon, Info } from "lucide-react";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { BsQuestionCircleFill } from "react-icons/bs";
 
 interface Props {
   params: {
@@ -29,22 +31,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function Region({ params, searchParams }: Props) {
+export default async function Region({ params, searchParams }: Props) {
   const pageNumber = parseInt(searchParams.page ?? "1", 10);
   if (supportedUserRegions.has(params.region) === false) {
     redirect("/euw");
   }
 
+  const playerCounts = await getLatestPlayerCount(
+    userRegionToRiotRegion(params.region),
+  );
+  const totalPlayerCount =
+    playerCounts.masterCount +
+    playerCounts.grandmasterCount +
+    playerCounts.challengerCount;
+
   return (
     <>
       <div className="flex w-full justify-end">
         <div className="border-b border-l border-zinc-900 px-2 text-sm">
-          <Suspense
-            fallback={<p>Loading player count...</p>}
-            key={`${params.region}`}
-          >
-            <RegionPlayerCount userRegion={params.region} />
-          </Suspense>
+          <RegionPlayerCount
+            userRegion={params.region}
+            lastUpdateUtc={playerCounts.atTime}
+            totalPlayerCount={totalPlayerCount}
+          />
         </div>
       </div>
       <div className="flex items-center justify-center">
@@ -56,7 +65,7 @@ export default function Region({ params, searchParams }: Props) {
             <RefreshButton className="mr-2" />
             <Popover>
               <PopoverTrigger>
-                <BsQuestionCircleFill className="md:size-6" />
+                <HelpCircleIcon className="md:size-6" />
               </PopoverTrigger>
               <PopoverContent className="border-zinc-700 bg-zinc-800 text-white">
                 <p>
@@ -69,6 +78,20 @@ export default function Region({ params, searchParams }: Props) {
             </Popover>
           </div>
           <AutoFetchSwitch />
+          {totalPlayerCount === 0 && (
+            <Alert className="mt-2 w-5/6 border-2 border-zinc-900 bg-yellow-400 bg-opacity-35 md:w-full">
+              <AlertTitle>
+                <div className="flex items-center text-center">
+                  <Info className="mr-1 size-6" />
+                  <p>No players!</p>
+                </div>
+              </AlertTitle>
+              <AlertDescription>
+                Currently, there are no {params.region.toUpperCase()} players in
+                master or above, which means no dodges can be detected.
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
       </div>
       <Suspense
