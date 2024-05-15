@@ -6,8 +6,9 @@ import {
   summoners,
 } from "@/src/db/schema";
 import "dotenv/config";
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, lt, sql } from "drizzle-orm";
 import { db } from "./db";
+import { seasons } from "./seasons";
 import { Tier } from "./types"; // Assuming Dodge is properly defined to match the query results
 
 export function profileIconUrl(profileIconID: number): string {
@@ -150,8 +151,35 @@ export async function getLeaderboard(
   riotRegion: string,
   pageSize: number,
   page: number,
+  seasonValue: string,
 ) {
-  return await db
+  const season = seasons.find((s) => s.value === seasonValue)!;
+
+  const startDate =
+    season.startDate[riotRegion as keyof typeof season.startDate]!;
+  const endDate = season.endDate[riotRegion as keyof typeof season.endDate]!;
+
+  const totalEntriesQuery = db
+    .select({
+      total: sql<number>`COUNT(DISTINCT ${riotIds.gameName})`,
+    })
+    .from(dodges)
+    .innerJoin(
+      summoners,
+      and(
+        eq(dodges.summonerId, summoners.summonerId),
+        eq(dodges.region, summoners.region),
+      ),
+    )
+    .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
+    .where(
+      and(
+        eq(dodges.region, riotRegion),
+        and(gt(dodges.createdAt!, startDate), lt(dodges.createdAt!, endDate)),
+      ),
+    );
+
+  const leaderboardQuery = db
     .select({
       gameName: riotIds.gameName,
       tagLine: riotIds.tagLine,
@@ -181,7 +209,12 @@ export async function getLeaderboard(
         eq(summoners.region, apexTierPlayers.region),
       ),
     )
-    .where(eq(dodges.region, riotRegion))
+    .where(
+      and(
+        eq(dodges.region, riotRegion),
+        and(gt(dodges.createdAt!, startDate), lt(dodges.createdAt!, endDate)),
+      ),
+    )
     .groupBy(riotIds.gameName, riotIds.tagLine)
     .orderBy(
       desc(sql<number>`COUNT(${dodges.dodgeId})`),
@@ -189,8 +222,19 @@ export async function getLeaderboard(
     )
     .limit(pageSize)
     .offset(pageSize * (page - 1));
-}
 
+  const [totalEntriesResult, leaderboardResult] = await Promise.all([
+    totalEntriesQuery,
+    leaderboardQuery,
+  ]);
+
+  const totalEntries = totalEntriesResult[0]?.total || 0;
+
+  return {
+    totalEntries,
+    data: leaderboardResult,
+  };
+}
 export async function getAccounts() {
   return await db
     .select({

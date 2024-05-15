@@ -1,6 +1,6 @@
 "use client";
-import { usePathname, useRouter } from "next/navigation";
-import { FC } from "react";
+import { useQueryState } from "nuqs";
+import { FC, useTransition } from "react";
 import { Button } from "./Button";
 
 interface PaginationControlsProps {
@@ -16,10 +16,10 @@ const PaginationControls: FC<PaginationControlsProps> = ({
   hasPrevPage,
   totalPageCount,
 }) => {
-  const router = useRouter();
-  const pathname = usePathname();
+  const [_, startTransition] = useTransition();
+  const [page, setPage] = useQueryState("page", { startTransition });
   const goToPage = (newPage: number) => {
-    router.push(`${pathname}?page=${newPage}`);
+    setPage(newPage.toString());
     window.scrollTo(0, 0);
   };
 

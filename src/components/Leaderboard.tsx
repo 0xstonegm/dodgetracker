@@ -14,31 +14,43 @@ const maxPages = 100;
 export default async function Leaderboard({
   userRegion,
   pageNumber,
+  seasonValue,
 }: {
   userRegion: string;
   pageNumber: number;
+  seasonValue: string;
 }) {
-  // FIXME: Get length of leaderboard instead of hardcoding like this
-  const totalPageCount = maxPages;
   pageNumber = (function () {
-    if (isNaN(pageNumber)) {
-      return 1;
-    }
-    return Math.min(Math.max(pageNumber, 1), totalPageCount);
+    return Math.min(Math.max(pageNumber, 1), maxPages);
   })();
-
   const leaderboard = await getLeaderboard(
     userRegionToRiotRegion(userRegion),
     pageSize,
     pageNumber,
+    seasonValue,
   );
   if (!leaderboard) {
     notFound();
   }
 
+  const totalPageCount = Math.min(
+    Math.ceil(leaderboard.totalEntries / pageSize),
+    maxPages,
+  );
+
+  if (leaderboard.data.length === 0) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <p className="md:text-lg">
+          No data available for this region and season yet.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
-      {leaderboard.map((entry, index) => (
+      {leaderboard.data.map((entry, index) => (
         <div key={index}>
           <div className="flex border-b border-zinc-900 p-2">
             <div className="flex flex-grow flex-col">
