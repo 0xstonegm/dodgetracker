@@ -78,17 +78,18 @@ export default async function Region({ params, searchParams }: Props) {
             </Popover>
           </div>
           <AutoFetchSwitch />
-          {totalPlayerCount === 0 && (
+          {totalPlayerCount <= 50 && (
             <Alert className="mt-2 w-5/6 border-2 border-zinc-900 bg-yellow-400 bg-opacity-35 md:w-full">
               <AlertTitle>
                 <div className="flex items-center text-center">
                   <Info className="mr-1 size-6" />
-                  <p>No players!</p>
+                  <p>Few players!</p>
                 </div>
               </AlertTitle>
               <AlertDescription>
-                Currently, there are no {params.region.toUpperCase()} players in
-                master or above, which means no dodges can be detected.
+                Currently there are not many players in{" "}
+                {params.region.toUpperCase()} master and above (
+                {totalPlayerCount} player(s)).
               </AlertDescription>
             </Alert>
           )}
