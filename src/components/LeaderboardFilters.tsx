@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useQueryState } from "nuqs";
+import posthog from "posthog-js";
 import { useTransition } from "react";
 import {
   Select,
@@ -25,6 +26,7 @@ export default function LeaderboardFilters() {
   const onSeasonChange = (value: string) => {
     setSeason(value);
     setPage("1");
+    posthog.capture("leaderboard_filters_season_change", { season: value });
   };
 
   return (
