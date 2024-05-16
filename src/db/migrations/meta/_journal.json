@@ -36,6 +36,27 @@
       "when": 1715677435902,
       "tag": "0004_tricky_eternity",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1715874603158,
+      "tag": "0005_funny_scarlet_spider",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1715876245114,
+      "tag": "0006_hesitant_colossus",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1715876759770,
+      "tag": "0007_mysterious_madelyne_pryor",
+      "breakpoints": true
     }
   ]
 }

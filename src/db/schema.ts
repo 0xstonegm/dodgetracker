@@ -36,6 +36,10 @@ export const apexTierPlayers = mysqlTable(
         columns: [table.summonerId, table.region],
         name: "apex_tier_players_summoner_id_region",
       }),
+      summonweIdRegion: index("summoner_id_region").on(
+        table.summonerId,
+        table.region,
+      ),
     };
   },
 );
@@ -88,6 +92,12 @@ export const dodges = mysqlTable(
   (table) => {
     return {
       summonerId: index("summoner_id").on(table.summonerId, table.region),
+      createdAt: index("created_at").on(table.createdAt),
+      summonerIdRegionCreatedAt: index("summoner_id_region_created_at").on(
+        table.summonerId,
+        table.region,
+        table.createdAt,
+      ),
       dodgesDodgeId: primaryKey({
         columns: [table.dodgeId],
         name: "dodges_dodge_id",
@@ -139,6 +149,11 @@ export const riotIds = mysqlTable(
         columns: [table.puuid],
         name: "riot_ids_puuid",
       }),
+      puuidGameNameTagLine: index("puuid_game_name_tag_line").on(
+        table.puuid,
+        table.gameName,
+        table.tagLine,
+      ),
     };
   },
 );
@@ -165,6 +180,11 @@ export const summoners = mysqlTable(
         name: "summoners_puuid",
       }),
       summonerId: unique("summoner_id").on(table.summonerId, table.region),
+      summonerIdRegion: index("summoner_id_region").on(
+        table.summonerId,
+        table.region,
+      ),
+      puuid: index("puuid").on(table.puuid),
     };
   },
 );

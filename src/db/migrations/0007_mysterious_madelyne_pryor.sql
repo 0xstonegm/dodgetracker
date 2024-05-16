@@ -1,0 +1,1 @@
+CREATE INDEX `summoner_id_region` ON `apex_tier_players` (`summoner_id`,`region`);
