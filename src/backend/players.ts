@@ -7,6 +7,7 @@ import {
 import { Constants } from "twisted";
 import { Regions, regionToRegionGroup } from "twisted/dist/constants/regions";
 import { LeagueItemDTO } from "twisted/dist/models-dto";
+import { z } from "zod";
 import {
   apexTierPlayers,
   demotions,
@@ -572,14 +573,13 @@ export async function updateAccountsData(
         };
       });
 
+  // Add all EUW accounts to a separate array to fetch LolPros.gg slugs
   let euwAccounts: { puuid: string; gameName: string; tagLine: string }[] = [];
   accountsToUpsert.forEach((account, index) => {
     if (puuidsAndRegion[index][1] === Regions.EU_WEST) {
       euwAccounts.push(account);
     }
   });
-
-  accountsToUpsert = accountsToUpsert.filter((account) => account !== null);
 
   if (accountsToUpsert.length > 0) {
     await transaction
@@ -596,27 +596,70 @@ export async function updateAccountsData(
     logger.info("No new accounts to upsert into riot_ids table, skipping...");
   }
 
-  // TODO: break this into a separate function
-  const lolprosPromises = euwAccounts.map((account) =>
-    getLolprosSlug(account.gameName, account.tagLine),
+  await upsertLolProsSlugs(euwAccounts, transaction);
+
+  logger.info("All summoner and account data updated.");
+}
+
+async function upsertLolProsSlugs(
+  euwAccounts: {
+    puuid: string;
+    gameName: string;
+    tagLine: string;
+  }[],
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, never>,
+    ExtractTablesWithRelations<Record<string, never>>
+  >,
+) {
+  const lolProsPromises = euwAccounts.map((account) =>
+    promiseWithTimeout(
+      getLolProsSlug(account.gameName, account.tagLine),
+      5 * 1000,
+    )
+      .then(
+        (slug) =>
+          ({
+            status: "success",
+            gameName: account.gameName,
+            tagLine: account.tagLine,
+            puuid: account.puuid,
+            slug,
+          }) as const,
+      )
+      .catch(
+        (error) =>
+          ({
+            status: "error",
+            error,
+            gameName: account.gameName,
+            tagLine: account.tagLine,
+            puuid: account.puuid,
+          }) as const,
+      ),
   );
-  const lolProsSlugs: (string | null)[] = await Promise.all(lolprosPromises);
+  const lolProsSlugs = await Promise.all(lolProsPromises);
 
   const slugsToUpsert: { puuid: string; lolprosSlug: string }[] = [];
-  lolProsSlugs.forEach((slug, index) => {
-    if (slug) {
+  lolProsSlugs.forEach((result, _) => {
+    if (result.status === "success" && result.slug) {
       slugsToUpsert.push({
-        puuid: euwAccounts[index].puuid,
-        lolprosSlug: slug,
+        puuid: result.puuid,
+        lolprosSlug: result.slug,
       });
+      logger.info(
+        `Got lolpros.gg slug for ${result.gameName}#${result.tagLine}: ${result.slug}`,
+      );
+    } else if (result.status === "error") {
+      logger.error(
+        `Error fetching LolPros.gg slug for ${result.gameName}#${result.tagLine}: ${JSON.stringify(result.error)}`,
+      );
     }
   });
 
   if (slugsToUpsert.length > 0) {
-    logger.info(
-      `There are ${slugsToUpsert.length} LolPros.gg slugs to upsert into riot_ids table:`,
-      slugsToUpsert.map((slug) => slug.lolprosSlug).join(", "),
-    );
     await transaction
       .insert(riotIds)
       .values(slugsToUpsert)
@@ -627,37 +670,40 @@ export async function updateAccountsData(
         },
       });
     logger.info(
-      `${slugsToUpsert.length} LolPros.gg slugs upserted into riot_ids table.`,
+      `${slugsToUpsert.length} lolpros.gg slugs upserted into riot_ids table.`,
     );
   } else {
     logger.info(
-      "No LolPros.gg slugs to upsert into riot_ids table, skipping...",
+      "No lolpros.gg slugs to upsert into riot_ids table, skipping...",
     );
   }
-
-  logger.info("All summoner and account data updated.");
 }
 
-async function getLolprosSlug(
+async function getLolProsSlug(
   gameName: string,
   tagLine: string,
 ): Promise<string | null> {
+  const lolProsResponseSchema = z.array(
+    z
+      .object({
+        slug: z.string(),
+      })
+      .passthrough(),
+  );
   const url = `https://api.lolpros.gg/es/search?query=${encodeURIComponent(`${gameName}#${tagLine}`)}`;
-  logger.info(`Lolpros.gg API request: ${url}`);
+  logger.info(`Lolpros.gg API request URL: ${url}`);
+
   const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error("LolPros API request failed!");
-  }
+  const validatedData = lolProsResponseSchema.parse(await response.json());
 
-  const data = await response.json();
-  if (data.length === 0) {
+  if (validatedData.length === 0) {
     return null;
+  } else {
+    if (validatedData.length > 1) {
+      logger.warn(
+        `Got multiple lolpros.gg results for ${gameName}#${tagLine}, using the first one... (results: ${JSON.stringify(validatedData)})`,
+      );
+    }
+    return validatedData[0].slug;
   }
-
-  const slug = data[0].slug;
-  if (!slug) {
-    return null;
-  }
-
-  return slug;
 }
