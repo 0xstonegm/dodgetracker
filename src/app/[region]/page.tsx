@@ -48,7 +48,7 @@ export default async function Region({ params, searchParams }: Props) {
   return (
     <>
       <div className="flex w-full justify-end">
-        <div className="border-b border-l border-zinc-900 px-2 text-sm">
+        <div className="border-b border-l border-zinc-900 px-2 text-sm font-light">
           <RegionPlayerCount
             userRegion={params.region}
             lastUpdateUtc={playerCounts.atTime}
