@@ -6,8 +6,8 @@ import posthog from "posthog-js";
 import { useEffect, useState, useTransition } from "react";
 import { MdDone } from "react-icons/md";
 import { cn } from "../lib/utils";
-import { Button } from "./Button";
 import LoadingSpinner from "./LoadingSpinner";
+import { Button } from "./ui/button";
 
 const updateIntervalSecs = 15;
 
@@ -65,8 +65,9 @@ export default function RefreshButton({
   return (
     <Button
       disabled={isPending || isDone}
+      variant={"secondary"}
       className={cn(
-        "min-h-6 min-w-12 text-sm md:min-h-10 md:min-w-16 md:text-lg",
+        "min-h-6 min-w-12 text-sm md:min-h-10 md:min-w-20 md:text-lg",
         className,
       )}
       onClick={() => {

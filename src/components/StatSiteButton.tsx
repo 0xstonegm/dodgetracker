@@ -2,7 +2,7 @@
 
 import { cn } from "../lib/utils";
 import { StatSite, getDeeplolUrl, getOpggUrl } from "../statSites";
-import { Button } from "./Button";
+import { Button } from "./ui/button";
 
 export interface StatSiteButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -29,12 +29,13 @@ export default function StatSiteButton({
   })();
 
   return (
-    <a href={url} target="_blank" rel="noopener noreferrer">
+    <a href={url} target="_blank" rel="noopener noreferrer" tabIndex={-1}>
       <Button
+        variant={"secondary"}
         className={cn(
-          "text-xs text-zinc-400",
+          "h-auto px-2 py-1 align-middle text-xs font-light",
           {
-            "rounded-md bg-yellow-800 p-1 align-middle text-xs font-medium text-zinc-200 shadow-sm shadow-zinc-800 enabled:hover:bg-yellow-700":
+            "shadow-sm dark:bg-yellow-800 dark:shadow-zinc-800 dark:enabled:hover:bg-yellow-800/80":
               props.statSite === StatSite.LOLPROS,
           },
           className,
