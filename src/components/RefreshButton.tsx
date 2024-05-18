@@ -67,7 +67,7 @@ export default function RefreshButton({
       disabled={isPending || isDone}
       variant={"secondary"}
       className={cn(
-        "min-h-6 min-w-12 text-sm md:min-h-10 md:min-w-20 md:text-lg",
+        "min-h-8 min-w-16 text-lg md:min-h-10 md:min-w-20",
         className,
       )}
       onClick={() => {
