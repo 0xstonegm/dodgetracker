@@ -39,7 +39,14 @@ export default function LeaderboardFilters() {
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Season" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent
+            ref={(ref) =>
+              // Temporary workaround from https://github.com/shadcn-ui/ui/issues/1220
+              // Radix UI issue https://github.com/radix-ui/primitives/pull/2403
+              // Credits to https://github.com/citizenofjustice/ocean-goods/pull/24/files
+              ref?.addEventListener("touchend", (e) => e.preventDefault())
+            }
+          >
             {seasons.reverse().map((season) => (
               <SelectItem key={season.value} value={season.value}>
                 {season.label}
