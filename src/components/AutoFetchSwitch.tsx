@@ -1,47 +1,24 @@
 "use client";
 
+import { useLocalStorage } from "@uidotdev/usehooks";
 import posthog from "posthog-js";
-import { useEffect, useState } from "react";
+import { autoFetchKey } from "../autoFetch";
 import { Switch } from "./ui/switch";
 
 export default function AutoFetchSwitch() {
-  const [autoFetch, setAutoFetch] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
+  const [autoFetch, setAutoFetch] = useLocalStorage(autoFetchKey, false);
 
-    const value = localStorage.getItem("autoFetch");
-    return value === "true";
-  });
-
-  function setAndStoreAutoFetch(value: boolean) {
-    posthog.capture("auto_fetch_switch", { enabled: value });
-    localStorage.setItem("autoFetch", value.toString());
+  const handleCheckedChange = (value: boolean) => {
     setAutoFetch(value);
-  }
-
-  // Sync autoFetch between tabs
-  useEffect(() => {
-    // Handler to update state based on localStorage changes
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === "autoFetch") {
-        setAutoFetch(event.newValue === "true");
-      }
-    };
-
-    // Add event listener for storage changes
-    window.addEventListener("storage", handleStorageChange);
-
-    // Cleanup function to remove the event listener
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
+    posthog.capture("auto_fetch_switch", {
+      enabled: value,
+    });
+  };
 
   return (
     <div className="flex items-center justify-center text-sm">
       <p className="pr-2">Auto-fetch</p>
-      <Switch checked={autoFetch} onCheckedChange={setAndStoreAutoFetch} />
+      <Switch checked={autoFetch} onCheckedChange={handleCheckedChange} />
     </div>
   );
 }

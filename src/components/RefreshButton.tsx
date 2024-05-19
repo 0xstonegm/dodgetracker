@@ -1,10 +1,12 @@
 "use client";
 
 import { sendGTMEvent } from "@next/third-parties/google";
+import { useLocalStorage } from "@uidotdev/usehooks";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { MdDone } from "react-icons/md";
+import { autoFetchKey } from "../autoFetch";
 import { cn } from "../lib/utils";
 import LoadingSpinner from "./LoadingSpinner";
 import { Button } from "./ui/button";
@@ -20,21 +22,59 @@ export default function RefreshButton({
 }: RefreshButtonProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
-  const defaultLabel = "Fetch";
-
+  const [autoFetch, _setAutoFetch] = useLocalStorage(autoFetchKey, false);
   const [buttonClicked, setButtonClicked] = useState(false);
   const [isDone, setIsDone] = useState(false);
+  const interval = useRef<number | null>(null);
 
-  function getAutoFetch(): boolean {
-    if (typeof window === "undefined") {
-      return false;
+  // Fetch new dodges
+  const fetch = useCallback(
+    (eventName: string) => {
+      console.log("fetching");
+      setButtonClicked(true);
+      startTransition(() => {
+        router.refresh();
+        setIsDone(true);
+      });
+
+      sendGTMEvent({ event: eventName });
+      posthog.capture(eventName);
+    },
+    [setButtonClicked, startTransition, router, setIsDone],
+  );
+
+  const setInterval = useCallback(() => {
+    interval.current = window.setInterval(() => {
+      fetch("auto_fetch");
+    }, updateIntervalSecs * 1000);
+  }, [fetch]);
+
+  // Reset interval
+  const resetInterval = () => {
+    if (autoFetch && interval.current) {
+      window.clearInterval(interval.current);
+      setInterval();
+    }
+  };
+
+  // Start an interval when autoFetch is enabled, clear it when disabled
+  useEffect(() => {
+    if (autoFetch) {
+      setInterval();
+    } else {
+      if (interval.current) {
+        window.clearInterval(interval.current);
+      }
     }
 
-    const value = localStorage.getItem("autoFetch");
-    return value === "true";
-  }
+    return () => {
+      if (interval.current) {
+        window.clearInterval(interval.current);
+      }
+    };
+  }, [autoFetch, fetch, setInterval]);
 
+  // Reset button state after a short delay
   useEffect(() => {
     if (!isPending && buttonClicked) {
       const timeoutId = setTimeout(() => {
@@ -45,23 +85,6 @@ export default function RefreshButton({
     }
   }, [isPending, buttonClicked]);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (getAutoFetch()) {
-        setButtonClicked(true);
-        startTransition(() => {
-          sendGTMEvent({ event: "auto_fetch" });
-          posthog.capture("auto_fetch");
-
-          router.refresh();
-          setIsDone(true);
-        });
-      }
-    }, updateIntervalSecs * 1000);
-
-    return () => clearInterval(intervalId);
-  }, [router]);
-
   return (
     <Button
       disabled={isPending || isDone}
@@ -71,14 +94,8 @@ export default function RefreshButton({
         className,
       )}
       onClick={() => {
-        setButtonClicked(true);
-        startTransition(() => {
-          router.refresh();
-          setIsDone(true);
-        });
-
-        sendGTMEvent({ event: "fetch_clicked" });
-        posthog.capture("fetch_clicked");
+        fetch("fetch_clicked");
+        resetInterval();
       }}
       {...props}
     >
@@ -92,7 +109,7 @@ export default function RefreshButton({
             <MdDone />
           </div>
         ) : (
-          defaultLabel
+          "Fetch"
         )}
       </div>
     </Button>
