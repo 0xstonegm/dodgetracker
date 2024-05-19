@@ -7,6 +7,7 @@ import { useTransition } from "react";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -30,7 +31,7 @@ export default function LeaderboardFilters() {
   };
 
   return (
-    <div>
+    <>
       {
         <Select
           defaultValue={validatedSearchParams.season}
@@ -47,14 +48,16 @@ export default function LeaderboardFilters() {
               ref?.addEventListener("touchend", (e) => e.preventDefault())
             }
           >
-            {seasons.reverse().map((season) => (
-              <SelectItem key={season.value} value={season.value}>
-                {season.label}
-              </SelectItem>
-            ))}
+            <SelectGroup>
+              {seasons.map((season) => (
+                <SelectItem key={season.value} value={season.value}>
+                  {season.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
           </SelectContent>
         </Select>
       }
-    </div>
+    </>
   );
 }
