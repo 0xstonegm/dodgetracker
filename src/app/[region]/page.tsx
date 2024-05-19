@@ -12,7 +12,6 @@ import {
 import { getLatestPlayerCount } from "@/src/data";
 import { supportedUserRegions, userRegionToRiotRegion } from "@/src/regions";
 import { HelpCircleIcon, Info } from "lucide-react";
-import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -22,12 +21,6 @@ interface Props {
   };
   searchParams: {
     page?: string;
-  };
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  return {
-    title: `${params.region.toUpperCase()}`,
   };
 }
 
