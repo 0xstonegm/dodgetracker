@@ -3,7 +3,6 @@ import {
   getDodges,
   getDodgesByPlayer,
   getDodgesCount,
-  getRankEmblem,
   profileIconUrl,
 } from "../data";
 import { cn } from "../lib/utils";
@@ -12,6 +11,7 @@ import { StatSite } from "../statSites";
 import { Tier } from "../types";
 import PaginationControls from "./PaginationControls";
 import ProfileLink from "./ProfileLink";
+import RankInfo from "./RankInfo";
 import StatSiteButton from "./StatSiteButton";
 import TimeString from "./TimeString";
 
@@ -121,18 +121,7 @@ export default async function DodgeList({
                   </>
                 )}
               </section>
-              <section className="flex flex-wrap items-center justify-center text-sm sm:justify-start md:text-base">
-                <div className="relative mr-1 size-7 md:size-10">
-                  <Image
-                    src={getRankEmblem(dodge.rankTier as Tier)}
-                    alt={dodge.rankTier}
-                    fill
-                    quality={100}
-                    unoptimized // save vercel bandwidth
-                  />
-                </div>
-                {dodge.lp} LP
-              </section>
+              <RankInfo rankTier={dodge.rankTier as Tier} lp={dodge.lp} />
               <section className="flex items-center justify-center text-left text-sm sm:justify-start md:text-base">
                 <p
                   className={cn(

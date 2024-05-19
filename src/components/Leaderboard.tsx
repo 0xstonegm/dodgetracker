@@ -1,11 +1,12 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getLeaderboard, getRankEmblem, profileIconUrl } from "../data";
+import { getLeaderboard, profileIconUrl } from "../data";
 import { userRegionToRiotRegion } from "../regions";
 import { StatSite } from "../statSites";
 import { Tier } from "../types";
 import PaginationControls from "./PaginationControls";
 import ProfileLink from "./ProfileLink";
+import RankInfo from "./RankInfo";
 import StatSiteButton from "./StatSiteButton";
 
 const pageSize = 50;
@@ -78,7 +79,7 @@ export default async function Leaderboard({
                       </div>
                     </div>
                   </ProfileLink>
-                  <div className="flex md:items-center md:justify-center">
+                  <div className="flex flex-wrap md:items-center md:justify-center">
                     {entry.lolProsSlug && (
                       <div className="mr-1">
                         <StatSiteButton
@@ -109,18 +110,10 @@ export default async function Leaderboard({
                     </div>
                   </div>
                 </section>
-                <div className="flex flex-col items-center justify-center md:flex-row md:justify-start">
-                  <div className="relative mr-1 size-7 md:size-10">
-                    <Image
-                      src={getRankEmblem(entry.rankTier as Tier)}
-                      alt={entry.rankTier}
-                      layout="fill"
-                      quality={100}
-                      unoptimized // save vercel bandwidth
-                    />
-                  </div>
-                  <p className="text-xs md:text-base">{entry.currentLP} LP</p>
-                </div>
+                <RankInfo
+                  rankTier={entry.rankTier as Tier}
+                  lp={entry.currentLP}
+                />
                 <div className="flex justify-end">
                   <div className="flex w-fit flex-col items-center justify-center">
                     <p>{entry.numberOfDodges}</p>
