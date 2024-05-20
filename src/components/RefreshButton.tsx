@@ -2,13 +2,12 @@
 
 import { sendGTMEvent } from "@next/third-parties/google";
 import { useLocalStorage } from "@uidotdev/usehooks";
+import { Check, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { MdDone } from "react-icons/md";
 import { autoFetchKey } from "../autoFetch";
 import { cn } from "../lib/utils";
-import LoadingSpinner from "./LoadingSpinner";
 import { Button } from "./ui/button";
 
 const updateIntervalSecs = 15;
@@ -101,12 +100,10 @@ export default function RefreshButton({
     >
       <div className="flex items-center justify-center">
         {isPending ? (
-          <div className="size-5 md:size-7">
-            <LoadingSpinner />
-          </div>
+          <Loader2 className="animate-spin" />
         ) : isDone ? (
           <div className="text-xl md:text-2xl">
-            <MdDone />
+            <Check />
           </div>
         ) : (
           "Fetch"

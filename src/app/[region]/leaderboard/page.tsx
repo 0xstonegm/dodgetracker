@@ -49,9 +49,7 @@ export default async function page({ params, searchParams }: Props) {
         key={`${userRegion}-${validatedSearchParams.page}-${validatedSearchParams.season}`}
         fallback={
           <div className="flex h-[75vh] items-center justify-center">
-            <div className="size-16">
-              <LoadingSpinner />
-            </div>
+            <LoadingSpinner />
           </div>
         }
       >

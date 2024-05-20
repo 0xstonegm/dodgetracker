@@ -92,9 +92,7 @@ export default async function Region({ params, searchParams }: Props) {
         key={`${params.region}-${pageNumber}`}
         fallback={
           <div className="flex h-[75vh] items-center justify-center">
-            <div className="size-16">
-              <LoadingSpinner />
-            </div>
+            <LoadingSpinner />
           </div>
         }
       >
