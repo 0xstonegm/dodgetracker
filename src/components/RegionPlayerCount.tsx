@@ -1,23 +1,29 @@
+import { getLatestPlayerCount } from "../data";
 import { cn, timeDiffString } from "../lib/utils";
+import { userRegionToRiotRegion } from "../regions";
 
 export interface RegionPlayerCountProps
   extends React.HTMLAttributes<HTMLDivElement> {
   userRegion: string;
-  totalPlayerCount: number;
-  lastUpdateUtc: Date;
 }
 
 export default async function RegionPlayerCount({
   userRegion,
-  totalPlayerCount,
-  lastUpdateUtc,
   className,
   ...props
 }: RegionPlayerCountProps) {
+  const playerCounts = await getLatestPlayerCount(
+    userRegionToRiotRegion(userRegion),
+  );
+  const totalPlayerCount =
+    playerCounts.masterCount +
+    playerCounts.grandmasterCount +
+    playerCounts.challengerCount;
+
   return (
     <p
       className={cn(className)}
-      title={`Last updated ${timeDiffString(lastUpdateUtc)}`}
+      title={`Last updated ${timeDiffString(playerCounts.atTime)}`}
       {...props}
     >
       Master+ players in {userRegion.toUpperCase()}: {totalPlayerCount}
