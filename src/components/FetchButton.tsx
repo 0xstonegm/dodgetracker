@@ -12,13 +12,10 @@ import { Button } from "./ui/button";
 
 const updateIntervalSecs = 15;
 
-export interface RefreshButtonProps
+export interface FetchButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
-export default function RefreshButton({
-  className,
-  ...props
-}: RefreshButtonProps) {
+export default function FetchButton({ className, ...props }: FetchButtonProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [autoFetch, _setAutoFetch] = useLocalStorage(autoFetchKey, false);

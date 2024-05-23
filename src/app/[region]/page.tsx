@@ -1,8 +1,8 @@
 import AutoFetchSwitch from "@/src/components/AutoFetchSwitch";
 import DodgeList from "@/src/components/DodgeList";
+import FetchButton from "@/src/components/FetchButton";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
 import PlayerCountAlert from "@/src/components/PlayerCountAlert";
-import RefreshButton from "@/src/components/RefreshButton";
 import RegionPlayerCount from "@/src/components/RegionPlayerCount";
 import {
   Popover,
@@ -47,7 +47,7 @@ export default async function Region({ params, searchParams }: Props) {
             <header className="m-2 text-center text-2xl font-bold md:text-4xl">
               Dodges
             </header>
-            <RefreshButton className="mr-2" />
+            <FetchButton className="mr-2" />
             <Popover>
               <PopoverTrigger>
                 <HelpCircleIcon className="md:size-6" />
