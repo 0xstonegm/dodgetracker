@@ -299,24 +299,55 @@ export async function getLatestPlayerCount(riotRegion: string): Promise<{
   atTime: Date;
   riotRegion: string;
 }> {
-  const res = await db
+  const masterRes = await db
     .select()
     .from(playerCounts)
     .where(
       and(
         eq(playerCounts.region, riotRegion),
-        eq(
-          playerCounts.atTime,
-          sql<Date>`(SELECT MAX(${playerCounts.atTime}) FROM ${playerCounts} WHERE ${playerCounts.region} = ${riotRegion})`,
-        ),
+        eq(playerCounts.rankTier, "MASTER"),
       ),
-    );
+    )
+    .orderBy(desc(playerCounts.playerCountId))
+    .limit(1);
+  const grandmasterRes = await db
+    .select()
+    .from(playerCounts)
+    .where(
+      and(
+        eq(playerCounts.region, riotRegion),
+        eq(playerCounts.rankTier, "GRANDMASTER"),
+      ),
+    )
+    .orderBy(desc(playerCounts.playerCountId))
+    .limit(1);
+  const challengerRes = await db
+    .select()
+    .from(playerCounts)
+    .where(
+      and(
+        eq(playerCounts.region, riotRegion),
+        eq(playerCounts.rankTier, "CHALLENGER"),
+      ),
+    )
+    .orderBy(desc(playerCounts.playerCountId))
+    .limit(1);
+
+  const masterCount = masterRes[0]?.playerCount!;
+  const grandmasterCount = grandmasterRes[0]?.playerCount!;
+  const challengerCount = challengerRes[0]?.playerCount!;
+
+  const atTime =
+    masterRes[0]?.atTime ||
+    grandmasterRes[0]?.atTime ||
+    challengerRes[0]?.atTime!;
+  const region = riotRegion;
+
   return {
-    masterCount: res.find((r) => r.rankTier === "MASTER")?.playerCount!,
-    grandmasterCount: res.find((r) => r.rankTier === "GRANDMASTER")
-      ?.playerCount!,
-    challengerCount: res.find((r) => r.rankTier === "CHALLENGER")?.playerCount!,
-    atTime: res[0].atTime,
-    riotRegion: res[0].region,
+    masterCount,
+    grandmasterCount,
+    challengerCount,
+    atTime,
+    riotRegion: region,
   };
 }
