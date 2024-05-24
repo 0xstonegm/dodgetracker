@@ -3,9 +3,10 @@
 import { useLocalStorage } from "@uidotdev/usehooks";
 import posthog from "posthog-js";
 import { autoFetchKey } from "../autoFetch";
+import withNoSSR from "./higherOrder/withNoSSR";
 import { Switch } from "./ui/switch";
 
-export default function AutoFetchSwitch() {
+function AutoFetchSwitch() {
   const [autoFetch, setAutoFetch] = useLocalStorage(autoFetchKey, false);
 
   const handleCheckedChange = (value: boolean) => {
@@ -22,3 +23,5 @@ export default function AutoFetchSwitch() {
     </div>
   );
 }
+
+export default withNoSSR(AutoFetchSwitch);

@@ -8,6 +8,7 @@ import posthog from "posthog-js";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { autoFetchKey } from "../autoFetch";
 import { cn } from "../lib/utils";
+import withNoSSR from "./higherOrder/withNoSSR";
 import { Button } from "./ui/button";
 
 const updateIntervalSecs = 15;
@@ -15,7 +16,7 @@ const updateIntervalSecs = 15;
 export interface FetchButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
-export default function FetchButton({ className, ...props }: FetchButtonProps) {
+function FetchButton({ className, ...props }: FetchButtonProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [autoFetch, _setAutoFetch] = useLocalStorage(autoFetchKey, false);
@@ -109,3 +110,5 @@ export default function FetchButton({ className, ...props }: FetchButtonProps) {
     </Button>
   );
 }
+
+export default withNoSSR(FetchButton);
