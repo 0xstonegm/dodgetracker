@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="scrollbar scrollbar-track-zinc-800 scrollbar-thumb-zinc-900"
+      className="overflow-y-scroll scrollbar scrollbar-track-zinc-800 scrollbar-thumb-zinc-900"
     >
       <CSPostHogProvider>
         <body className={`${inter.className} dark bg-zinc-700 text-zinc-300`}>
