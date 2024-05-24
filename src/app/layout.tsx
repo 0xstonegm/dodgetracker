@@ -35,15 +35,17 @@ export default function RootLayout({
       lang="en"
       className="overflow-y-scroll scrollbar scrollbar-track-zinc-800 scrollbar-thumb-zinc-900"
     >
-      <CSPostHogProvider>
-        <body className={`${inter.className} dark bg-zinc-700 text-zinc-300`}>
+      <body
+        className={`${inter.className} dark !min-w-full bg-zinc-700 text-zinc-300`}
+      >
+        <CSPostHogProvider>
           <NavBar />
           <main>{children}</main>
           <GoogleAnalytics gaId={process.env.GA_ID || ""} />
           <GoogleTagManager gtmId={process.env.GTM_ID || ""} />
           <Analytics />
-        </body>
-      </CSPostHogProvider>
+        </CSPostHogProvider>
+      </body>
     </html>
   );
 }
