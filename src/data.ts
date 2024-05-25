@@ -8,6 +8,7 @@ import {
 import "dotenv/config";
 import { and, asc, desc, eq, gt, lt, sql } from "drizzle-orm";
 import { db } from "./db";
+import { userRegionToRiotRegion } from "./regions";
 import { seasons } from "./seasons";
 import { Tier } from "./types"; // Assuming Dodge is properly defined to match the query results
 
@@ -95,11 +96,16 @@ export interface Summoner {
   isInLatestUpdate: boolean | null;
 }
 
-export async function getSummoner(gameName: string, tagLine: string) {
-  return await db
+export async function getSummoner(
+  gameName: string,
+  tagLine: string,
+  userRegion: string,
+) {
+  const res = await db
     .select({
       gameName: riotIds.gameName,
       tagLine: riotIds.tagLine,
+      riotRegion: summoners.region,
       summonerLevel: summoners.summonerLevel,
       profileIconId: summoners.profileIconId,
       rankTier: apexTierPlayers.rankTier,
@@ -120,6 +126,11 @@ export async function getSummoner(gameName: string, tagLine: string) {
     )
     .where(and(eq(riotIds.gameName, gameName), eq(riotIds.tagLine, tagLine)))
     .limit(1);
+
+  if (res.length === 0) return null;
+  const summoner = res[0];
+  if (summoner.riotRegion !== userRegionToRiotRegion(userRegion)) return null;
+  return summoner;
 }
 
 export async function getDodgeCounts(gameName: string, tagLine: string) {

@@ -32,3 +32,18 @@ export function timeDiffString(utcTime: Date): string {
     return `${Math.floor(diffInSeconds)}s ago`;
   }
 }
+
+export function decodeRiotIdURIComponent(
+  riotIdURIComponent: string,
+): [string, string] {
+  if (riotIdURIComponent.indexOf("-") === -1) {
+    return [riotIdURIComponent, ""];
+  }
+
+  const decodedString = decodeURIComponent(riotIdURIComponent);
+  const lastDashIdx = decodedString.lastIndexOf("-");
+  return [
+    decodedString.substring(0, lastDashIdx),
+    decodedString.substring(lastDashIdx + 1),
+  ];
+}
