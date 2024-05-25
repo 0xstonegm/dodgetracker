@@ -63,8 +63,8 @@ export async function insertDodges(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ): Promise<void> {
   await transaction.insert(dodges).values(dodgesToInsert);

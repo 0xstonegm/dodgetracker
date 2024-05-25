@@ -25,8 +25,8 @@ async function checkAccountsAndSummonersCount(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ) {
   let summonersResult = await transaction
@@ -51,8 +51,8 @@ export async function run(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ) {
   let { playersFromApiMap: newData, erroredRegions } =

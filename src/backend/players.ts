@@ -58,8 +58,8 @@ async function getPlayersForRegion(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ): Promise<LeagueItemDTOWithRegionAndTier[]> {
   const promises = [
@@ -139,8 +139,8 @@ async function insertApexTierPlayerCount(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ): Promise<void> {
   logger.info(
@@ -176,8 +176,8 @@ export async function fetchCurrentPlayers(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ): Promise<PlayersFromDbMap> {
   const rows = await transaction.select().from(apexTierPlayers);
@@ -220,8 +220,8 @@ export async function getPlayers(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ): Promise<{
   playersFromApiMap: PlayersFromApiMap;
@@ -266,8 +266,8 @@ async function getDemotions(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ): Promise<Map<SummonerIdAndRegionKey, [Date]>> {
   const rows = await transaction.select().from(demotions);
@@ -291,8 +291,8 @@ export async function registerPromotions(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ): Promise<void> {
   const demotionsMap = await getDemotions(transaction);
@@ -350,8 +350,8 @@ export async function registerDemotions(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ): Promise<void> {
   const playersNotInApi: Map<
@@ -429,8 +429,8 @@ export async function upsertPlayers(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ): Promise<void> {
   const playersToUpsert = Array.from(players.values()).map((player) => {
@@ -475,8 +475,8 @@ export async function updateAccountsData(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ): Promise<void> {
   let summonersToFetch = new Map<string, string>();
@@ -610,8 +610,8 @@ async function upsertLolProsSlugs(
   transaction: MySqlTransaction<
     MySql2QueryResultHKT,
     MySql2PreparedQueryHKT,
-    Record<string, never>,
-    ExtractTablesWithRelations<Record<string, never>>
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ) {
   const lolProsPromises = euwAccounts.map((account) =>
