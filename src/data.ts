@@ -83,6 +83,33 @@ export async function getDodgesByPlayer(
     .offset(pageSize * (page - 1));
 }
 
+export async function getAllDodgesByPlayer(gameName: string, tagLine: string) {
+  return await db
+    .select({
+      dodgeId: dodges.dodgeId,
+      gameName: riotIds.gameName,
+      tagLine: riotIds.tagLine,
+      lolProsSlug: riotIds.lolprosSlug,
+      profileIconId: summoners.profileIconId,
+      riotRegion: dodges.region,
+      rankTier: dodges.rankTier,
+      lp: dodges.lpBefore,
+      lpLost: sql<number>`${dodges.lpBefore} - ${dodges.lpAfter}`,
+      time: dodges.createdAt,
+    })
+    .from(dodges)
+    .innerJoin(
+      summoners,
+      and(
+        eq(dodges.summonerId, summoners.summonerId),
+        eq(dodges.region, summoners.region),
+      ),
+    )
+    .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
+    .where(and(eq(riotIds.gameName, gameName), eq(riotIds.tagLine, tagLine)))
+    .orderBy(desc(dodges.createdAt));
+}
+
 export interface Summoner {
   gameName: string | null;
   tagLine: string | null;

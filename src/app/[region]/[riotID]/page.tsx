@@ -15,6 +15,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import DodgeCounts from "./_components/DodgeCounts";
+import DodgeTypes from "./_components/DodgeTypes";
 
 // FIXME: Add metadata
 
@@ -60,7 +61,7 @@ export default async function Summoner({
   return (
     <section>
       <section className="flex min-h-[25vh] flex-wrap items-center justify-center border-b-4 border-zinc-900 bg-zinc-600">
-        <div className="m-2 md:mx-14">
+        <div className="m-2 my-4 md:mx-14">
           <ProfileCard
             gameName={summoner.gameName}
             tagLine={summoner.tagLine}
@@ -70,9 +71,12 @@ export default async function Summoner({
             summonerLevel={summoner.summonerLevel}
           />
         </div>
+        <div className="flex h-36 w-80 items-center justify-center p-2 md:h-52 md:py-6">
+          <DodgeCounts gameName={gameName} tagLine={tagLine} />
+        </div>
       </section>
       <section className="w-full">
-        <Tabs defaultValue="stats" className="p-2">
+        <Tabs defaultValue="stats" className="py-2">
           <div className="flex justify-center">
             <TabsList className="mx-auto">
               <TabsTrigger value="stats">Dodge Statistics</TabsTrigger>
@@ -90,8 +94,13 @@ export default async function Summoner({
                 </div>
               }
             >
-              <div className="flex w-96 items-center justify-center">
-                <DodgeCounts gameName={gameName} tagLine={tagLine} />
+              <div className="flex flex-wrap items-center justify-center">
+                <div className="flex flex-col items-center justify-center">
+                  <p className="font-semibold">Short/long Dodge Ratio</p>
+                  <div className="flex w-96 items-center justify-center">
+                    <DodgeTypes gameName={gameName} tagLine={tagLine} />
+                  </div>
+                </div>
               </div>
             </Suspense>
           </TabsContent>
