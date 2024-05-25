@@ -1,7 +1,12 @@
 import DodgeList from "@/src/components/DodgeList";
-import DodgeStats from "@/src/components/DodgeStats";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
 import ProfileCard from "@/src/components/ProfileCard";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/src/components/ui/tabs";
 import { getSummoner } from "@/src/data";
 import { decodeRiotIdURIComponent } from "@/src/lib/utils";
 import { supportedUserRegions } from "@/src/regions";
@@ -9,6 +14,7 @@ import { Tier } from "@/src/types";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import DodgeCounts from "./_components/DodgeCounts";
 
 // FIXME: Add metadata
 
@@ -53,53 +59,65 @@ export default async function Summoner({
 
   return (
     <section>
-      <section className="flex min-h-[20vh] flex-wrap items-center justify-center border-b-4 border-zinc-900 bg-zinc-600">
-        <Suspense
-          fallback={
-            <LoadingSpinner
-              key={`${gameName}#${tagLine}-${region}`}
-              className="size-10"
-            />
-          }
-        >
-          <div className="m-2 md:mx-14">
-            <ProfileCard
-              gameName={summoner.gameName}
-              tagLine={summoner.tagLine}
-              rankTier={summoner.rankTier as Tier}
-              currentLp={summoner.currentLp}
-              profileIconId={summoner.profileIconId}
-              summonerLevel={summoner.summonerLevel}
-            />
-          </div>
-          <div className="m-2 md:mx-14">
-            <DodgeStats
-              gameName={summoner.gameName}
-              tagLine={summoner.tagLine}
-            />
-          </div>
-        </Suspense>
-      </section>
-
-      <Suspense
-        key={`${gameName}#${tagLine}-${region}`}
-        fallback={
-          <div className="flex h-[70vh] items-center justify-center">
-            <LoadingSpinner />
-          </div>
-        }
-      >
-        <div className="mx-auto lg:w-5/6">
-          <DodgeList
-            userRegion={region}
-            pageNumber={pageNumber}
-            gameName={gameName}
-            tagLine={tagLine}
-            statSiteButtons={false}
-            profileLink={false}
+      <section className="flex min-h-[25vh] flex-wrap items-center justify-center border-b-4 border-zinc-900 bg-zinc-600">
+        <div className="m-2 md:mx-14">
+          <ProfileCard
+            gameName={summoner.gameName}
+            tagLine={summoner.tagLine}
+            rankTier={summoner.rankTier as Tier}
+            currentLp={summoner.currentLp}
+            profileIconId={summoner.profileIconId}
+            summonerLevel={summoner.summonerLevel}
           />
         </div>
-      </Suspense>
+      </section>
+      <section className="w-full">
+        <Tabs defaultValue="stats" className="p-2">
+          <div className="flex justify-center">
+            <TabsList className="mx-auto">
+              <TabsTrigger value="stats">Dodge Statistics</TabsTrigger>
+              <TabsTrigger value="history">Dodge History</TabsTrigger>
+            </TabsList>
+          </div>
+          <TabsContent
+            value="stats"
+            className="flex items-center justify-center"
+          >
+            <Suspense
+              fallback={
+                <div className="size-16">
+                  <LoadingSpinner />
+                </div>
+              }
+            >
+              <div className="flex w-96 items-center justify-center">
+                <DodgeCounts gameName={gameName} tagLine={tagLine} />
+              </div>
+            </Suspense>
+          </TabsContent>
+          <TabsContent value="history">
+            <Suspense
+              key={`${gameName}#${tagLine}-${region}`}
+              fallback={
+                <div className="flex h-[70vh] items-center justify-center">
+                  <LoadingSpinner />
+                </div>
+              }
+            >
+              <div className="mx-auto lg:w-5/6">
+                <DodgeList
+                  userRegion={region}
+                  pageNumber={pageNumber}
+                  gameName={gameName}
+                  tagLine={tagLine}
+                  statSiteButtons={false}
+                  profileLink={false}
+                />
+              </div>
+            </Suspense>
+          </TabsContent>
+        </Tabs>
+      </section>
     </section>
   );
 }
