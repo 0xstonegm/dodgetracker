@@ -57,6 +57,20 @@
       "when": 1715876759770,
       "tag": "0007_mysterious_madelyne_pryor",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1716725793752,
+      "tag": "0008_sudden_sunset_bain",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1716726036778,
+      "tag": "0009_mysterious_dark_phoenix",
+      "breakpoints": true
     }
   ]
 }

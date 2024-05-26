@@ -64,6 +64,10 @@ export const demotions = mysqlTable(
         columns: [table.demotionId],
         name: "demotions_demotion_id",
       }),
+      summonerIdRegion: index("summoner_id_region").on(
+        table.summonerId,
+        table.region,
+      ),
     };
   },
 );
@@ -126,6 +130,10 @@ export const promotions = mysqlTable(
         columns: [table.promotionId],
         name: "promotions_promotion_id",
       }),
+      summonerIdRegion: index("summoner_id_region").on(
+        table.summonerId,
+        table.region,
+      ),
     };
   },
 );
