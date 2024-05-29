@@ -157,7 +157,7 @@ export default function SearchBar({ className }: SearchBarProps) {
               )}
               {inputHasFocus && isPending && searchFilter.length > 0 && (
                 <div className="flex items-center justify-center p-2">
-                  <p>Loading...</p>
+                  <p className="font-semibold">Loading...</p>
                 </div>
               )}
               {inputHasFocus &&
@@ -165,7 +165,12 @@ export default function SearchBar({ className }: SearchBarProps) {
                 searchFilter.length > 0 &&
                 data.players.length === 0 && (
                   <div className="flex items-center justify-center p-2">
-                    <p>No players found.</p>
+                    <div className="flex flex-col items-center justify-center text-center">
+                      <p className="font-semibold">No players found.</p>
+                      <p className="text-sm font-light">
+                        (Players without any dodges will not show up)
+                      </p>
+                    </div>
                   </div>
                 )}
               {inputHasFocus && error && searchFilter.length > 0 && (
