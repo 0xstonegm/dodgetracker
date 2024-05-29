@@ -44,7 +44,7 @@ export async function getDodges(
     )
     .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
     .where(eq(dodges.region, riotRegion))
-    .orderBy(desc(dodges.createdAt))
+    .orderBy(desc(dodges.createdAt), desc(dodges.dodgeId))
     .limit(pageSize)
     .offset(pageSize * (page - 1));
 }
