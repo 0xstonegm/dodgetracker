@@ -86,9 +86,10 @@ export default async function DodgeList({
                         unoptimized // save vercel bandwidth
                       ></Image>
                     </div>
-                    <p className="break-all pl-2 font-bold">
-                      {dodge.gameName}#{dodge.tagLine}
-                    </p>
+                    <div className="flex flex-wrap break-all pl-2 font-bold">
+                      <p>{dodge.gameName}</p>
+                      <p>#{dodge.tagLine}</p>
+                    </div>
                   </section>
                 </ProfileLink>
                 {statSiteButtons && (
