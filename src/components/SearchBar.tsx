@@ -62,9 +62,9 @@ export default function SearchBar({ className }: SearchBarProps) {
   });
 
   const { data, isPending, error } = useQuery({
-    queryKey: ["players", debouncedSearchFilter, region],
-    queryFn: () => fetchPlayers(debouncedSearchFilter!, region),
-    enabled: debouncedSearchFilter.length > 0,
+    queryKey: ["players", region, debouncedSearchFilter.toLowerCase()],
+    queryFn: () => fetchPlayers(debouncedSearchFilter!.toLowerCase(), region),
+    enabled: !!debouncedSearchFilter && region !== "about",
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
