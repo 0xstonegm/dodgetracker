@@ -2,9 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { cn } from "../lib/utils";
 import { supportedUserRegions } from "../regions";
 
-export default function NavbarLink({ path }: { path: string }) {
+interface NavBarLinkProps extends React.HTMLAttributes<HTMLDivElement> {
+  path: string;
+}
+
+export default function NavbarLink({ path, className }: NavBarLinkProps) {
   let currentUserRegion: string | null = usePathname().split("/")[1];
   currentUserRegion = (function () {
     if (!supportedUserRegions.has(currentUserRegion)) {
@@ -30,7 +35,7 @@ export default function NavbarLink({ path }: { path: string }) {
 
   return (
     <Link href={getNewPath(path)}>
-      <div className="text-lg md:text-xl">{path}</div>
+      <div className={cn(className)}>{path}</div>
     </Link>
   );
 }
