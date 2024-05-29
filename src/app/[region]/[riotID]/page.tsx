@@ -76,11 +76,11 @@ export default async function Summoner({
         </div>
       </section>
       <section className="w-full">
-        <Tabs defaultValue="stats" className="py-2">
+        <Tabs defaultValue="history" className="py-2">
           <div className="flex justify-center">
             <TabsList className="mx-auto">
-              <TabsTrigger value="stats">Dodge Statistics</TabsTrigger>
               <TabsTrigger value="history">Dodge History</TabsTrigger>
+              <TabsTrigger value="stats">Dodge Statistics</TabsTrigger>
             </TabsList>
           </div>
           <TabsContent
