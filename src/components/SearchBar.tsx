@@ -32,13 +32,16 @@ const playerSchema = z.object({
 
 const fetchPlayers = async (searchFilter: string, userRegion: string) => {
   const riotRegion = userRegionToRiotRegion(userRegion);
-  return fetch(
+
+  const response = await fetch(
     `/api/players?search=${encodeURIComponent(searchFilter)}&region=${riotRegion}`,
-  )
-    .then((res) => res.json())
-    .then((data) => {
-      return playerSchema.parse(data);
-    });
+  );
+
+  if (!response.ok)
+    throw new Error(`Fetch failed with status: ${response.status}.`);
+
+  const data = await response.json();
+  return playerSchema.parse(data);
 };
 
 function isWithinDays(oldDate: Date, now: Date, dayLimit: number): boolean {
@@ -58,7 +61,7 @@ export default function SearchBar({ className }: SearchBarProps) {
     setInputHasFocus(false);
   });
 
-  const { data, isPending } = useQuery({
+  const { data, isPending, error } = useQuery({
     queryKey: ["players", debouncedSearchFilter, region],
     queryFn: () => fetchPlayers(debouncedSearchFilter!, region),
     enabled: debouncedSearchFilter.length > 0,
@@ -151,6 +154,19 @@ export default function SearchBar({ className }: SearchBarProps) {
           {inputHasFocus && isPending && searchFilter.length > 0 && (
             <div className="flex items-center justify-center p-2">
               <p>Loading...</p>
+            </div>
+          )}
+          {inputHasFocus &&
+            data &&
+            searchFilter.length > 0 &&
+            data.players.length === 0 && (
+              <div className="flex items-center justify-center p-2">
+                <p>No players found.</p>
+              </div>
+            )}
+          {inputHasFocus && error && searchFilter.length > 0 && (
+            <div className="flex items-center justify-center p-2">
+              <p>Search error: {error.message}</p>
             </div>
           )}
         </div>
