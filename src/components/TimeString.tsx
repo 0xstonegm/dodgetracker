@@ -2,12 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { timeDiffString } from "../lib/utils";
+import withNoSSR from "./higherOrder/withNoSSR";
 
-export default function TimeString({
-  utcTime: utcTime,
-}: {
-  utcTime: Date | null;
-}) {
+function TimeString({ utcTime: utcTime }: { utcTime: Date | null }) {
   const [, setTick] = useState(0); // Use state to force re-render
 
   // console.log(utcTime.toLocaleString());
@@ -30,3 +27,5 @@ export default function TimeString({
     </p>
   );
 }
+
+export default withNoSSR(TimeString);
