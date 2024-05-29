@@ -80,6 +80,7 @@ export default function SearchBar({ className }: SearchBarProps) {
           <Input
             className={cn("w-96", className)}
             placeholder="Search players..."
+            disabled={region === "about"} // FIXME: Temporary fix
             value={searchFilter}
             onChange={inputHandleChange}
             onClick={() => setInputHasFocus(true)}
