@@ -15,7 +15,9 @@ function NavBar() {
             <RegionSelector />
           </section>
           <Separator className="mx-2 dark:bg-zinc-700" orientation="vertical" />
-          <SearchBar className="hidden md:visible md:block" />
+          <section className="hidden md:visible md:block">
+            <SearchBar />
+          </section>
           <Separator
             className="hidden dark:bg-zinc-700 md:visible md:mx-2 md:block"
             orientation="vertical"

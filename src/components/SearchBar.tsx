@@ -3,7 +3,7 @@
 import { Kbd } from "@nextui-org/kbd";
 import { useQuery } from "@tanstack/react-query";
 import { useClickAway, useDebounce } from "@uidotdev/usehooks";
-import { Dot } from "lucide-react";
+import { Dot, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -105,6 +105,7 @@ export default function SearchBar({ className }: SearchBarProps) {
       <div className="relative">
         <div ref={wrapperRef}>
           <Input
+            startIcon={Search}
             className={cn("w-96", className)}
             ref={inputRef}
             placeholder="Search players..."
