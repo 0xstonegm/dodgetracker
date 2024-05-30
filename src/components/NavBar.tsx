@@ -3,20 +3,24 @@ import Logo from "./Logo";
 import NavbarLink from "./NavbarLink";
 import RegionSelector from "./RegionSelector";
 import SearchBar from "./SearchBar";
+import { Separator } from "./ui/separator";
 
 function NavBar() {
   return (
     <nav className="flex flex-col bg-zinc-800 p-2">
       <section className="flex justify-between">
-        <div className="flex items-center gap-1">
-          <section className="flex border-r border-zinc-700">
+        <div className="flex items-center">
+          <section className="flex gap-1">
             <Logo />
-            <RegionSelector className="mr-1" />
+            <RegionSelector />
           </section>
-          <SearchBar className="hidden md:visible md:flex" />
-          <section className="flex pl-2">
-            <NavbarLink className="md:text-lg" path={"Leaderboard"} />
-          </section>
+          <Separator className="mx-2 dark:bg-zinc-700" orientation="vertical" />
+          <SearchBar className="hidden md:visible md:block" />
+          <Separator
+            className="hidden dark:bg-zinc-700 md:visible md:mx-2 md:block"
+            orientation="vertical"
+          />
+          <NavbarLink className="md:text-lg" path={"Leaderboard"} />
         </div>
         <section className="flex items-center">
           <Link href="/about">
