@@ -5,10 +5,8 @@ import DailyRotateFile from "winston-daily-rotate-file";
 // For JavaScript, you can remove this type definition
 type LoggerType = typeof console & winston.Logger;
 
-const isLambda: boolean = !!process.env.AWS_EXECUTION_ENV;
-
-const path = require("path");
-let projectRoot = "/home/isak102/Code/dodgetracker";
+const isLambda = !!process.env.AWS_EXECUTION_ENV;
+const projectRoot = "/home/isak102/Code/dodgetracker";
 
 const logger: LoggerType = isLambda
   ? (console as LoggerType)

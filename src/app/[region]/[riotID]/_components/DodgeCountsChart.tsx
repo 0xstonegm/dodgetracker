@@ -14,8 +14,9 @@ type DodgeCountsChartProps = {
 };
 
 function DodgeCountsChart({ data }: DodgeCountsChartProps) {
+  /* eslint-disable */
   const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
+    if (active && payload?.length) {
       return (
         <div className="custom-tooltip rounded-md bg-zinc-800 p-4">
           <p className="label text-sm font-semibold">{`${payload[0].value} dodges`}</p>
@@ -26,6 +27,7 @@ function DodgeCountsChart({ data }: DodgeCountsChartProps) {
 
     return null;
   };
+  /* eslint-enable */
 
   return (
     <ResponsiveContainer width="100%" height="100%">

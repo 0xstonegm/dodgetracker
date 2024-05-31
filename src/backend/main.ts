@@ -37,7 +37,7 @@ async function main() {
       logger.info("Database updated successfully, transaction commited...");
     } catch (error) {
       logger.error("Database update failed, rolling back transaction:", error);
-      await tx.rollback();
+      tx.rollback();
       logger.info("Transaction rolled back.");
     }
   });

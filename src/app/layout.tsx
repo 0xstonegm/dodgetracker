@@ -1,5 +1,4 @@
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
-import { QueryClient } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -27,8 +26,6 @@ export const metadata: Metadata = {
   },
 };
 
-const queryClient = new QueryClient();
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -46,8 +43,8 @@ export default function RootLayout({
           <ReactQueryClientProvider>
             <NavBar />
             <main>{children}</main>
-            <GoogleAnalytics gaId={process.env.GA_ID || ""} />
-            <GoogleTagManager gtmId={process.env.GTM_ID || ""} />
+            <GoogleAnalytics gaId={process.env.GA_ID ?? ""} />
+            <GoogleTagManager gtmId={process.env.GTM_ID ?? ""} />
             <Analytics />
           </ReactQueryClientProvider>
         </CSPostHogProvider>

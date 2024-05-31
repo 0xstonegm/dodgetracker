@@ -1,7 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { cn } from "../lib/utils";
 
-interface LoadingSpinnerProps extends React.HTMLAttributes<HTMLDivElement> {}
+type LoadingSpinnerProps = React.HTMLAttributes<HTMLDivElement>;
 
 function LoadingSpinner({ className }: LoadingSpinnerProps) {
   return (

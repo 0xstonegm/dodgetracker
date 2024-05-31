@@ -13,8 +13,7 @@ import { Button } from "./ui/button";
 
 const updateIntervalSecs = 15;
 
-export interface FetchButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+export type FetchButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 function FetchButton({ className, ...props }: FetchButtonProps) {
   const router = useRouter();

@@ -15,10 +15,10 @@ function captureEvent(eventName: string, href: string) {
 export default function ProfileLink(props: ProfileLinkProps) {
   return (
     <Link
-      onClick={(e) => {
+      onClick={(_e) => {
         captureEvent("profile_link_clicked", props.href);
       }}
-      onMouseEnter={(e) => {
+      onMouseEnter={(_e) => {
         captureEvent("profile_link_hovered", props.href);
       }}
       href={props.href}

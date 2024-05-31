@@ -1,14 +1,14 @@
-import { ExtractTablesWithRelations } from "drizzle-orm";
-import { MySqlTransaction } from "drizzle-orm/mysql-core";
+import { type ExtractTablesWithRelations } from "drizzle-orm";
+import { type MySqlTransaction } from "drizzle-orm/mysql-core";
 import {
-  MySql2PreparedQueryHKT,
-  MySql2QueryResultHKT,
+  type MySql2PreparedQueryHKT,
+  type MySql2QueryResultHKT,
 } from "drizzle-orm/mysql2";
-import { Regions } from "twisted/dist/constants";
+import { type Regions } from "twisted/dist/constants";
 import { dodges } from "../db/schema";
 import logger from "./logger";
-import { PlayersFromApiMap, PlayersFromDbMap } from "./players";
-import { Tier } from "./types";
+import { type PlayersFromApiMap, type PlayersFromDbMap } from "./players";
+import { type Tier } from "./types";
 
 export interface Dodge {
   summonerId: string;
@@ -27,7 +27,7 @@ export async function getDodges(
   playersFromApi: PlayersFromApiMap,
 ): Promise<Dodge[]> {
   logger.info("Getting dodges...");
-  let dodges: Dodge[] = [];
+  const dodges: Dodge[] = [];
   let notFound = 0;
   playersFromApi.forEach((newData, summonerIdAndRegionKey) => {
     const oldData = playersFromDb.get(summonerIdAndRegionKey);

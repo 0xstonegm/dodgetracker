@@ -19,7 +19,7 @@ export default function NavbarLink({ path, className }: NavBarLinkProps) {
   })();
 
   function getNewPath(destination: string) {
-    let path = destination.toLowerCase();
+    const path = destination.toLowerCase();
 
     if (!currentUserRegion) {
       if (path === "leaderboard") {

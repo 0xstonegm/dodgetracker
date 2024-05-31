@@ -1,7 +1,14 @@
 "use client";
 import withNoSSR from "@/src/components/higherOrder/withNoSSR";
 import {} from "lucide-react";
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  type TooltipProps,
+} from "recharts";
 
 const COLORS = {
   "Short dodges": "#807035",
@@ -18,8 +25,8 @@ interface DodgeTypesChartProps {
 function DodgeTypesChart({ data }: DodgeTypesChartProps) {
   const totalDodges = data.reduce((acc, { count }) => acc + count, 0);
 
-  const RADIAN = Math.PI / 180;
-
+  /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
+  const RADIAN = Math.PI / 180; // eslint-disable-line
   const renderCustomizedLabel = ({
     cx,
     cy,
@@ -28,6 +35,7 @@ function DodgeTypesChart({ data }: DodgeTypesChartProps) {
     outerRadius,
     percent,
   }: any) => {
+    const RADIAN = Math.PI / 180;
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
@@ -44,12 +52,13 @@ function DodgeTypesChart({ data }: DodgeTypesChartProps) {
       </text>
     );
   };
+  /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
+  const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+    if (active && payload?.length) {
       return (
         <div className="custom-tooltip rounded-md bg-zinc-800 p-4">
-          <p className="label font-semibold">{`${payload[0].name}: ${payload[0].value}/${totalDodges}`}</p>
+          <p className="label font-semibold">{`${payload[0].name}: ${payload[0].value}/${totalDodges}`}</p>{" "}
           <p className="desc text-sm">
             {payload[0].name === "Short dodges"
               ? "Dodges with 5 or fewer LP lost"

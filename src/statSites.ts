@@ -11,7 +11,7 @@ export function getOpggUrl(
   gameName: string,
   tagLine: string,
 ): string {
-  let userRegion = riotRegionToUserRegion(riotRegion);
+  const userRegion = riotRegionToUserRegion(riotRegion);
   return `https://www.op.gg/summoners/${userRegion}/${gameName}-${tagLine}`;
 }
 
@@ -20,6 +20,6 @@ export function getDeeplolUrl(
   gameName: string,
   tagLine: string,
 ): string {
-  let userRegion = riotRegionToUserRegion(riotRegion);
+  const userRegion = riotRegionToUserRegion(riotRegion);
   return `https://www.deeplol.gg/summoner/${userRegion}/${gameName}-${tagLine}`;
 }

@@ -10,7 +10,7 @@ import { and, asc, desc, eq, gt, lt, sql } from "drizzle-orm";
 import { db } from "./db";
 import { userRegionToRiotRegion } from "./regions";
 import { seasons } from "./seasons";
-import { Tier } from "./types"; // Assuming Dodge is properly defined to match the query results
+import type { Tier } from "./types"; // Assuming Dodge is properly defined to match the query results
 
 export function profileIconUrl(profileIconID: number): string {
   return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${profileIconID}.jpg`;
@@ -161,7 +161,7 @@ export async function getSummoner(
 }
 
 export async function getDodgeCounts(gameName: string, tagLine: string) {
-  let res = await db
+  const res = await db
     .select({
       last24Hours: sql<number>`COUNT(CASE WHEN ${dodges.createdAt} >= CURRENT_TIMESTAMP - INTERVAL 1 DAY THEN 1 END)`,
       last7Days: sql<number>`COUNT(CASE WHEN ${dodges.createdAt} >= CURRENT_TIMESTAMP - INTERVAL 7 DAY THEN 1 END)`,
@@ -194,8 +194,8 @@ export async function getLeaderboard(
   const season = seasons.find((s) => s.value === seasonValue)!;
 
   const startDate =
-    season.startDate[riotRegion as keyof typeof season.startDate]!;
-  const endDate = season.endDate[riotRegion as keyof typeof season.endDate]!;
+    season.startDate[riotRegion as keyof typeof season.startDate];
+  const endDate = season.endDate[riotRegion as keyof typeof season.endDate];
 
   const totalEntriesQuery = db
     .select({
@@ -213,7 +213,7 @@ export async function getLeaderboard(
     .where(
       and(
         eq(dodges.region, riotRegion),
-        and(gt(dodges.createdAt!, startDate), lt(dodges.createdAt!, endDate)),
+        and(gt(dodges.createdAt, startDate), lt(dodges.createdAt, endDate)),
       ),
     );
 
@@ -250,7 +250,7 @@ export async function getLeaderboard(
     .where(
       and(
         eq(dodges.region, riotRegion),
-        and(gt(dodges.createdAt!, startDate), lt(dodges.createdAt!, endDate)),
+        and(gt(dodges.createdAt, startDate), lt(dodges.createdAt, endDate)),
       ),
     )
     .groupBy(riotIds.gameName, riotIds.tagLine)
@@ -371,14 +371,14 @@ export async function getLatestPlayerCount(riotRegion: string): Promise<{
     .orderBy(desc(playerCounts.playerCountId))
     .limit(1);
 
-  const masterCount = masterRes[0]?.playerCount!;
-  const grandmasterCount = grandmasterRes[0]?.playerCount!;
-  const challengerCount = challengerRes[0]?.playerCount!;
+  const masterCount = masterRes[0]?.playerCount;
+  const grandmasterCount = grandmasterRes[0]?.playerCount;
+  const challengerCount = challengerRes[0]?.playerCount;
 
   const atTime =
     masterRes[0]?.atTime ||
     grandmasterRes[0]?.atTime ||
-    challengerRes[0]?.atTime!;
+    challengerRes[0]?.atTime;
   const region = riotRegion;
 
   return {

@@ -12,10 +12,10 @@ import { useRef, useState } from "react";
 import { z } from "zod";
 import { cn, getRankEmblem } from "../lib/utils";
 import { userRegionToRiotRegion } from "../regions";
-import { Tier } from "../types";
+import { type Tier } from "../types";
 import { Input } from "./ui/input";
 
-interface SearchBarProps extends React.HTMLAttributes<HTMLDivElement> {}
+type SearchBarProps = React.HTMLAttributes<HTMLDivElement>;
 
 const playerSchema = z.object({
   players: z.array(
@@ -41,7 +41,7 @@ const fetchPlayers = async (searchFilter: string, userRegion: string) => {
   if (!response.ok)
     throw new Error(`Fetch failed with status: ${response.status}.`);
 
-  const data = await response.json();
+  const data = await response.json(); // eslint-disable-line
   return playerSchema.parse(data);
 };
 
@@ -59,15 +59,14 @@ export default function SearchBar({ className }: SearchBarProps) {
   const region = usePathname().split("/")[1];
   const router = useRouter();
 
-  const wrapperRef = useClickAway<HTMLDivElement>(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 100));
+  const wrapperRef = useClickAway<HTMLDivElement>(() => {
     setInputHasFocus(false);
   });
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { data, isPending, error } = useQuery({
     queryKey: ["players", region, debouncedSearchFilter.toLowerCase()],
-    queryFn: () => fetchPlayers(debouncedSearchFilter!.toLowerCase(), region),
+    queryFn: () => fetchPlayers(debouncedSearchFilter.toLowerCase(), region),
     enabled: !!debouncedSearchFilter && region !== "about",
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
@@ -87,7 +86,7 @@ export default function SearchBar({ className }: SearchBarProps) {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== "Enter") return;
-    if (isPending || error || !data || data.players.length === 0) return;
+    if (isPending || error || !data || data.players.length === 0) return; // eslint-disable-line
 
     const player = data.players[0];
     const url = `/${region}/${player.gameName}-${player.tagLine}`;

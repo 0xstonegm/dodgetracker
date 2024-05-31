@@ -8,7 +8,7 @@ import {
 import { cn } from "../lib/utils";
 import { userRegionToRiotRegion } from "../regions";
 import { StatSite } from "../statSites";
-import { Tier } from "../types";
+import { type Tier } from "../types";
 import PaginationControls from "./PaginationControls";
 import ProfileLink from "./ProfileLink";
 import RankInfo from "./RankInfo";

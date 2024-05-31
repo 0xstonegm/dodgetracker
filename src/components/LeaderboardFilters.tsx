@@ -17,16 +17,16 @@ import { LeaderboardSearchParamsSchema } from "../types";
 
 export default function LeaderboardFilters() {
   const [_, startTransition] = useTransition();
-  const [season, setSeason] = useQueryState("season", { startTransition });
-  const [page, setPage] = useQueryState("page", { startTransition });
+  const [_season, setSeason] = useQueryState("season", { startTransition });
+  const [_page, setPage] = useQueryState("page", { startTransition });
 
   const validatedSearchParams = LeaderboardSearchParamsSchema.parse(
     Object.fromEntries(useSearchParams()),
   );
 
-  const onSeasonChange = (value: string) => {
-    setSeason(value);
-    setPage("1");
+  const onSeasonChange = async (value: string) => {
+    await setSeason(value);
+    await setPage("1");
     posthog.capture("leaderboard_filters_season_change", { season: value });
   };
 

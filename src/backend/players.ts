@@ -1,12 +1,12 @@
-import { ExtractTablesWithRelations, sql } from "drizzle-orm";
-import { MySqlTransaction } from "drizzle-orm/mysql-core";
+import { sql, type ExtractTablesWithRelations } from "drizzle-orm";
+import { type MySqlTransaction } from "drizzle-orm/mysql-core";
 import {
-  MySql2PreparedQueryHKT,
-  MySql2QueryResultHKT,
+  type MySql2PreparedQueryHKT,
+  type MySql2QueryResultHKT,
 } from "drizzle-orm/mysql2";
 import { Constants } from "twisted";
 import { Regions, regionToRegionGroup } from "twisted/dist/constants/regions";
-import { LeagueItemDTO } from "twisted/dist/models-dto";
+import { type LeagueItemDTO } from "twisted/dist/models-dto";
 import { z } from "zod";
 import {
   apexTierPlayers,
@@ -17,9 +17,9 @@ import {
   summoners,
 } from "../db/schema";
 import { lolApi, riotApi } from "./api";
-import { Dodge } from "./dodges";
+import { type Dodge } from "./dodges";
 import logger from "./logger";
-import { Tier } from "./types";
+import { type Tier } from "./types";
 import { promiseWithTimeout } from "./util";
 
 const supportedRegions = [
@@ -182,7 +182,7 @@ export async function fetchCurrentPlayers(
 ): Promise<PlayersFromDbMap> {
   const rows = await transaction.select().from(apexTierPlayers);
 
-  let currentPlayersData = new Map<
+  const currentPlayersData = new Map<
     SummonerIdAndRegionKey,
     {
       lp: number;
@@ -196,10 +196,10 @@ export async function fetchCurrentPlayers(
   rows.forEach((row) => {
     const key = constructSummonerAndRegionKey(row.summonerId, row.region);
     currentPlayersData.set(key, {
-      lp: row.currentLp!,
+      lp: row.currentLp,
       wins: row.wins,
       losses: row.losses,
-      updatedAt: row.updatedAt!,
+      updatedAt: row.updatedAt,
       region: row.region,
     });
   });
@@ -231,7 +231,7 @@ export async function getPlayers(
     (region) =>
       promiseWithTimeout(getPlayersForRegion(region, transaction), 10 * 1000)
         .then((data) => ({ status: "success", data }) as const) // Using 'as const' for literal type inference
-        .catch((error) => ({ status: "error", region, error }) as const), // Same here
+        .catch((error) => ({ status: "error", region, error }) as const), // eslint-disable-line
   );
   const players = await Promise.all(promises);
 
@@ -354,10 +354,10 @@ export async function registerDemotions(
     ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ): Promise<void> {
-  const playersNotInApi: Map<
+  const playersNotInApi = new Map<
     SummonerIdAndRegionKey,
     { updatedAt: Date; wins: number; losses: number }
-  > = new Map();
+  >();
 
   if (regionsToSkip.length > 0) {
     logger.info(`Skipping demotions for ${regionsToSkip.join(", ")}.`);
@@ -479,8 +479,8 @@ export async function updateAccountsData(
     ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ): Promise<void> {
-  let summonersToFetch = new Map<string, string>();
-  let promises = dodges.map((dodge) => {
+  const summonersToFetch = new Map<string, string>();
+  const promises = dodges.map((dodge) => {
     summonersToFetch.set(dodge.summonerId, dodge.region);
     return lolApi.Summoner.getById(dodge.summonerId, dodge.region);
   });
@@ -490,8 +490,8 @@ export async function updateAccountsData(
   );
   const summonerResults = await Promise.all(promises);
 
-  let puuidsAndRegion: string[][] = [];
-  let summonersToInsert: {
+  const puuidsAndRegion: string[][] = [];
+  const summonersToInsert: {
     puuid: string;
     summonerId: string;
     region: string;
@@ -499,10 +499,10 @@ export async function updateAccountsData(
     profileIconId: number;
     summonerLevel: number;
   }[] = summonerResults.map((result) => {
-    if (result && result.response) {
-      let summonerData = result.response;
+    if (result?.response) {
+      const summonerData = result.response;
 
-      let region = summonersToFetch.get(summonerData.id)?.toUpperCase();
+      const region = summonersToFetch.get(summonerData.id)?.toUpperCase();
       if (!region) {
         throw new Error(
           `Region not found for summoner ${summonerData.id} (should never happen)`,
@@ -541,7 +541,7 @@ export async function updateAccountsData(
     logger.info("No new summoners to insert into summoners table, skipping...");
   }
 
-  let accountInfoPromises = puuidsAndRegion.map((puuid) => {
+  const accountInfoPromises = puuidsAndRegion.map((puuid) => {
     if (!puuid) throw new Error("Puuid not found");
     return riotApi.Account.getByPUUID(
       puuid[0],
@@ -559,24 +559,28 @@ export async function updateAccountsData(
   logger.info(
     `Fetching account data for ${puuidsAndRegion.length} accounts...`,
   );
-  let accountResults = await Promise.all(accountInfoPromises);
+  const accountResults = await Promise.all(accountInfoPromises);
 
-  let accountsToUpsert: { puuid: string; gameName: string; tagLine: string }[] =
-    accountResults
-      .filter((result) => result !== null && result.response !== null)
-      .map((result) => {
-        let accountData = result!.response;
-        return {
-          puuid: accountData.puuid,
-          gameName: accountData.gameName,
-          tagLine: accountData.tagLine,
-        };
-      });
+  const accountsToUpsert: {
+    puuid: string;
+    gameName: string;
+    tagLine: string;
+  }[] = accountResults
+    .filter((result) => result?.response !== null)
+    .map((result) => {
+      const accountData = result!.response;
+      return {
+        puuid: accountData.puuid,
+        gameName: accountData.gameName,
+        tagLine: accountData.tagLine,
+      };
+    });
 
   // Add all EUW accounts to a separate array to fetch LolPros.gg slugs
-  let euwAccounts: { puuid: string; gameName: string; tagLine: string }[] = [];
+  const euwAccounts: { puuid: string; gameName: string; tagLine: string }[] =
+    [];
   accountsToUpsert.forEach((account, index) => {
-    if (puuidsAndRegion[index][1] === Regions.EU_WEST) {
+    if ((puuidsAndRegion[index][1] as Regions) === Regions.EU_WEST) {
       euwAccounts.push(account);
     }
   });
@@ -633,7 +637,7 @@ async function upsertLolProsSlugs(
         (error) =>
           ({
             status: "error",
-            error,
+            error, // eslint-disable-line
             gameName: account.gameName,
             tagLine: account.tagLine,
             puuid: account.puuid,

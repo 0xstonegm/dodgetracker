@@ -1,6 +1,6 @@
 "use client";
 import { useQueryState } from "nuqs";
-import { FC, useTransition } from "react";
+import { useTransition, type FC } from "react";
 import { Button } from "./ui/button";
 
 interface PaginationControlsProps {
@@ -17,9 +17,9 @@ const PaginationControls: FC<PaginationControlsProps> = ({
   totalPageCount,
 }) => {
   const [_, startTransition] = useTransition();
-  const [page, setPage] = useQueryState("page", { startTransition });
-  const goToPage = (newPage: number) => {
-    setPage(newPage.toString());
+  const [_page, setPage] = useQueryState("page", { startTransition });
+  const goToPage = async (newPage: number) => {
+    await setPage(newPage.toString());
     window.scrollTo(0, 0);
   };
 

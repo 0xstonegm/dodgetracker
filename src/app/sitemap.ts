@@ -1,4 +1,4 @@
-import { MetadataRoute } from "next";
+import { type MetadataRoute } from "next";
 import { getAccounts } from "../data";
 import { riotRegionToUserRegion, supportedUserRegions } from "../regions";
 

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getRankEmblem } from "../data";
-import { Tier } from "../types";
+import { type Tier } from "../types";
 
 interface RankInfoProps {
   rankTier: Tier;

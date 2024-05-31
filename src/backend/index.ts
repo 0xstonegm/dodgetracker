@@ -1,10 +1,10 @@
-import { Handler } from "aws-lambda";
+import { type Handler } from "aws-lambda";
 import * as dotenv from "dotenv";
-import { ExtractTablesWithRelations, count } from "drizzle-orm";
-import { MySqlTransaction } from "drizzle-orm/mysql-core";
+import { count, type ExtractTablesWithRelations } from "drizzle-orm";
+import { type MySqlTransaction } from "drizzle-orm/mysql-core";
 import {
-  MySql2PreparedQueryHKT,
-  MySql2QueryResultHKT,
+  type MySql2PreparedQueryHKT,
+  type MySql2QueryResultHKT,
 } from "drizzle-orm/mysql2";
 import { db } from "../db";
 import { riotIds, summoners } from "../db/schema";
@@ -29,11 +29,11 @@ async function checkAccountsAndSummonersCount(
     ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ) {
-  let summonersResult = await transaction
+  const summonersResult = await transaction
     .select({ count: count() })
     .from(summoners);
 
-  let accountsResult = await transaction
+  const accountsResult = await transaction
     .select({ count: count() })
     .from(riotIds);
 
@@ -55,15 +55,15 @@ export async function run(
     ExtractTablesWithRelations<Record<string, unknown>>
   >,
 ) {
-  let { playersFromApiMap: newData, erroredRegions } =
+  const { playersFromApiMap: newData, erroredRegions } =
     await getPlayers(transaction);
-  let oldData = await fetchCurrentPlayers(transaction);
+  const oldData = await fetchCurrentPlayers(transaction);
 
   logger.info(
     `Fetched ${newData.size} players from API and ${oldData.size} from DB. (diff = ${oldData.size - newData.size})`,
   );
 
-  let dodges = await getDodges(oldData, newData);
+  const dodges = await getDodges(oldData, newData);
 
   if (dodges.length > 0) {
     await updateAccountsData(dodges, transaction);

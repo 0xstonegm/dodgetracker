@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
     ? search.split("#")
     : [search, ""];
 
-  let players = await db
+  const players = await db
     .select({
       gameName: riotIds.gameName,
       tagLine: riotIds.tagLine,

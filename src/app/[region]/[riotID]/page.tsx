@@ -10,8 +10,8 @@ import {
 import { getSummoner } from "@/src/data";
 import { decodeRiotIdURIComponent } from "@/src/lib/utils";
 import { supportedUserRegions } from "@/src/regions";
-import { Tier } from "@/src/types";
-import { Metadata } from "next";
+import { type Tier } from "@/src/types";
+import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import DodgeCounts from "./_components/DodgeCounts";

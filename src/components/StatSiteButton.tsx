@@ -17,7 +17,7 @@ export default function StatSiteButton({
   className,
   ...props
 }: StatSiteButtonProps) {
-  let url = (function () {
+  const url = (function () {
     switch (props.statSite) {
       case StatSite.OPGG:
         return getOpggUrl(props.riotRegion, props.gameName, props.tagLine);

@@ -5,7 +5,7 @@ import React, { useTransition } from "react";
 import { cn } from "../lib/utils";
 import { supportedUserRegions } from "../regions";
 
-interface RegionSelectorProps extends React.HTMLAttributes<HTMLSelectElement> {}
+type RegionSelectorProps = React.HTMLAttributes<HTMLSelectElement>;
 
 export default function RegionSelector({ className }: RegionSelectorProps) {
   const pathname = usePathname();
