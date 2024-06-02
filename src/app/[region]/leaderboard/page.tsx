@@ -40,7 +40,7 @@ export default async function page({ params, searchParams }: Props) {
   return (
     <section className="p-2">
       <h2 className="flex items-center justify-center text-xl font-medium md:text-2xl">
-        {userRegion.toUpperCase()} Leaderboard
+        {userRegion.toUpperCase()} Dodge Leaderboard
       </h2>
       <div className="mx-auto flex border-b border-zinc-900 p-2 lg:w-3/4">
         <LeaderboardFilters />

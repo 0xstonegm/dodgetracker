@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     default: "Dodgetracker - League of Legends",
     template: "%s - Dodgetracker - League of Legends",
   },
-  description: `Track League of Legends dodges in Master, Grandmaster, and Challenger. Available for ${availableRegions}.`,
+  description: `Track League of Legends (LOL) dodges in Master, Grandmaster, and Challenger. Available for ${availableRegions}.`,
   twitter: {
     card: "summary_large_image",
   },
