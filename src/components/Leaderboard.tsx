@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getLeaderboard, profileIconUrl } from "../data";
+import { getLeaderboard } from "../data";
+import { profileIconUrl } from "../lib/utils";
 import { userRegionToRiotRegion } from "../regions";
 import { StatSite } from "../statSites";
 import { type Tier } from "../types";

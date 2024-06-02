@@ -12,10 +12,6 @@ import { userRegionToRiotRegion } from "./regions";
 import { seasons } from "./seasons";
 import type { Tier } from "./types"; // Assuming Dodge is properly defined to match the query results
 
-export function profileIconUrl(profileIconID: number): string {
-  return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${profileIconID}.jpg`;
-}
-
 export async function getDodges(
   riotRegion: string,
   pageSize: number,
@@ -283,11 +279,6 @@ export async function getAccounts() {
     })
     .from(riotIds)
     .innerJoin(summoners, eq(riotIds.puuid, summoners.puuid));
-}
-
-export function getRankEmblem(rankTier: Tier) {
-  const rankTierStr = rankTier.toLowerCase();
-  return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/${rankTierStr}.svg`;
 }
 
 export async function getDodgesCount(

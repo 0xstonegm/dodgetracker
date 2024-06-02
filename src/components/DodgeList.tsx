@@ -1,11 +1,6 @@
 import Image from "next/image";
-import {
-  getDodges,
-  getDodgesByPlayer,
-  getDodgesCount,
-  profileIconUrl,
-} from "../data";
-import { cn } from "../lib/utils";
+import { getDodges, getDodgesByPlayer, getDodgesCount } from "../data";
+import { cn, profileIconUrl } from "../lib/utils";
 import { userRegionToRiotRegion } from "../regions";
 import { StatSite } from "../statSites";
 import { type Tier } from "../types";

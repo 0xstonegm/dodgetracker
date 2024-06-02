@@ -53,3 +53,17 @@ export function getRankEmblem(rankTier: Tier) {
   const rankTierStr = rankTier.toLowerCase();
   return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-mini-crests/${rankTierStr}.svg`;
 }
+
+export function isWithinDays(
+  oldDate: Date,
+  now: Date,
+  dayLimit: number,
+): boolean {
+  const differenceInMillis = Math.abs(now.getTime() - oldDate.getTime());
+  const differenceInDays = differenceInMillis / (1000 * 60 * 60 * 24);
+  return differenceInDays < dayLimit;
+}
+
+export function profileIconUrl(profileIconID: number): string {
+  return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${profileIconID}.jpg`;
+}

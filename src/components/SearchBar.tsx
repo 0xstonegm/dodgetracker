@@ -10,7 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useRef, useState } from "react";
 import { z } from "zod";
-import { cn, getRankEmblem } from "../lib/utils";
+import { cn, getRankEmblem, isWithinDays } from "../lib/utils";
 import { userRegionToRiotRegion } from "../regions";
 import { type Tier } from "../types";
 import { Input } from "./ui/input";
@@ -44,12 +44,6 @@ const fetchPlayers = async (searchFilter: string, userRegion: string) => {
   const data = await response.json(); // eslint-disable-line
   return playerSchema.parse(data);
 };
-
-function isWithinDays(oldDate: Date, now: Date, dayLimit: number): boolean {
-  const differenceInMillis = Math.abs(now.getTime() - oldDate.getTime());
-  const differenceInDays = differenceInMillis / (1000 * 60 * 60 * 24);
-  return differenceInDays < dayLimit;
-}
 
 export default function SearchBar({ className }: SearchBarProps) {
   const [inputHasFocus, setInputHasFocus] = useState(false);
