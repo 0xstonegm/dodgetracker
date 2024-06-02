@@ -33,9 +33,9 @@ export default function StatSiteButton({
       <Button
         variant={"secondary"}
         className={cn(
-          "h-auto px-2 py-1 align-middle text-xs font-light",
+          "h-auto px-2 py-1 align-middle text-xs font-light shadow-sm",
           {
-            "shadow-sm dark:bg-yellow-800 dark:shadow-zinc-800 dark:enabled:hover:bg-yellow-800/80":
+            "dark:bg-yellow-800 dark:shadow-zinc-800 dark:enabled:hover:bg-yellow-800/80":
               props.statSite === StatSite.LOLPROS,
           },
           className,

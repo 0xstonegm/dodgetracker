@@ -129,6 +129,7 @@ export async function getSummoner(
       gameName: riotIds.gameName,
       tagLine: riotIds.tagLine,
       riotRegion: summoners.region,
+      lolProsSlug: riotIds.lolprosSlug,
       summonerLevel: summoners.summonerLevel,
       profileIconId: summoners.profileIconId,
       rankTier: apexTierPlayers.rankTier,
@@ -136,7 +137,6 @@ export async function getSummoner(
       wins: apexTierPlayers.wins,
       losses: apexTierPlayers.losses,
       lastUpdateTime: apexTierPlayers.updatedAt,
-      isInLatestUpdate: sql<boolean>`(${apexTierPlayers.updatedAt} = (SELECT MAX(${apexTierPlayers.updatedAt}) FROM ${apexTierPlayers}))`,
     })
     .from(riotIds)
     .innerJoin(summoners, eq(riotIds.puuid, summoners.puuid))

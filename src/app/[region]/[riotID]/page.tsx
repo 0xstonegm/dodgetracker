@@ -1,5 +1,6 @@
 import DodgeList from "@/src/components/DodgeList";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
+import StatSiteButton from "@/src/components/StatSiteButton";
 import {
   Tabs,
   TabsContent,
@@ -8,7 +9,8 @@ import {
 } from "@/src/components/ui/tabs";
 import { getSummoner } from "@/src/data";
 import { decodeRiotIdURIComponent } from "@/src/lib/utils";
-import { supportedUserRegions } from "@/src/regions";
+import { supportedUserRegions, userRegionToRiotRegion } from "@/src/regions";
+import { StatSite } from "@/src/statSites";
 import { type Tier } from "@/src/types";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -61,16 +63,41 @@ export default async function Summoner({
   return (
     <section>
       <section className="flex min-h-[25vh] flex-wrap items-center justify-center border-b-4 border-zinc-900 bg-zinc-600">
-        <div className="m-2 my-4 md:mx-14">
-          <ProfileCard
-            gameName={summoner.gameName}
-            tagLine={summoner.tagLine}
-            rankTier={summoner.rankTier as Tier}
-            currentLp={summoner.currentLp}
-            profileIconId={summoner.profileIconId}
-            summonerLevel={summoner.summonerLevel}
-            lastUpdateTime={summoner.lastUpdateTime}
-          />
+        <div className="flex flex-col items-center justify-center">
+          <div className="m-2 my-4 md:mx-14">
+            <ProfileCard
+              gameName={summoner.gameName}
+              tagLine={summoner.tagLine}
+              rankTier={summoner.rankTier as Tier}
+              currentLp={summoner.currentLp}
+              profileIconId={summoner.profileIconId}
+              summonerLevel={summoner.summonerLevel}
+              lastUpdateTime={summoner.lastUpdateTime}
+            />
+          </div>
+          <section className="flex items-center justify-center gap-1">
+            {summoner.lolProsSlug && (
+              <StatSiteButton
+                statSite={StatSite.LOLPROS}
+                gameName={gameName}
+                tagLine={tagLine}
+                riotRegion={userRegionToRiotRegion(region)}
+                lolProsSlug={summoner.lolProsSlug}
+              />
+            )}
+            <StatSiteButton
+              statSite={StatSite.OPGG}
+              gameName={gameName}
+              tagLine={tagLine}
+              riotRegion={userRegionToRiotRegion(region)}
+            />
+            <StatSiteButton
+              statSite={StatSite.DEEPLOL}
+              gameName={gameName}
+              tagLine={tagLine}
+              riotRegion={userRegionToRiotRegion(region)}
+            />
+          </section>
         </div>
         <div className="flex h-36 w-80 items-center justify-center p-2 md:h-52 md:py-6">
           <DodgeCounts gameName={gameName} tagLine={tagLine} />
