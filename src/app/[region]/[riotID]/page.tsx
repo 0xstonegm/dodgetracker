@@ -1,6 +1,5 @@
 import DodgeList from "@/src/components/DodgeList";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
-import ProfileCard from "@/src/components/ProfileCard";
 import {
   Tabs,
   TabsContent,
@@ -16,6 +15,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import DodgeCounts from "./_components/DodgeCounts";
 import DodgeTypes from "./_components/DodgeTypes";
+import ProfileCard from "./_components/ProfileCard";
 
 // FIXME: Add metadata
 

@@ -1,6 +1,6 @@
+import { getRankEmblem, profileIconUrl } from "@/src/lib/utils";
+import { type Tier } from "@/src/types";
 import Image from "next/image";
-import { getRankEmblem, profileIconUrl } from "../lib/utils";
-import { type Tier } from "../types";
 
 export default async function ProfileCard(props: {
   profileIconId: number;
