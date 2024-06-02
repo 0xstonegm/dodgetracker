@@ -69,6 +69,7 @@ export default async function Summoner({
             currentLp={summoner.currentLp}
             profileIconId={summoner.profileIconId}
             summonerLevel={summoner.summonerLevel}
+            lastUpdateTime={summoner.lastUpdateTime}
           />
         </div>
         <div className="flex h-36 w-80 items-center justify-center p-2 md:h-52 md:py-6">
