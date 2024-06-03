@@ -10,7 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useRef, useState } from "react";
 import { z } from "zod";
-import { cn, getRankEmblem, isWithinDays } from "../lib/utils";
+import { cn, getRankEmblem, isWithinDays, profileIconUrl } from "../lib/utils";
 import { userRegionToRiotRegion } from "../regions";
 import { type Tier } from "../types";
 import { Input } from "./ui/input";
@@ -115,7 +115,7 @@ export default function SearchBar({ className }: SearchBarProps) {
           {inputHasFocus && searchFilter.length > 0 && (
             <div className="absolute top-10 z-[100] flex h-[50vh] w-full flex-col overflow-y-scroll rounded-sm bg-zinc-900 text-zinc-300 shadow-sm shadow-zinc-900 scrollbar scrollbar-track-zinc-800 scrollbar-thumb-zinc-900">
               {data && data.players.length > 0 && (
-                <ul>
+                <ol>
                   {data.players.map((player, index) => (
                     <li
                       className="flex w-full items-center justify-between px-1 hover:bg-zinc-800"
@@ -133,7 +133,7 @@ export default function SearchBar({ className }: SearchBarProps) {
                           <Image
                             className="pr-1"
                             alt="Profile Icon"
-                            src={`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${player.profileIconId}.jpg`}
+                            src={profileIconUrl(player.profileIconId)}
                             width={32}
                             height={32}
                             unoptimized
@@ -180,7 +180,7 @@ export default function SearchBar({ className }: SearchBarProps) {
                       </Link>
                     </li>
                   ))}
-                </ul>
+                </ol>
               )}
               {isPending && searchFilter.length > 0 && (
                 <div className="flex items-center justify-center p-2">
