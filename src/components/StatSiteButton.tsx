@@ -1,5 +1,6 @@
 "use client";
 
+import posthog from "posthog-js";
 import { cn } from "../lib/utils";
 import { StatSite, getDeeplolUrl, getOpggUrl } from "../statSites";
 import { Button } from "./ui/button";
@@ -28,6 +29,16 @@ export default function StatSiteButton({
     }
   })();
 
+  const handleClick = () => {
+    posthog.capture("statsite_button_clicked", {
+      statSite: props.statSite,
+      gameName: props.gameName,
+      tagLine: props.tagLine,
+      region: props.riotRegion,
+      siteUrl: url,
+    });
+  };
+
   return (
     <a href={url} target="_blank" rel="noopener noreferrer" tabIndex={-1}>
       <Button
@@ -40,6 +51,7 @@ export default function StatSiteButton({
           },
           className,
         )}
+        onClick={handleClick}
       >
         {props.statSite}
       </Button>
