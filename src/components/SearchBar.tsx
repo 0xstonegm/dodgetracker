@@ -8,7 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import posthog from "posthog-js";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { cn, getRankEmblem, isWithinDays, profileIconUrl } from "../lib/utils";
 import { userRegionToRiotRegion } from "../regions";
@@ -92,6 +92,21 @@ export default function SearchBar({ className }: SearchBarProps) {
     captureSearch(player.gameName, player.tagLine);
     posthog.capture("searchbar_enter_search");
   };
+
+  useEffect(() => {
+    // Check if no search results and send analytics event if so
+    if (
+      data &&
+      !isPending &&
+      debouncedSearchFilter.length > 0 &&
+      data.players.length === 0
+    ) {
+      posthog.capture("search_no_results", {
+        region: region,
+        searchFilter: debouncedSearchFilter,
+      });
+    }
+  }, [data, isPending, debouncedSearchFilter, region]);
 
   return (
     <>
