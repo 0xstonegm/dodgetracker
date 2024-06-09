@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { autoFetchKey } from "../autoFetch";
-import { cn } from "../lib/utils";
+import { cn, secondsBetween } from "../lib/utils";
 import withNoSSR from "./higherOrder/withNoSSR";
 import { Button } from "./ui/button";
 
@@ -23,16 +23,17 @@ function FetchButton({ className, ...props }: FetchButtonProps) {
   const [isDone, setIsDone] = useState(false);
   const tabVisible = useVisibilityChange();
   const interval = useRef<number | null>(null);
+  const lastFetchTime = useRef<Date>(new Date());
 
   // Fetch new dodges
   const fetch = useCallback(
     (eventName: string) => {
-      console.log("fetching");
       setButtonClicked(true);
       startTransition(() => {
         router.refresh();
         setIsDone(true);
       });
+      lastFetchTime.current = new Date();
 
       sendGTMEvent({ event: eventName });
       posthog.capture(eventName);
@@ -84,11 +85,15 @@ function FetchButton({ className, ...props }: FetchButtonProps) {
     }
   }, [isPending, buttonClicked]);
 
-  // Fetch new dodges when tab is visible, stop interval when hidden
+  // Start interval when tab becomes visible, stop interval when hidden
   useEffect(() => {
     if (tabVisible) {
       if (autoFetch) {
-        fetch("auto_fetch");
+        if (
+          secondsBetween(lastFetchTime.current, new Date()) > updateIntervalSecs
+        ) {
+          fetch("auto_fetch");
+        }
         resetInterval();
       }
     } else {

@@ -67,3 +67,7 @@ export function isWithinDays(
 export function profileIconUrl(profileIconID: number): string {
   return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${profileIconID}.jpg`;
 }
+
+export function secondsBetween(from: Date, to: Date): number {
+  return Math.abs(from.getTime() - to.getTime()) / 1000;
+}
