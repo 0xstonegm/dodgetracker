@@ -1,7 +1,7 @@
 "use client";
 
 import { sendGTMEvent } from "@next/third-parties/google";
-import { useLocalStorage } from "@uidotdev/usehooks";
+import { useLocalStorage, useVisibilityChange } from "@uidotdev/usehooks";
 import { Check, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
@@ -21,6 +21,7 @@ function FetchButton({ className, ...props }: FetchButtonProps) {
   const [autoFetch, _setAutoFetch] = useLocalStorage(autoFetchKey, false);
   const [buttonClicked, setButtonClicked] = useState(false);
   const [isDone, setIsDone] = useState(false);
+  const tabVisible = useVisibilityChange();
   const interval = useRef<number | null>(null);
 
   // Fetch new dodges
@@ -45,30 +46,32 @@ function FetchButton({ className, ...props }: FetchButtonProps) {
     }, updateIntervalSecs * 1000);
   }, [fetch]);
 
-  // Reset interval
-  const resetInterval = () => {
-    if (autoFetch && interval.current) {
+  const clearInterval = useCallback(() => {
+    if (interval.current) {
       window.clearInterval(interval.current);
+    }
+  }, [interval]);
+
+  // Reset interval
+  const resetInterval = useCallback(() => {
+    clearInterval();
+    if (autoFetch) {
       setInterval();
     }
-  };
+  }, [autoFetch, setInterval, clearInterval]);
 
   // Start an interval when autoFetch is enabled, clear it when disabled
   useEffect(() => {
     if (autoFetch) {
       setInterval();
     } else {
-      if (interval.current) {
-        window.clearInterval(interval.current);
-      }
+      clearInterval();
     }
 
     return () => {
-      if (interval.current) {
-        window.clearInterval(interval.current);
-      }
+      clearInterval();
     };
-  }, [autoFetch, fetch, setInterval]);
+  }, [autoFetch, fetch, setInterval, clearInterval]);
 
   // Reset button state after a short delay
   useEffect(() => {
@@ -80,6 +83,18 @@ function FetchButton({ className, ...props }: FetchButtonProps) {
       return () => clearTimeout(timeoutId);
     }
   }, [isPending, buttonClicked]);
+
+  // Fetch new dodges when tab is visible, stop interval when hidden
+  useEffect(() => {
+    if (tabVisible) {
+      if (autoFetch) {
+        fetch("auto_fetch");
+        resetInterval();
+      }
+    } else {
+      clearInterval();
+    }
+  }, [tabVisible, autoFetch, fetch, resetInterval, clearInterval]);
 
   return (
     <Button
