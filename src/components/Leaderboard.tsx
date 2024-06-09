@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getLeaderboard } from "../data";
@@ -13,6 +14,10 @@ import StatSiteButton from "./StatSiteButton";
 const pageSize = 50;
 const maxPages = 100;
 
+const getCachedLeaderboard = unstable_cache(getLeaderboard, ["leaderboard"], {
+  revalidate: 60 * 60, // 1 hour
+});
+
 export default async function Leaderboard({
   userRegion,
   pageNumber,
@@ -25,7 +30,7 @@ export default async function Leaderboard({
   pageNumber = (function () {
     return Math.min(Math.max(pageNumber, 1), maxPages);
   })();
-  const leaderboard = await getLeaderboard(
+  const leaderboard = await getCachedLeaderboard(
     userRegionToRiotRegion(userRegion),
     pageSize,
     pageNumber,
