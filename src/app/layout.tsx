@@ -36,6 +36,13 @@ export default function RootLayout({
       lang="en"
       className="overflow-y-scroll scrollbar scrollbar-track-zinc-800 scrollbar-thumb-zinc-900"
     >
+      <head>
+        <script
+          data-domain="www.dodgetracker.com"
+          src="https://statspro.io/js/broadcaster.js"
+          async
+        />
+      </head>
       <body
         className={`${inter.className} dark !min-w-full bg-zinc-700 text-zinc-300`}
       >
