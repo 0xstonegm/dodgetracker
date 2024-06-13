@@ -2,7 +2,7 @@ import { type Regions } from "twisted/dist/constants";
 import { dodges } from "../db/schema";
 import logger from "./logger";
 import { type PlayersFromApiMap, type PlayersFromDbMap } from "./players";
-import { Transaction, type Tier } from "./types";
+import { type Tier, type Transaction } from "./types";
 
 export interface Dodge {
   summonerId: string;

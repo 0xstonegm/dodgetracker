@@ -1,7 +1,6 @@
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
-import { type Transaction } from "types";
 import { getDodges, insertDodges } from "./dodges";
 import logger from "./logger";
 import {
@@ -13,6 +12,7 @@ import {
   updateAccountsData,
   upsertPlayers,
 } from "./players";
+import { type Transaction } from "./types";
 import { promiseWithTimeout } from "./util";
 
 // Seconds to wait before timing out the database update and rolling back the transaction

@@ -363,12 +363,7 @@ export async function registerDemotions(
 
   const demotionsMap = await getDemotions(transaction);
 
-  const demotedPlayers: {
-    summonerId: string;
-    region: string;
-    atWins: number;
-    atLosses: number;
-  }[] = Array.from(playersNotInApi)
+  const demotedPlayers = Array.from(playersNotInApi)
     .filter(([key, player]) => {
       const demotions = demotionsMap.get(key);
       if (!demotions) return true; // if there are no demotions, then the player is demoted
@@ -479,14 +474,7 @@ export async function updateAccountsData(
   const summonerResults = await Promise.all(promises);
 
   const puuidsAndRegion: string[][] = [];
-  const summonersToInsert: {
-    puuid: string;
-    summonerId: string;
-    region: string;
-    accountId: string;
-    profileIconId: number;
-    summonerLevel: number;
-  }[] = summonerResults.map((result) => {
+  const summonersToInsert = summonerResults.map((result) => {
     if (result?.response) {
       const summonerData = result.response;
 
@@ -529,7 +517,7 @@ export async function updateAccountsData(
     logger.info("No new summoners to insert into summoners table, skipping...");
   }
 
-  const accountInfoPromises = puuidsAndRegion.map((puuid) => {
+  const accountInfoPromises = puuidsAndRegion.map(async (puuid) => {
     if (!puuid) throw new Error("Puuid not found");
     return riotApi.Account.getByPUUID(
       puuid[0],
@@ -549,11 +537,7 @@ export async function updateAccountsData(
   );
   const accountResults = await Promise.all(accountInfoPromises);
 
-  const accountsToUpsert: {
-    puuid: string;
-    gameName: string;
-    tagLine: string;
-  }[] = accountResults
+  const accountsToUpsert = accountResults
     .filter((result) => result?.response !== null)
     .map((result) => {
       const accountData = result!.response;
@@ -565,12 +549,8 @@ export async function updateAccountsData(
     });
 
   // Add all EUW accounts to a separate array to fetch LolPros.gg slugs
-  const euwAccounts: { puuid: string; gameName: string; tagLine: string }[] =
-    [];
-  accountsToUpsert.forEach((account, index) => {
-    if ((puuidsAndRegion[index][1] as Regions) === Regions.EU_WEST) {
-      euwAccounts.push(account);
-    }
+  const euwAccounts = accountsToUpsert.filter((_account, index) => {
+    return (puuidsAndRegion[index][1] as Regions) === Regions.EU_WEST;
   });
 
   if (accountsToUpsert.length > 0) {
