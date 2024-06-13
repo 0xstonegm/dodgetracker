@@ -24,6 +24,13 @@ cd "$PROJECT_ROOT_DIR" || exit
 
 source .env
 
+export NVM_DIR="$HOME/.nvm"
+source "$NVM_DIR/nvm.sh" || {
+    echo "Failed to load nvm"
+    exit 1
+}
+nvm use || exit 1
+
 echo "Building backend..."
 npx tsc -p src/backend/tsconfig.json
 echo "Build completed."
