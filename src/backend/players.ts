@@ -1,4 +1,4 @@
-import { sql, type ExtractTablesWithRelations } from "drizzle-orm";
+import { count, sql, type ExtractTablesWithRelations } from "drizzle-orm";
 import { type MySqlTransaction } from "drizzle-orm/mysql-core";
 import {
   type MySql2PreparedQueryHKT,
@@ -709,5 +709,31 @@ async function getLolProsSlug(
       );
     }
     return validatedData[0].slug;
+  }
+}
+
+export async function checkAccountsAndSummonersCount(
+  transaction: MySqlTransaction<
+    MySql2QueryResultHKT,
+    MySql2PreparedQueryHKT,
+    Record<string, unknown>,
+    ExtractTablesWithRelations<Record<string, unknown>>
+  >,
+) {
+  const summonersResult = await transaction
+    .select({ count: count() })
+    .from(summoners);
+
+  const accountsResult = await transaction
+    .select({ count: count() })
+    .from(riotIds);
+
+  const summonersCount = summonersResult[0].count;
+  const accountsCount = accountsResult[0].count;
+
+  if (summonersResult[0].count !== accountsResult[0].count) {
+    logger.warn(
+      `Summoners count (${summonersCount}) and accounts count (${accountsCount}) do not match!`,
+    );
   }
 }
