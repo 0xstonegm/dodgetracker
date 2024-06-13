@@ -16,6 +16,11 @@ export interface Dodge {
 
 const DECAY_LP_LOSS = 75;
 
+/**
+ * @param playersFromDb - All players currently in the database
+ * @param playersFromApi - All players fetched from the league API
+ * @returns An array of dodges
+ */
 export async function getDodges(
   playersFromDb: PlayersFromDbMap,
   playersFromApi: PlayersFromApiMap,
@@ -52,6 +57,12 @@ export async function getDodges(
   return dodges;
 }
 
+/**
+ * Inserts dodges into the database
+ *
+ * @param dodgesToInsert - Dodges to insert into the database
+ * @param transaction - Transaction to use for the insert
+ */
 export async function insertDodges(
   dodgesToInsert: Dodge[],
   transaction: Transaction,

@@ -157,6 +157,12 @@ export function constructSummonerAndRegionKey(
   return `${summonerId}-${region.toUpperCase()}`;
 }
 
+/**
+ * Fetches all apex tier players currently in the database.
+ *
+ * @param transaction - The transaction to execute the query in
+ * @returns All apex tier players currently in the database
+ */
 export async function fetchCurrentPlayers(
   transaction: Transaction,
 ): Promise<PlayersFromDbMap> {
@@ -196,6 +202,12 @@ export class RegionError extends Error {
   }
 }
 
+/**
+ * Fetches all apex tier players from the league of legends API for all supported regions.
+ *
+ * @param transaction - The database transaction
+ * @returns A map of apex tier  players from the league of legends API and a list of regions that errored
+ */
 export async function getPlayers(transaction: Transaction): Promise<{
   playersFromApiMap: PlayersFromApiMap;
   erroredRegions: string[];
@@ -253,6 +265,13 @@ async function getDemotions(
   return demotionsMap;
 }
 
+/**
+ * Inserts promotions for players that have promoted into master.
+ *
+ * @param playersFromDb - Player data currently in the database
+ * @param playersFromApi - Player data fetched from the league API
+ * @param transaction - Transaction to execute the query in
+ */
 export async function registerPromotions(
   playersFromDb: PlayersFromDbMap,
   playersFromApi: PlayersFromApiMap,
@@ -306,6 +325,14 @@ export async function registerPromotions(
   }
 }
 
+/**
+ * Inserts demotions for players that have demoted from master.
+ *
+ * @param playersFromDb - Player data currently in the database
+ * @param playersFromApi - Player data fetched from the league API
+ * @param regionsToSkip - Regions to skip demotions for (for example due to an error in API response)
+ * @param transaction - Transaction to execute the query in
+ */
 export async function registerDemotions(
   playersFromDb: PlayersFromDbMap,
   playersFromApi: PlayersFromApiMap,
@@ -382,6 +409,12 @@ export async function registerDemotions(
   }
 }
 
+/**
+ * Updates the database wtih the new player data fetched from the league API.
+ *
+ * @param players - Players to upsert into the database
+ * @param transaction - Transaction to execute the query in
+ */
 export async function upsertPlayers(
   players: PlayersFromApiMap,
   transaction: Transaction,
@@ -423,6 +456,13 @@ export async function upsertPlayers(
 }
 
 /* TODO: update account information if it is older than X days */
+/**
+ * Update the accounts data for all summoners in the dodges list. This includes updating the summoners table and the riot_ids table.
+ * Will also fetch the LolPros.gg slug for all EUW accounts and update the riot_ids table with the slug.
+ *
+ * @param dodges - List of dodges to update accounts data for
+ * @param transaction - Transaction to execute the query in
+ */
 export async function updateAccountsData(
   dodges: Dodge[],
   transaction: Transaction,
@@ -655,6 +695,11 @@ async function getLolProsSlug(
   }
 }
 
+/**
+ * Simple check to see if the number of accounts and summoners in the database match. Does not do anything, only logs a warning.
+ *
+ * @param transaction - Transaction to execute the query in
+ */
 export async function checkAccountsAndSummonersCount(transaction: Transaction) {
   const summonersResult = await transaction
     .select({ count: count() })
