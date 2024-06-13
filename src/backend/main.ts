@@ -1,11 +1,7 @@
-import { sql, type ExtractTablesWithRelations } from "drizzle-orm";
-import { type MySqlTransaction } from "drizzle-orm/mysql-core";
-import {
-  drizzle,
-  type MySql2PreparedQueryHKT,
-  type MySql2QueryResultHKT,
-} from "drizzle-orm/mysql2";
+import { sql } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
+import { type Transaction } from "types";
 import { getDodges, insertDodges } from "./dodges";
 import logger from "./logger";
 import {
@@ -23,14 +19,7 @@ import { promiseWithTimeout } from "./util";
 // This is to prevent the algorithm from getting stuck.
 const timeoutSeconds = 30;
 
-export async function run(
-  transaction: MySqlTransaction<
-    MySql2QueryResultHKT,
-    MySql2PreparedQueryHKT,
-    Record<string, unknown>,
-    ExtractTablesWithRelations<Record<string, unknown>>
-  >,
-) {
+export async function run(transaction: Transaction) {
   const { playersFromApiMap: newData, erroredRegions } =
     await getPlayers(transaction);
   const oldData = await fetchCurrentPlayers(transaction);

@@ -1,14 +1,8 @@
-import { type ExtractTablesWithRelations } from "drizzle-orm";
-import { type MySqlTransaction } from "drizzle-orm/mysql-core";
-import {
-  type MySql2PreparedQueryHKT,
-  type MySql2QueryResultHKT,
-} from "drizzle-orm/mysql2";
 import { type Regions } from "twisted/dist/constants";
 import { dodges } from "../db/schema";
 import logger from "./logger";
 import { type PlayersFromApiMap, type PlayersFromDbMap } from "./players";
-import { type Tier } from "./types";
+import { Transaction, type Tier } from "./types";
 
 export interface Dodge {
   summonerId: string;
@@ -60,12 +54,7 @@ export async function getDodges(
 
 export async function insertDodges(
   dodgesToInsert: Dodge[],
-  transaction: MySqlTransaction<
-    MySql2QueryResultHKT,
-    MySql2PreparedQueryHKT,
-    Record<string, unknown>,
-    ExtractTablesWithRelations<Record<string, unknown>>
-  >,
+  transaction: Transaction,
 ): Promise<void> {
   await transaction.insert(dodges).values(dodgesToInsert);
 }
