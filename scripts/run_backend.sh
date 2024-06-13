@@ -25,7 +25,7 @@ cd "$PROJECT_ROOT_DIR" || exit
 source .env
 
 echo "Building backend..."
-tsc -p src/backend/tsconfig.json
+npx tsc -p src/backend/tsconfig.json
 echo "Build completed."
 
 if "$RUN"; then
