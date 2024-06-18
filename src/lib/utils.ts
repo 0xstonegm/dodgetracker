@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function timeDiffString(utcTime: Date): string {
-  const timeDiff = Date.now() - utcTime.getTime();
+  const timeDiff = Date.now() - new Date(utcTime).getTime();
 
   const diffInSeconds: number = timeDiff / 1000;
   const diffInMinutes: number = diffInSeconds / 60;
