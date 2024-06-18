@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import Image from "next/image";
 import { getDodges, getDodgesByPlayer, getDodgesCount } from "../data";
 import { cn, profileIconUrl } from "../lib/utils";
@@ -18,6 +19,10 @@ interface DodgeListProps {
   statSiteButtons?: boolean;
   profileLink?: boolean;
 }
+
+const getCachedDodges = unstable_cache(getDodges, ["dodges"], {
+  revalidate: 14, // cahce for 14 secconds, auto fetch time is 15 seconds
+});
 
 const pageSize = 50;
 const maxPages = 500;
@@ -51,7 +56,7 @@ export default async function DodgeList({
   const dodges = await (async function () {
     // TODO: Refactor these two functions into one
     if (gameName === undefined || tagLine === undefined) {
-      return getDodges(
+      return getCachedDodges(
         userRegionToRiotRegion(userRegion),
         pageSize,
         pageNumber,
