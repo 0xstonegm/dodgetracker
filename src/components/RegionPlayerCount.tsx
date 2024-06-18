@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { getLatestPlayerCount } from "../data";
 import { cn } from "../lib/utils";
 import { userRegionToRiotRegion } from "../regions";
@@ -8,11 +9,19 @@ export interface RegionPlayerCountProps
   userRegion: string;
 }
 
+const getCachedLatestPlayerCount = unstable_cache(
+  getLatestPlayerCount,
+  ["getLatestPlayerCount"],
+  {
+    revalidate: 60 * 60, // 1 hour
+  },
+);
+
 export default async function RegionPlayerCount({
   userRegion,
   className,
 }: RegionPlayerCountProps) {
-  const playerCounts = await getLatestPlayerCount(
+  const playerCounts = await getCachedLatestPlayerCount(
     userRegionToRiotRegion(userRegion),
   );
   const totalPlayerCount =
