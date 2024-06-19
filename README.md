@@ -15,6 +15,7 @@ A League of Legends dodge tracker that tracks all queue dodges in Master, Grandm
 - [Limitations](#limitations)
 - [Technologies Used](#technologies-used)
 - [Implementation](#implementation)
+- [Community Usage](#community-usage)
 <!--toc:end-->
 
 ## Background
@@ -61,3 +62,9 @@ Due to limitations of the League of Legends API, Dodgetracker only tracks dodges
 The dodges are detected using an algorithm ([here](./src/backend/main.ts)) that runs 24/7 as a [Linux service](./src/backend/service/dodgetracker.service) on a self-hosted Ubuntu Server. In simple terms, this algorithm constantly checks the Master+ ladder using the League of Legends API, if a player loses LP without playing a game or [decaying](<https://leagueoflegends.fandom.com/wiki/Rank_(League_of_Legends)#Decay>) then a dodge is registered.
 
 The web-application is built using NextJS, TailwindCSS and Typescript ([here](./src/app/)) and is hosted on Vercel.
+
+## Community Usage
+
+In this clip, one of the most popular streamers [Agurin](https://lol.fandom.com/wiki/Agurin) uses Dodgetracker to check who dodged his most recent champion selection, and voices his appreaciation for the site:
+
+https://github.com/isak102/dodgetracker/assets/90389894/2ef368cc-7e15-4f17-80d2-20854e4698cf
