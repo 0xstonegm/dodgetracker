@@ -26,11 +26,11 @@ A League of Legends dodge tracker that tracks all queue dodges in Master, Grandm
 
 ### What is Queue Dodging?
 
-To play a ranked game of League of Legends, you queue up to get matched with other players also in queue. When a lobby is found, you press accept to enter champion selection. Once in champion selection, each player in both teams picks the champion (character) that they want to play. After champion selection is finished, all players load into the actual game and the game begins.
+To play a ranked game of League of Legends, you queue up to get matched with other players also in queue. When a lobby is found, you press accept to enter [champion selection](https://lol.fandom.com/wiki/New_To_League/Gameplay/Champ_Select). Once in champion selection, each player in both teams picks the [champion](https://leagueoflegends.fandom.com/wiki/Champion) (character) that they want to play. After champion selection is finished, all players load into the actual game and the game begins.
 
 The act of leaving champion selection before it is finished and a game has started is called a queue dodge. There are multiple reasons as to why you might want to leave champion selection, for example you might determine that the enemy team has picked champions that are good against yours, or you realize that you do not have time to actually play a game. Queue dodging can also be unintentional, for example your computer might crash during champion selection.
 
-The ranking system is based on league points (LP), when you win a game you gain LP and when you lose a game you lose LP. Queue dodging gives both a LP penalty and a time penalty. When you dodge, you lose LP and you are not allowed to queue up for a new game for a certain amount of time.
+The [ranking system](<https://leagueoflegends.fandom.com/wiki/Rank_(League_of_Legends)>) in League of Legends is based on league points (LP), when you win a game you gain LP and when you lose a game you lose LP. Queue dodging gives both a LP penalty and a time penalty. When you dodge, you lose LP and you are not allowed to queue up for a new game for a certain amount of time.
 
 - [Riot Games on queue dodging](https://support-leagueoflegends.riotgames.com/hc/en-us/articles/201751844-Queue-Dodging)
 - [Unofficial LOL Wiki on queue dodging](https://leagueoflegends.fandom.com/wiki/Queue_dodging)
@@ -39,7 +39,7 @@ The ranking system is based on league points (LP), when you win a game you gain 
 
 Queue dodging is an anonymous act, there is no built-in way in the League of Legends client to know which player in your champion selection that dodged. Dodgetracker provides a way for players to know which player left their champion selection, as well as view statistics such as a [leaderboard](https://www.dodgetracker.com/euw/leaderboard) of the players with the most dodges.
 
-Knowing who dodged your champion selection can provide some strategic advantages, for example if a player picked champion A and then dodged, you now do not need to ban champion A in the next champion selection, because that player has a time penalty. Dodgetracker also lets the general public view the dodging habits of League of Legends players, which can provide interesting insights about how they approach champion selection.
+Knowing who dodged your champion selection can provide some strategic advantages, especially in high ranks, because you now know that you will not be playing against that player in the next game. Dodgetracker also lets the general public view the dodging habits of League of Legends players, which can provide interesting insights about how they approach champion selection.
 
 ## Limitations
 
