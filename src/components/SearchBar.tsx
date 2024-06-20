@@ -204,10 +204,10 @@ export default function SearchBar({ className }: SearchBarProps) {
               )}
               {data && searchFilter.length > 0 && data.players.length === 0 && (
                 <div className="flex items-center justify-center p-2">
-                  <div className="flex flex-col items-center justify-center text-center">
+                  <div className="flex w-3/4 flex-col items-center justify-center text-center">
                     <p className="font-semibold">No players found.</p>
                     <p className="text-sm font-light">
-                      (Players without any dodges will not show up)
+                      (Players without any dodges in master+ will not show up)
                     </p>
                   </div>
                 </div>
