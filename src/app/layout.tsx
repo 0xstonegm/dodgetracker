@@ -2,6 +2,7 @@ import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import NavBar from "../components/NavBar";
 import { ReactQueryClientProvider } from "../components/higherOrder/queryClientProvider";
 import { supportedUserRegions } from "../regions";
@@ -53,6 +54,7 @@ export default function RootLayout({
             <GoogleAnalytics gaId={process.env.GA_ID ?? ""} />
             <GoogleTagManager gtmId={process.env.GTM_ID ?? ""} />
             <Analytics />
+            <Toaster position="bottom-right" />
           </ReactQueryClientProvider>
         </CSPostHogProvider>
       </body>
