@@ -71,13 +71,14 @@ export default async function Leaderboard({
                     profileLink={true}
                   >
                     <div className="mr-2 flex items-center justify-center underline-offset-4 sm:justify-start md:hover:underline">
-                      <div className="relative size-8 self-center md:size-12">
+                      <div className="relative size-10 self-center md:size-12">
                         <Image
                           alt="Profile Icon"
                           src={profileIconUrl(entry.profileIconId)}
                           layout="fill"
+                          style={{ objectFit: "contain" }}
                           quality={100}
-                          unoptimized // save vercel bandwidth
+                          unoptimized
                         ></Image>
                       </div>
                       <div className="break-all pl-2 font-bold underline-offset-4 hover:underline">
