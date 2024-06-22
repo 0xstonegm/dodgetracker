@@ -43,3 +43,7 @@ export const seasons = [
 export function isCurrentSeason(seasonValue: string) {
   return seasons.find((season) => season.value === seasonValue)?.isCurrent;
 }
+
+export function getCurrentSeason() {
+  return seasons.find((season) => season.isCurrent)!.value;
+}

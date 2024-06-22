@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getCurrentSeason, seasons } from "./seasons";
 
 export enum Tier {
   MASTER = "MASTER",
@@ -6,11 +7,12 @@ export enum Tier {
   CHALLENGER = "CHALLENGER",
 }
 
+const currentSeason = getCurrentSeason();
 export const LeaderboardSearchParamsSchema = z.object({
   page: z.coerce.number().optional().default(1).catch(1),
   season: z
-    .enum(["s14sp1", "s14sp2"])
+    .enum(seasons.map((season) => season.value) as [string, ...string[]])
     .optional()
-    .default("s14sp2")
-    .catch("s14sp2"),
+    .default(currentSeason)
+    .catch(currentSeason),
 });

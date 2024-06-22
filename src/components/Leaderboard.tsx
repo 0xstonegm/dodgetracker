@@ -1,11 +1,10 @@
 import { unstable_cache } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { z } from "zod";
 import { getLeaderboard } from "../data";
 import { cn, profileIconUrl } from "../lib/utils";
 import { userRegionToRiotRegion } from "../regions";
-import { isCurrentSeason, seasons } from "../seasons";
+import { isCurrentSeason } from "../seasons";
 import { StatSite } from "../statSites";
 import { type Tier } from "../types";
 import PaginationControls from "./PaginationControls";
@@ -19,10 +18,6 @@ const maxPages = 100;
 const getCachedLeaderboard = unstable_cache(getLeaderboard, ["leaderboard"], {
   revalidate: 60 * 60, // 1 hour
 });
-
-export const seasonSchema = z.enum(
-  seasons.map((season) => season.value) as [string, ...string[]],
-);
 
 export default async function Leaderboard({
   userRegion,
@@ -46,7 +41,7 @@ export default async function Leaderboard({
     notFound();
   }
 
-  const currentSeason = isCurrentSeason(seasonSchema.parse(seasonValue));
+  const currentSeason = isCurrentSeason(seasonValue);
 
   const totalPageCount = Math.min(
     Math.ceil(leaderboard.totalEntries / pageSize),
