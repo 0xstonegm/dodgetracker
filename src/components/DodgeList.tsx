@@ -76,9 +76,10 @@ export default async function DodgeList({
                       <Image
                         alt="Profile Icon"
                         src={profileIconUrl(dodge.profileIconId)}
-                        fill
                         quality={100}
-                        unoptimized // save vercel bandwidth
+                        unoptimized
+                        layout="fill"
+                        style={{ objectFit: "contain" }}
                       ></Image>
                     </div>
                     <div className="flex flex-wrap break-all pl-2 font-bold">
