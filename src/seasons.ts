@@ -2,6 +2,7 @@ export const seasons = [
   {
     label: "S2024 Split 2",
     value: "s14sp2",
+    isCurrent: true,
     startDate: {
       EUW1: new Date("2024-05-15T11:00:00Z"),
       EUN1: new Date("2024-05-15T11:00:00Z"),
@@ -21,6 +22,7 @@ export const seasons = [
   {
     label: "S2024 Split 1",
     value: "s14sp1",
+    isCurrent: false,
     startDate: {
       EUW1: new Date("2024-01-11T00:00:00Z"),
       EUN1: new Date("2024-01-11T00:00:00Z"),
@@ -36,4 +38,8 @@ export const seasons = [
       OC1: new Date("2024-05-14T14:45:00Z"),
     },
   },
-];
+] as const;
+
+export function isCurrentSeason(seasonValue: string) {
+  return seasons.find((season) => season.value === seasonValue)?.isCurrent;
+}

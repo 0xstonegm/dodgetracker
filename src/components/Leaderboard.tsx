@@ -1,9 +1,11 @@
 import { unstable_cache } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { z } from "zod";
 import { getLeaderboard } from "../data";
-import { profileIconUrl } from "../lib/utils";
+import { cn, profileIconUrl } from "../lib/utils";
 import { userRegionToRiotRegion } from "../regions";
+import { isCurrentSeason, seasons } from "../seasons";
 import { StatSite } from "../statSites";
 import { type Tier } from "../types";
 import PaginationControls from "./PaginationControls";
@@ -17,6 +19,10 @@ const maxPages = 100;
 const getCachedLeaderboard = unstable_cache(getLeaderboard, ["leaderboard"], {
   revalidate: 60 * 60, // 1 hour
 });
+
+export const seasonSchema = z.enum(
+  seasons.map((season) => season.value) as [string, ...string[]],
+);
 
 export default async function Leaderboard({
   userRegion,
@@ -40,6 +46,8 @@ export default async function Leaderboard({
     notFound();
   }
 
+  const currentSeason = isCurrentSeason(seasonSchema.parse(seasonValue));
+
   const totalPageCount = Math.min(
     Math.ceil(leaderboard.totalEntries / pageSize),
     maxPages,
@@ -61,7 +69,12 @@ export default async function Leaderboard({
         <div key={index}>
           <div className="flex border-b border-zinc-900 p-2">
             <div className="flex flex-grow flex-col">
-              <div className="grid grid-cols-[0.15fr,2.5fr,0.7fr,0.7fr] gap-2">
+              <div
+                className={cn("grid gap-2", {
+                  "grid-cols-[0.15fr,2.5fr,0.7fr,0.7fr]": currentSeason,
+                  "grid-cols-[0.15fr,2.5fr,0.7fr]": !currentSeason,
+                })}
+              >
                 <p className="flex items-center justify-center font-bold md:text-lg">
                   {(pageNumber - 1) * pageSize + index + 1}.
                 </p>
@@ -117,10 +130,12 @@ export default async function Leaderboard({
                     </div>
                   </div>
                 </section>
-                <RankInfo
-                  rankTier={entry.rankTier as Tier}
-                  lp={entry.currentLP}
-                />
+                {currentSeason && (
+                  <RankInfo
+                    rankTier={entry.rankTier as Tier}
+                    lp={entry.currentLP}
+                  />
+                )}
                 <div className="flex justify-end">
                   <div className="flex w-fit flex-col items-center justify-center">
                     <p>{entry.numberOfDodges}</p>
