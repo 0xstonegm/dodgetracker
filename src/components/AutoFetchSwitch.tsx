@@ -29,13 +29,15 @@ function AutoFetchSwitch() {
           </p>
           {value && (
             <p className="mt-1 text-sm font-light">
-              Dodges will automatically be fetched every 15 seconds.
+              Dodges will be automatically fetched every 15 seconds. You can
+              still manually fetch them by clicking the fetch button.
             </p>
           )}
         </Toast>
       ),
       {
         id: "auto-fetch-toast",
+        duration: value ? 6000 : 3000,
       },
     );
     setAutoFetch(value);
