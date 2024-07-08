@@ -106,6 +106,11 @@ export const dodges = mysqlTable(
         columns: [table.dodgeId],
         name: "dodges_dodge_id",
       }),
+      regionCreatedAtDodgeId: index("region_created_at_dodge_id").on(
+        table.region,
+        table.createdAt,
+        table.dodgeId,
+      ),
     };
   },
 );
@@ -187,12 +192,17 @@ export const summoners = mysqlTable(
         columns: [table.puuid],
         name: "summoners_puuid",
       }),
-      summonerId: unique("summoner_id").on(table.summonerId, table.region),
-      summonerIdRegion: index("summoner_id_region").on(
+      summonerIdRegion: unique("summoner_id_region").on(
         table.summonerId,
         table.region,
       ),
+      summonerId: index("summoner_id").on(table.summonerId),
       puuid: index("puuid").on(table.puuid),
+      puuidSummonerIdRegion: index("puuid_summoner_id_region").on(
+        table.puuid,
+        table.summonerId,
+        table.region,
+      ),
     };
   },
 );

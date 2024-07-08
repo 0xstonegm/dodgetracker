@@ -1,0 +1,1 @@
+DROP INDEX `summoner_id_region` ON ``.`summoners`;
