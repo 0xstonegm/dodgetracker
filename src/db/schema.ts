@@ -36,10 +36,8 @@ export const apexTierPlayers = mysqlTable(
         columns: [table.summonerId, table.region],
         name: "apex_tier_players_summoner_id_region",
       }),
-      summonweIdRegion: index("summoner_id_region").on(
-        table.summonerId,
-        table.region,
-      ),
+      summonerId: index("summoner_id").on(table.summonerId),
+      region: index("region").on(table.region),
     };
   },
 );
