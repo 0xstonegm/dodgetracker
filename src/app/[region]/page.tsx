@@ -13,6 +13,7 @@ import { supportedUserRegions } from "@/src/regions";
 import { HelpCircleIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import Notif from "./_components/Notif";
 
 interface Props {
   params: {
@@ -77,6 +78,7 @@ export default async function Region({ params, searchParams }: Props) {
         }
       >
         <div className="mx-auto lg:w-3/4">
+          {["euw", "eune"].includes(params.region) && <Notif />}
           <DodgeList
             pageNumber={pageNumber}
             userRegion={params.region}
