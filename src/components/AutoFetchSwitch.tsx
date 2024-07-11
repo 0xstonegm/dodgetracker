@@ -3,7 +3,7 @@
 import { useLocalStorage } from "@uidotdev/usehooks";
 import posthog from "posthog-js";
 import toast from "react-hot-toast";
-import { autoFetchKey } from "../autoFetch";
+import { autoFetchInterval, autoFetchKey } from "../autoFetch";
 import { cn } from "../lib/utils";
 import Toast from "./Toast";
 import withNoSSR from "./higherOrder/withNoSSR";
@@ -29,8 +29,9 @@ function AutoFetchSwitch() {
           </p>
           {value && (
             <p className="mt-1 text-sm font-light">
-              Dodges will be automatically fetched every 15 seconds. You can
-              still manually fetch them by clicking the fetch button.
+              Dodges will be automatically fetched every {autoFetchInterval}{" "}
+              seconds. You can still manually fetch them by clicking the fetch
+              button.
             </p>
           )}
         </Toast>

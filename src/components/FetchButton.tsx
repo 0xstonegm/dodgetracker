@@ -7,13 +7,11 @@ import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
-import { autoFetchKey } from "../autoFetch";
+import { autoFetchInterval, autoFetchKey } from "../autoFetch";
 import { cn, secondsBetween } from "../lib/utils";
 import Toast from "./Toast";
 import withNoSSR from "./higherOrder/withNoSSR";
 import { Button } from "./ui/button";
-
-const updateIntervalSecs = 15;
 
 const notifPressCountIntervalSecs = 10;
 const notifPressCountThreshold = 3;
@@ -50,7 +48,7 @@ function FetchButton({ className, ...props }: FetchButtonProps) {
   const setInterval = useCallback(() => {
     interval.current = window.setInterval(() => {
       fetch("auto_fetch");
-    }, updateIntervalSecs * 1000);
+    }, autoFetchInterval * 1000);
   }, [fetch]);
 
   const clearInterval = useCallback(() => {
@@ -96,7 +94,7 @@ function FetchButton({ className, ...props }: FetchButtonProps) {
     if (tabVisible) {
       if (autoFetch) {
         if (
-          secondsBetween(lastFetchTime.current, new Date()) > updateIntervalSecs
+          secondsBetween(lastFetchTime.current, new Date()) > autoFetchInterval
         ) {
           fetch("auto_fetch");
         }

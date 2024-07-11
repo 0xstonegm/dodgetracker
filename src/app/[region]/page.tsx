@@ -55,10 +55,10 @@ export default async function Region({ params, searchParams }: Props) {
               </PopoverTrigger>
               <PopoverContent className="border-zinc-700 bg-zinc-800 text-white">
                 <p>
-                  The database is updated automatically every ~10 seconds. Press
-                  the fetch button to fetch the latest dodges from the database
-                  or enable auto-fetch to automatically fetch the latest dodges
-                  every 15 seconds.
+                  The database is updated automatically every 5-10 seconds.
+                  Press the fetch button to fetch the latest dodges from the
+                  database or enable auto-fetch to automatically fetch the
+                  latest dodges every 10 seconds.
                 </p>
               </PopoverContent>
             </Popover>
