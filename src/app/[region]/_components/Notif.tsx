@@ -17,10 +17,10 @@ export default function Notif() {
   return (
     <div className="mx-auto mt-2 flex w-[95%] items-center justify-between gap-1 rounded-md border-4 border-zinc-800 bg-green-900/50 px-2 py-1">
       <div className="flex items-center gap-2">
-        <Sparkles className="size-14 sm:size-6" />
+        <Sparkles className="size-14 text-yellow-600 sm:size-6" />
         <p>
-          <b>Improved dodge detection!</b> Most new dodges are now detected
-          within just 5 seconds.
+          <b>Improved dodge detection!</b> Dodges are now detected within just 5
+          seconds during normal operation.
         </p>
       </div>
       <X
