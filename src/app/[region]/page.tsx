@@ -1,3 +1,4 @@
+import { autoFetchInterval } from "@/src/autoFetch";
 import AutoFetchSwitch from "@/src/components/AutoFetchSwitch";
 import DodgeList from "@/src/components/DodgeList";
 import FetchButton from "@/src/components/FetchButton";
@@ -53,13 +54,22 @@ export default async function Region({ params, searchParams }: Props) {
               <PopoverTrigger>
                 <HelpCircleIcon className="md:size-6" />
               </PopoverTrigger>
-              <PopoverContent className="border-zinc-700 bg-zinc-800 text-white">
-                <p>
-                  The database is updated automatically every 5-10 seconds.
-                  Press the fetch button to fetch the latest dodges from the
-                  database or enable auto-fetch to automatically fetch the
-                  latest dodges every 10 seconds.
-                </p>
+              <PopoverContent className="w-60 border-zinc-700 bg-zinc-800 sm:w-96">
+                <div className="space-y-4">
+                  <p className="font-semibold">
+                    Dodges are automatically detected 24/7, every 5-10 seconds.
+                  </p>
+                  <ul className="list-inside list-disc space-y-2 font-light">
+                    <li>
+                      Press the <span className="font-semibold">Fetch</span>{" "}
+                      button to manually get the latest dodges from the server.
+                    </li>
+                    <li>
+                      Enable auto-fetch to receive updates automatically every{" "}
+                      {autoFetchInterval} seconds.
+                    </li>
+                  </ul>
+                </div>
               </PopoverContent>
             </Popover>
           </div>
