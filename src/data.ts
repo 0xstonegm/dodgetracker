@@ -233,6 +233,23 @@ export async function getLeaderboard(
       ),
     );
 
+  const dodgesSubquery = db
+    .select({
+      summonerId: dodges.summonerId,
+      region: dodges.region,
+      dodgeCount: sql<number>`COUNT(${dodges.dodgeId})`.as("dodgeCount"),
+    })
+    .from(dodges)
+    .where(
+      and(
+        eq(dodges.region, riotRegion),
+        gt(dodges.createdAt, startDate),
+        lt(dodges.createdAt, endDate),
+      ),
+    )
+    .groupBy(dodges.summonerId, dodges.region)
+    .as("dodgeCounts");
+
   const leaderboardQuery = db
     .select({
       gameName: riotIds.gameName,
@@ -244,15 +261,14 @@ export async function getLeaderboard(
       profileIconId: summoners.profileIconId,
       wins: apexTierPlayers.wins,
       losses: apexTierPlayers.losses,
-      numberOfDodges: sql<number>`COUNT(${dodges.dodgeId})`,
-      profileIconID: summoners.profileIconId,
+      numberOfDodges: dodgesSubquery.dodgeCount,
     })
-    .from(dodges)
+    .from(dodgesSubquery)
     .innerJoin(
       summoners,
       and(
-        eq(dodges.summonerId, summoners.summonerId),
-        eq(dodges.region, summoners.region),
+        eq(dodgesSubquery.summonerId, summoners.summonerId),
+        eq(dodgesSubquery.region, summoners.region),
       ),
     )
     .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
@@ -263,15 +279,20 @@ export async function getLeaderboard(
         eq(summoners.region, apexTierPlayers.region),
       ),
     )
-    .where(
-      and(
-        eq(dodges.region, riotRegion),
-        and(gt(dodges.createdAt, startDate), lt(dodges.createdAt, endDate)),
-      ),
+    .groupBy(
+      riotIds.gameName,
+      riotIds.tagLine,
+      summoners.region,
+      riotIds.lolprosSlug,
+      apexTierPlayers.rankTier,
+      apexTierPlayers.currentLp,
+      summoners.profileIconId,
+      apexTierPlayers.wins,
+      apexTierPlayers.losses,
+      dodgesSubquery.dodgeCount,
     )
-    .groupBy(riotIds.gameName, riotIds.tagLine)
     .orderBy(
-      desc(sql<number>`COUNT(${dodges.dodgeId})`),
+      desc(dodgesSubquery.dodgeCount),
       asc(sql<number>`(${apexTierPlayers.wins} + ${apexTierPlayers.losses})`),
     )
     .limit(pageSize)
