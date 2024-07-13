@@ -1,3 +1,4 @@
+import { SQL, sql } from "drizzle-orm";
 import {
   bigint,
   index,
@@ -7,6 +8,7 @@ import {
   primaryKey,
   timestamp,
   unique,
+  varbinary,
   varchar,
 } from "drizzle-orm/mysql-core";
 
@@ -147,6 +149,16 @@ export const riotIds = mysqlTable(
     puuid: varchar("puuid", { length: 255 }).notNull(),
     gameName: varchar("game_name", { length: 255 }).notNull().default(""),
     tagLine: varchar("tag_line", { length: 255 }).notNull().default(""),
+    lowerGameName: varbinary("lower_game_name", {
+      length: 255,
+    }).generatedAlwaysAs((): SQL => sql`LOWER(${riotIds.gameName})`, {
+      mode: "stored",
+    }),
+    lowerTagLine: varbinary("lower_tag_line", {
+      length: 255,
+    }).generatedAlwaysAs((): SQL => sql`LOWER(${riotIds.tagLine})`, {
+      mode: "stored",
+    }),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" })
       .defaultNow()
@@ -160,6 +172,10 @@ export const riotIds = mysqlTable(
         columns: [table.puuid],
         name: "riot_ids_puuid",
       }),
+      lowerGameNameTagLine: index("lower_game_name_tag_line").on(
+        table.lowerGameName,
+        table.lowerTagLine,
+      ),
       puuidGameNameTagLine: index("puuid_game_name_tag_line").on(
         table.puuid,
         table.gameName,

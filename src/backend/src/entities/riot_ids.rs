@@ -12,6 +12,10 @@ pub struct Model {
     pub created_at: DateTimeUtc,
     pub updated_at: DateTimeUtc,
     pub lolpros_slug: Option<String>,
+    #[sea_orm(column_type = "VarBinary(255)", nullable)]
+    pub lower_game_name: Option<Vec<u8>>,
+    #[sea_orm(column_type = "VarBinary(255)", nullable)]
+    pub lower_tag_line: Option<Vec<u8>>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

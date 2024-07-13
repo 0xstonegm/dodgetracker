@@ -75,8 +75,8 @@ export async function getDodgesByPlayer(
     .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
     .where(
       and(
-        sql<boolean>`${riotIds.gameName} = BINARY ${gameName}`,
-        sql<boolean>`${riotIds.tagLine} = BINARY ${tagLine}`,
+        sql<boolean>`${riotIds.lowerGameName} = BINARY LOWER(${gameName})`,
+        sql<boolean>`${riotIds.lowerTagLine} = BINARY LOWER(${tagLine})`,
       ),
     )
     .orderBy(desc(dodges.createdAt))
@@ -159,8 +159,8 @@ export async function getSummoner(
     )
     .where(
       and(
-        sql<boolean>`LOWER(${riotIds.gameName}) = BINARY LOWER(${gameName})`,
-        sql<boolean>`LOWER(${riotIds.tagLine}) = BINARY LOWER(${tagLine})`,
+        sql<boolean>`${riotIds.lowerGameName} = BINARY LOWER(${gameName})`,
+        sql<boolean>`${riotIds.lowerTagLine} = BINARY LOWER(${tagLine})`,
       ),
     )
     .limit(1);
@@ -181,7 +181,12 @@ export async function getDodgeCounts(gameName: string, tagLine: string) {
     .from(riotIds)
     .innerJoin(summoners, eq(riotIds.puuid, summoners.puuid))
     .innerJoin(dodges, eq(summoners.summonerId, dodges.summonerId))
-    .where(and(eq(riotIds.gameName, gameName), eq(riotIds.tagLine, tagLine)))
+    .where(
+      and(
+        sql<boolean>`${riotIds.lowerGameName} = BINARY LOWER(${gameName})`,
+        sql<boolean>`${riotIds.lowerTagLine} = BINARY LOWER(${tagLine})`,
+      ),
+    )
     .having(sql<number>`COUNT(${dodges.dodgeId}) > 0`);
 
   switch (res.length) {
