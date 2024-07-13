@@ -51,6 +51,7 @@ export async function getDodgesByPlayer(
   pageSize: number,
   page: number,
 ) {
+  console.log(gameName, tagLine, pageSize, page);
   return await db
     .select({
       dodgeId: dodges.dodgeId,
@@ -109,8 +110,8 @@ export async function getAllDodgesByPlayer(gameName: string, tagLine: string) {
     .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
     .where(
       and(
-        sql<boolean>`${riotIds.gameName} = BINARY ${gameName}`,
-        sql<boolean>`${riotIds.tagLine} = BINARY ${tagLine}`,
+        sql<boolean>`${riotIds.lowerGameName} = BINARY LOWER(${gameName})`,
+        sql<boolean>`${riotIds.lowerTagLine} = BINARY LOWER(${tagLine})`,
       ),
     )
     .orderBy(desc(dodges.createdAt));
@@ -172,6 +173,7 @@ export async function getSummoner(
 }
 
 export async function getDodgeCounts(gameName: string, tagLine: string) {
+  console.log(gameName, tagLine);
   const res = await db
     .select({
       last24Hours: sql<number>`COUNT(CASE WHEN ${dodges.createdAt} >= CURRENT_TIMESTAMP - INTERVAL 1 DAY THEN 1 END)`,
@@ -346,8 +348,8 @@ export async function getDodgesCount(
       .where(
         and(
           eq(dodges.region, riotRegion),
-          sql<boolean>`${riotIds.gameName} = BINARY ${gameName}`,
-          sql<boolean>`${riotIds.tagLine} = BINARY ${tagLine}`,
+          sql<boolean>`${riotIds.lowerGameName} = BINARY LOWER(${gameName})`,
+          sql<boolean>`${riotIds.lowerTagLine} = BINARY LOWER(${tagLine})`,
         ),
       );
   } else {
