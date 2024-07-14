@@ -14,6 +14,7 @@ import { supportedUserRegions } from "@/src/regions";
 import { HelpCircleIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import Notif from "./_components/Notif";
 
 interface Props {
@@ -39,7 +40,9 @@ export default async function Region({ params, searchParams }: Props) {
       <div className="flex w-full justify-end">
         <div className="border-b border-l border-zinc-900 px-2 text-sm font-light">
           <Suspense key={suspenseKey} fallback={<p>Loading player count...</p>}>
-            <RegionPlayerCount userRegion={params.region} />
+            <ErrorBoundary fallback={<p>Error loading player count.</p>}>
+              <RegionPlayerCount userRegion={params.region} />
+            </ErrorBoundary>
           </Suspense>
         </div>
       </div>
@@ -89,10 +92,21 @@ export default async function Region({ params, searchParams }: Props) {
       >
         <div className="mx-auto lg:w-3/4">
           {["euw", "eune"].includes(params.region) && <Notif />}
-          <DodgeList
-            pageNumber={pageNumber}
-            userRegion={params.region}
-          ></DodgeList>
+          <ErrorBoundary
+            fallback={
+              <div className="flex w-full items-center justify-center">
+                <p className="p-2 text-xl text-red-400">
+                  Error loading dodges. The issue will be taken care of as soon
+                  as possible.
+                </p>
+              </div>
+            }
+          >
+            <DodgeList
+              pageNumber={pageNumber}
+              userRegion={params.region}
+            ></DodgeList>
+          </ErrorBoundary>
         </div>
       </Suspense>
     </>
