@@ -28,7 +28,10 @@ export default function RegionSelector({ className }: RegionSelectorProps) {
   return (
     <>
       <select
-        className={cn("rounded-md bg-zinc-900 text-sm md:text-base", className)}
+        className={cn(
+          "cursor-pointer rounded-md bg-zinc-900 text-sm md:text-base",
+          className,
+        )}
         defaultValue={userRegion}
         onChange={handleChange}
         disabled={isPending}
