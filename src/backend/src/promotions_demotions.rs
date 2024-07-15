@@ -31,14 +31,14 @@ fn has_promoted(
 }
 
 fn has_demoted(
-    player: &apex_tier_players::Model,
-    player_demotions: Option<&Vec<ChronoDateTimeUtc>>,
+    player_in_db: &apex_tier_players::Model,
+    demotions: &HashMap<String, Vec<ChronoDateTimeUtc>>,
 ) -> bool {
-    match player_demotions {
+    match demotions.get(&player_in_db.summoner_id) {
         None => true,
         Some(demotions) => !demotions
             .iter()
-            .any(|demotion| demotion > &player.updated_at),
+            .any(|demotion| demotion > &player_in_db.updated_at),
     }
 }
 
@@ -150,9 +150,7 @@ pub async fn insert_demotions(
     let demotion_models: Vec<demotions::ActiveModel> = players_not_in_api
         .iter()
         .filter_map(|(summoner_id, player)| {
-            let player_demotions = demotions.get(summoner_id);
-
-            if has_demoted(player, player_demotions) {
+            if has_demoted(player, &demotions) {
                 Some(demotions::ActiveModel {
                     summoner_id: Set(summoner_id.clone()),
                     region: Set(region.to_string()),
