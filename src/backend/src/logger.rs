@@ -1,9 +1,20 @@
+use chrono::Utc;
 use tracing::level_filters::LevelFilter;
 use tracing_appender::{
     non_blocking::WorkerGuard,
     rolling::{RollingFileAppender, Rotation},
 };
+use tracing_subscriber::fmt::time::FormatTime;
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, Layer};
+
+struct CustomTimeFormatter;
+
+impl FormatTime for CustomTimeFormatter {
+    fn format_time(&self, w: &mut tracing_subscriber::fmt::format::Writer<'_>) -> std::fmt::Result {
+        let now = Utc::now();
+        write!(w, "{}", now.format("%y-%m-%dT%H:%M:%S%.3fZ"))
+    }
+}
 
 pub fn init() -> (WorkerGuard, WorkerGuard) {
     let file_appender = RollingFileAppender::builder()
@@ -27,8 +38,9 @@ pub fn init() -> (WorkerGuard, WorkerGuard) {
 
     let (json_non_blocking, _json_guard) = tracing_appender::non_blocking(json_appender);
 
-    // Layer for formatted logs
+    // Layer for formatted logs with custom time formatter
     let fmt_layer = fmt::layer()
+        .with_timer(CustomTimeFormatter)
         .with_target(false)
         .with_writer(non_blocking)
         .with_filter(LevelFilter::INFO);
