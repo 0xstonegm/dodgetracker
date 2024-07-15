@@ -91,7 +91,7 @@ export default async function Region({ params, searchParams }: Props) {
         }
       >
         <div className="mx-auto lg:w-3/4">
-          {["euw", "eune"].includes(params.region) && <Notif />}
+          <Notif />
           <ErrorBoundary
             fallback={
               <div className="flex w-full items-center justify-center">
