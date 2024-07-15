@@ -37,13 +37,13 @@ const SUPPORTED_REGIONS: [PlatformRoute; 5] = [
 ];
 
 lazy_static! {
-    static ref THROTTLES: HashMap<PlatformRoute, i32> = {
+    static ref THROTTLES: HashMap<PlatformRoute, Duration> = {
         let mut m = HashMap::new();
-        m.insert(PlatformRoute::EUW1, 3);
-        m.insert(PlatformRoute::EUN1, 6);
-        m.insert(PlatformRoute::NA1, 12);
-        m.insert(PlatformRoute::KR, 12);
-        m.insert(PlatformRoute::OC1, 6);
+        m.insert(PlatformRoute::EUW1, Duration::from_millis(1300));
+        m.insert(PlatformRoute::EUN1, Duration::from_millis(1300));
+        m.insert(PlatformRoute::NA1, Duration::from_millis(1300));
+        m.insert(PlatformRoute::KR, Duration::from_millis(1300));
+        m.insert(PlatformRoute::OC1, Duration::from_millis(1300));
         m
     };
 }
@@ -182,9 +182,7 @@ async fn run_region(region: PlatformRoute) {
             "Region update complete.",
         );
 
-        if let Some(sleep_duration) =
-            Duration::from_secs(THROTTLES[&region] as u64).checked_sub(t2.elapsed())
-        {
+        if let Some(sleep_duration) = THROTTLES[&region].checked_sub(t2.elapsed()) {
             sleep_thread(sleep_duration).await;
         }
     }
