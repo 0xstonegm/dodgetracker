@@ -8,7 +8,9 @@ use tracing::instrument;
 
 use crate::entities::{apex_tier_players, dodges, sea_orm_active_enums::RankTier};
 
-const DECAY_LP_LOSS: i32 = 75;
+/// The maximum amount of LP a player can lose without playing a game and still be considered a dodge.
+/// If a player loses more LP than this, it's likely due to decay.
+const DODGE_LP_CEILING: i32 = 15;
 
 #[instrument(skip_all, fields(db_players = db_players.len(), api_players = api_players.len()))]
 pub async fn find_dodges(
@@ -28,7 +30,7 @@ pub async fn find_dodges(
 
                 if new_data.league_points < old_data.current_lp
                     && new_games_played == old_games_played
-                    && old_data.current_lp - new_data.league_points != DECAY_LP_LOSS
+                    && (old_data.current_lp - new_data.league_points) <= DODGE_LP_CEILING
                 {
                     Some(dodges::ActiveModel {
                         summoner_id: ActiveValue::Set(old_data.summoner_id.clone()),
