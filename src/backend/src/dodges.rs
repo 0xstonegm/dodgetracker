@@ -287,4 +287,102 @@ mod tests {
         let dodges = find_dodges(&db_players, &api_players).await;
         assert_eq!(dodges.len(), 0);
     }
+
+    #[tokio::test]
+    async fn detects_15_lp_loss_dodges() {
+        let mut db_players = HashMap::new();
+        let mut api_players = HashMap::new();
+
+        let summoner_id_a = "summoner1".to_string();
+        let region = "EUW1".to_string();
+        let rank_tier = RankTier::Challenger;
+
+        db_players.insert(
+            summoner_id_a.clone(),
+            apex_tier_players::Model {
+                summoner_id: summoner_id_a.clone(),
+                summoner_name: Some("summoner1".to_string()),
+                region: region.clone(),
+                current_lp: 100,
+                wins: 10,
+                losses: 5,
+                rank_tier: rank_tier.clone(),
+                created_at: Utc::now(),
+                updated_at: Utc::now(),
+            },
+        );
+
+        api_players.insert(
+            summoner_id_a.clone(),
+            (
+                LeagueItem {
+                    summoner_id: summoner_id_a.clone(),
+                    league_points: 85,
+                    wins: 10,
+                    losses: 5,
+                    fresh_blood: false,
+                    mini_series: None,
+                    inactive: false,
+                    veteran: false,
+                    hot_streak: false,
+                    rank: Division::I,
+                },
+                rank_tier.clone(),
+            ),
+        );
+
+        let dodges = find_dodges(&db_players, &api_players).await;
+        assert_eq!(dodges.len(), 1);
+        let dodge = &dodges[0];
+        assert_eq!(dodge.summoner_id.as_ref(), &summoner_id_a);
+    }
+
+    #[tokio::test]
+    async fn detects_1_lp_loss_dodges() {
+        let mut db_players = HashMap::new();
+        let mut api_players = HashMap::new();
+
+        let summoner_id_a = "summoner1".to_string();
+        let region = "EUW1".to_string();
+        let rank_tier = RankTier::Challenger;
+
+        db_players.insert(
+            summoner_id_a.clone(),
+            apex_tier_players::Model {
+                summoner_id: summoner_id_a.clone(),
+                summoner_name: Some("summoner1".to_string()),
+                region: region.clone(),
+                current_lp: 1,
+                wins: 10,
+                losses: 5,
+                rank_tier: rank_tier.clone(),
+                created_at: Utc::now(),
+                updated_at: Utc::now(),
+            },
+        );
+
+        api_players.insert(
+            summoner_id_a.clone(),
+            (
+                LeagueItem {
+                    summoner_id: summoner_id_a.clone(),
+                    league_points: 0,
+                    wins: 10,
+                    losses: 5,
+                    fresh_blood: false,
+                    mini_series: None,
+                    inactive: false,
+                    veteran: false,
+                    hot_streak: false,
+                    rank: Division::I,
+                },
+                rank_tier.clone(),
+            ),
+        );
+
+        let dodges = find_dodges(&db_players, &api_players).await;
+        assert_eq!(dodges.len(), 1);
+        let dodge = &dodges[0];
+        assert_eq!(dodge.summoner_id.as_ref(), &summoner_id_a);
+    }
 }
