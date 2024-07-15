@@ -31,14 +31,14 @@ fn has_promoted(
 }
 
 fn has_demoted(
-    player_in_db: &apex_tier_players::Model,
+    player_only_in_db: &apex_tier_players::Model,
     demotions: &HashMap<String, Vec<ChronoDateTimeUtc>>,
 ) -> bool {
-    match demotions.get(&player_in_db.summoner_id) {
+    match demotions.get(&player_only_in_db.summoner_id) {
         None => true,
         Some(demotions) => !demotions
             .iter()
-            .any(|demotion| demotion > &player_in_db.updated_at),
+            .any(|demotion| demotion > &player_only_in_db.updated_at),
     }
 }
 
@@ -178,4 +178,221 @@ pub async fn insert_demotions(
     }
 
     Ok(())
+}
+
+// ----------------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------------------------
+
+#[cfg(test)]
+mod test {
+    use std::collections::HashMap;
+
+    use chrono::{DateTime, NaiveDate, TimeZone, Utc};
+    use riven::consts::PlatformRoute;
+
+    use crate::{
+        entities::{apex_tier_players, sea_orm_active_enums::RankTier},
+        promotions_demotions::{has_demoted, has_promoted},
+    };
+
+    fn str_to_utc(str: &str) -> DateTime<Utc> {
+        Utc.from_utc_datetime(
+            &NaiveDate::parse_from_str(str, "%Y-%m-%d")
+                .expect("Failed to parse date")
+                .and_hms_opt(0, 0, 0)
+                .expect("Invalid time"),
+        )
+    }
+
+    #[test]
+    fn does_detect_promotion_new_player() {
+        let db_players = HashMap::new();
+        let demotions = HashMap::new();
+
+        // This player does not exist in the DB, so it must be a new promotion
+
+        assert!(has_promoted(&"a".to_string(), &db_players, &demotions));
+    }
+
+    #[test]
+    fn does_detect_promotion_existing_player() {
+        let mut db_players = HashMap::new();
+        let summoner_id_a = "a".to_string();
+
+        db_players.insert(
+            summoner_id_a.clone(),
+            apex_tier_players::Model {
+                summoner_id: summoner_id_a.clone(),
+                summoner_name: None,
+                region: PlatformRoute::EUW1.to_string(),
+                current_lp: 100,
+                wins: 10,
+                losses: 5,
+                rank_tier: RankTier::Challenger,
+                created_at: Utc::now(),
+                updated_at: str_to_utc("2024-07-01"),
+            },
+        );
+
+        let mut demotions = HashMap::new();
+        demotions.insert(summoner_id_a.clone(), vec![str_to_utc("2024-07-02")]);
+
+        // This player has a demotion that was later than its last update time, so it must be a new
+        // promotion
+
+        assert!(has_promoted(
+            &summoner_id_a.clone(),
+            &db_players,
+            &demotions
+        ))
+    }
+
+    #[test]
+    fn does_not_detect_incorrect_promotions() {
+        let mut db_players = HashMap::new();
+        let summoner_id_a = "a".to_string();
+
+        db_players.insert(
+            summoner_id_a.clone(),
+            apex_tier_players::Model {
+                summoner_id: summoner_id_a.clone(),
+                summoner_name: None,
+                region: PlatformRoute::EUW1.to_string(),
+                current_lp: 100,
+                wins: 10,
+                losses: 5,
+                rank_tier: RankTier::Challenger,
+                created_at: Utc::now(),
+                updated_at: str_to_utc("2024-07-03"),
+            },
+        );
+
+        let mut demotions = HashMap::new();
+        demotions.insert(summoner_id_a.clone(), vec![str_to_utc("2024-07-02")]);
+
+        // This player is updated after its last demotion, meaning that it is not a new promotion
+
+        assert!(!has_promoted(
+            &summoner_id_a.clone(),
+            &db_players,
+            &demotions
+        ))
+    }
+
+    #[test]
+    fn has_promoted_handles_multiple_demotions() {
+        let mut db_players = HashMap::new();
+        let summoner_id_a = "a".to_string();
+
+        db_players.insert(
+            summoner_id_a.clone(),
+            apex_tier_players::Model {
+                summoner_id: summoner_id_a.clone(),
+                summoner_name: None,
+                region: PlatformRoute::EUW1.to_string(),
+                current_lp: 100,
+                wins: 10,
+                losses: 5,
+                rank_tier: RankTier::Challenger,
+                created_at: Utc::now(),
+                updated_at: str_to_utc("2024-07-10"),
+            },
+        );
+
+        let mut demotions = HashMap::new();
+        demotions.insert(
+            summoner_id_a.clone(),
+            vec![
+                str_to_utc("2024-07-05"),
+                str_to_utc("2024-07-02"),
+                str_to_utc("2024-07-11"),
+                str_to_utc("2024-07-07"),
+                str_to_utc("2024-07-20"),
+            ],
+        );
+
+        // This player has a demotion after its last update time, so it is a promotion
+
+        assert!(has_promoted(
+            &summoner_id_a.clone(),
+            &db_players,
+            &demotions
+        ))
+    }
+
+    #[test]
+    fn does_detect_first_demotion() {
+        let demotions = HashMap::new();
+
+        let player = apex_tier_players::Model {
+            summoner_id: "a".to_string(),
+            summoner_name: None,
+            region: PlatformRoute::EUW1.to_string(),
+            current_lp: 100,
+            wins: 10,
+            losses: 5,
+            rank_tier: RankTier::Challenger,
+            created_at: Utc::now(),
+            updated_at: str_to_utc("2024-07-10"),
+        };
+
+        // This player does not have any demotions, so it must be a new demotion, because the
+        // player is only in the DB
+
+        assert!(has_demoted(&player, &demotions));
+    }
+
+    #[test]
+    fn does_detect_demotion_with_existing_demotions() {
+        let mut demotions = HashMap::new();
+        let summoner_id_a = "a".to_string();
+
+        let player = apex_tier_players::Model {
+            summoner_id: summoner_id_a.clone(),
+            summoner_name: None,
+            region: PlatformRoute::EUW1.to_string(),
+            current_lp: 100,
+            wins: 10,
+            losses: 5,
+            rank_tier: RankTier::Challenger,
+            created_at: Utc::now(),
+            updated_at: str_to_utc("2024-07-10"),
+        };
+
+        demotions.insert(
+            summoner_id_a.clone(),
+            vec![str_to_utc("2024-07-05"), str_to_utc("2024-07-02")],
+        );
+
+        // This player has no demotion after its last update time, so it is a new demotion
+
+        assert!(has_demoted(&player, &demotions));
+    }
+
+    #[test]
+    fn does_not_detect_incorrect_demotions() {
+        let mut demotions = HashMap::new();
+        let summoner_id_a = "a".to_string();
+
+        let player = apex_tier_players::Model {
+            summoner_id: summoner_id_a.clone(),
+            summoner_name: None,
+            region: PlatformRoute::EUW1.to_string(),
+            current_lp: 100,
+            wins: 10,
+            losses: 5,
+            rank_tier: RankTier::Challenger,
+            created_at: Utc::now(),
+            updated_at: str_to_utc("2024-07-10"),
+        };
+
+        demotions.insert(
+            summoner_id_a.clone(),
+            vec![str_to_utc("2024-07-05"), str_to_utc("2024-07-15")],
+        );
+
+        // This player already has a demotion after its last update time, so it is not a new demotion
+
+        assert!(!has_demoted(&player, &demotions));
+    }
 }
