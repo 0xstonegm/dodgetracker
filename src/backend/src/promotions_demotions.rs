@@ -36,9 +36,9 @@ fn has_demoted(
 ) -> bool {
     match demotions.get(&player_only_in_db.summoner_id) {
         None => true,
-        Some(demotions) => !demotions
+        Some(demotions) => demotions
             .iter()
-            .any(|demotion| demotion > &player_only_in_db.updated_at),
+            .all(|demotion| demotion <= &player_only_in_db.updated_at),
     }
 }
 
