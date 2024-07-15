@@ -1,10 +1,11 @@
 "use client";
 
+import withNoSSR from "@/src/components/higherOrder/withNoSSR";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { Sparkles, X } from "lucide-react";
 import posthog from "posthog-js";
 
-export default function Notif() {
+function Notif() {
   const [dismissed, setDismissed] = useLocalStorage(
     "perfNotifDismissed",
     false,
@@ -33,3 +34,5 @@ export default function Notif() {
     </div>
   );
 }
+
+export default withNoSSR(Notif);
