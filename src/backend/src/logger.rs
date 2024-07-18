@@ -18,10 +18,10 @@ impl FormatTime for CustomTimeFormatter {
 
 pub fn init() -> (WorkerGuard, WorkerGuard) {
     let file_appender = RollingFileAppender::builder()
-        .rotation(Rotation::DAILY)
+        .rotation(Rotation::HOURLY)
         .filename_prefix("dodgetracker-log")
         .filename_suffix("log")
-        .max_log_files(3)
+        .max_log_files(72) // three days worth of logs
         .build(".log/")
         .unwrap();
 
