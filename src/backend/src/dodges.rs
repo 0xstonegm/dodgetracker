@@ -6,7 +6,8 @@ use sea_orm::{ActiveValue, DatabaseTransaction, EntityTrait};
 use tracing::info;
 use tracing::instrument;
 
-use crate::entities::{apex_tier_players, dodges, sea_orm_active_enums::RankTier};
+use crate::entities::sea_orm_active_enums::RankTierEnum;
+use crate::entities::{apex_tier_players, dodges};
 
 /// The maximum amount of LP a player can lose without playing a game and still be considered a dodge.
 /// If a player loses more LP than this, it's likely due to decay.
@@ -15,7 +16,7 @@ const DODGE_LP_CEILING: i32 = 15;
 #[instrument(skip_all, fields(db_players = db_players.len(), api_players = api_players.len()))]
 pub async fn find_dodges(
     db_players: &HashMap<String, apex_tier_players::Model>,
-    api_players: &HashMap<String, (LeagueItem, RankTier)>,
+    api_players: &HashMap<String, (LeagueItem, RankTierEnum)>,
 ) -> Vec<dodges::ActiveModel> {
     let t1 = Instant::now();
 
@@ -23,21 +24,21 @@ pub async fn find_dodges(
 
     let dodges: Vec<dodges::ActiveModel> = api_players
         .values()
-        .filter_map(|(new_data, _)| {
+        .filter_map(|(new_data, rank_tier)| {
             db_players.get(&new_data.summoner_id).and_then(|old_data| {
                 let old_games_played = old_data.wins + old_data.losses;
                 let new_games_played = new_data.wins + new_data.losses;
 
-                if new_data.league_points < old_data.current_lp
-                    && new_games_played == old_games_played
-                    && (old_data.current_lp - new_data.league_points) <= DODGE_LP_CEILING
+                if new_data.league_points < old_data.current_lp as i32
+                    && new_games_played == old_games_played as i32
+                    && (old_data.current_lp as i32 - new_data.league_points) <= DODGE_LP_CEILING
                 {
                     Some(dodges::ActiveModel {
                         summoner_id: ActiveValue::Set(old_data.summoner_id.clone()),
                         region: ActiveValue::Set(old_data.region.clone()),
                         lp_before: ActiveValue::Set(old_data.current_lp),
-                        lp_after: ActiveValue::Set(new_data.league_points),
-                        rank_tier: ActiveValue::Set(old_data.rank_tier.clone()),
+                        lp_after: ActiveValue::Set(new_data.league_points as i64),
+                        rank_tier: ActiveValue::Set(rank_tier.clone()),
                         at_wins: ActiveValue::Set(old_data.wins),
                         at_losses: ActiveValue::Set(old_data.losses),
                         ..Default::default()
@@ -96,7 +97,7 @@ mod tests {
     use riven::{consts::Division, models::league_v4::LeagueItem};
 
     use super::*;
-    use crate::entities::{apex_tier_players, sea_orm_active_enums::RankTier};
+    use crate::entities::apex_tier_players;
 
     #[tokio::test]
     async fn can_find_dodge() {
@@ -105,7 +106,7 @@ mod tests {
 
         let summoner_id_a = "summoner1".to_string();
         let region = "EUW1".to_string();
-        let rank_tier = RankTier::Challenger;
+        let rank_tier = RankTierEnum::Challenger;
 
         db_players.insert(
             summoner_id_a.clone(),
@@ -117,8 +118,8 @@ mod tests {
                 wins: 10,
                 losses: 5,
                 rank_tier: rank_tier.clone(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
+                created_at: Utc::now().into(),
+                updated_at: Utc::now().into(),
             },
         );
 
@@ -154,7 +155,7 @@ mod tests {
 
         let summoner_id_a = "summoner1".to_string();
         let region = "EUW1".to_string();
-        let rank_tier = RankTier::Challenger;
+        let rank_tier = RankTierEnum::Challenger;
 
         db_players.insert(
             summoner_id_a.clone(),
@@ -166,8 +167,8 @@ mod tests {
                 wins: 10,
                 losses: 5,
                 rank_tier: rank_tier.clone(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
+                created_at: Utc::now().into(),
+                updated_at: Utc::now().into(),
             },
         );
 
@@ -201,7 +202,7 @@ mod tests {
 
         let summoner_id_a = "summoner1".to_string();
         let region = "EUW1".to_string();
-        let rank_tier = RankTier::Challenger;
+        let rank_tier = RankTierEnum::Challenger;
 
         db_players.insert(
             summoner_id_a.clone(),
@@ -213,8 +214,8 @@ mod tests {
                 wins: 10,
                 losses: 5,
                 rank_tier: rank_tier.clone(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
+                created_at: Utc::now().into(),
+                updated_at: Utc::now().into(),
             },
         );
 
@@ -248,7 +249,7 @@ mod tests {
 
         let summoner_id_a = "summoner1".to_string();
         let region = "EUW1".to_string();
-        let rank_tier = RankTier::Challenger;
+        let rank_tier = RankTierEnum::Challenger;
 
         db_players.insert(
             summoner_id_a.clone(),
@@ -260,8 +261,8 @@ mod tests {
                 wins: 10,
                 losses: 5,
                 rank_tier: rank_tier.clone(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
+                created_at: Utc::now().into(),
+                updated_at: Utc::now().into(),
             },
         );
 
@@ -295,7 +296,7 @@ mod tests {
 
         let summoner_id_a = "summoner1".to_string();
         let region = "EUW1".to_string();
-        let rank_tier = RankTier::Challenger;
+        let rank_tier = RankTierEnum::Challenger;
 
         db_players.insert(
             summoner_id_a.clone(),
@@ -307,8 +308,8 @@ mod tests {
                 wins: 10,
                 losses: 5,
                 rank_tier: rank_tier.clone(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
+                created_at: Utc::now().into(),
+                updated_at: Utc::now().into(),
             },
         );
 
@@ -344,7 +345,7 @@ mod tests {
 
         let summoner_id_a = "summoner1".to_string();
         let region = "EUW1".to_string();
-        let rank_tier = RankTier::Challenger;
+        let rank_tier = RankTierEnum::Challenger;
 
         db_players.insert(
             summoner_id_a.clone(),
@@ -356,8 +357,8 @@ mod tests {
                 wins: 10,
                 losses: 5,
                 rank_tier: rank_tier.clone(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
+                created_at: Utc::now().into(),
+                updated_at: Utc::now().into(),
             },
         );
 

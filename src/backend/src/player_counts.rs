@@ -7,10 +7,8 @@ use sea_orm::{
 use tracing::info;
 use tracing::instrument;
 
-use crate::entities::{
-    player_counts,
-    sea_orm_active_enums::RankTier::{Challenger, Grandmaster, Master},
-};
+use crate::entities::player_counts;
+use crate::entities::sea_orm_active_enums::RankTierEnum;
 
 async fn get_latest_update_time(
     region: PlatformRoute,
@@ -21,7 +19,7 @@ async fn get_latest_update_time(
         .order_by(player_counts::Column::Id, sea_orm::Order::Desc)
         .one(txn)
         .await?
-        .map(|model| model.at_time))
+        .map(|model| model.at_time.into()))
 }
 
 #[instrument(skip_all, fields(m = master_count, gm = grandmaster_count, c = challenger_count))]
@@ -48,20 +46,20 @@ pub async fn update_player_counts(
     let counts = [
         player_counts::ActiveModel {
             region: Set(region.to_string()),
-            rank_tier: Set(Master),
-            player_count: Set(master_count as i32),
+            rank_tier: Set(RankTierEnum::Master),
+            player_count: Set(master_count as i64),
             ..Default::default()
         },
         player_counts::ActiveModel {
             region: Set(region.to_string()),
-            rank_tier: Set(Grandmaster),
-            player_count: Set(grandmaster_count as i32),
+            rank_tier: Set(RankTierEnum::Grandmaster),
+            player_count: Set(grandmaster_count as i64),
             ..Default::default()
         },
         player_counts::ActiveModel {
             region: Set(region.to_string()),
-            rank_tier: Set(Challenger),
-            player_count: Set(challenger_count as i32),
+            rank_tier: Set(RankTierEnum::Challenger),
+            player_count: Set(challenger_count as i64),
             ..Default::default()
         },
     ];

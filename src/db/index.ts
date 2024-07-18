@@ -1,24 +1,12 @@
 import "dotenv/config";
-import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Client } from "pg";
 
-const poolConnection = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-  timezone: "Z",
-  connectionLimit: 5,
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
 });
 
-type Drizzle = ReturnType<typeof drizzle>;
-const customGlobal = globalThis as { db?: Drizzle };
-
-const isProduction = process.env.NODE_ENV === "production";
-
-const db: Drizzle = customGlobal.db ?? drizzle(poolConnection);
-if (!isProduction) {
-  customGlobal.db = db;
-}
+await client.connect();
+const db = drizzle(client);
 
 export { db };

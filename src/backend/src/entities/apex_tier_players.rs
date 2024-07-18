@@ -2,22 +2,22 @@
 
 use sea_orm::entity::prelude::*;
 
-use super::sea_orm_active_enums::RankTier;
+use super::sea_orm_active_enums::RankTierEnum;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "apex_tier_players")]
+#[sea_orm(schema_name = "dodgetracker", table_name = "apex_tier_players")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub summoner_id: String,
     pub summoner_name: Option<String>,
     #[sea_orm(primary_key, auto_increment = false)]
     pub region: String,
-    pub rank_tier: RankTier,
-    pub current_lp: i32,
-    pub created_at: DateTimeUtc,
-    pub updated_at: DateTimeUtc,
-    pub wins: i32,
-    pub losses: i32,
+    pub current_lp: i64,
+    pub created_at: DateTimeWithTimeZone,
+    pub updated_at: DateTimeWithTimeZone,
+    pub wins: i64,
+    pub losses: i64,
+    pub rank_tier: RankTierEnum,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

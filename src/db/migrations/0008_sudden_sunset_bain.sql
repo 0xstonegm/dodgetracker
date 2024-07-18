@@ -1,1 +1,0 @@
-CREATE INDEX `summoner_id_region` ON `promotions` (`summoner_id`,`region`);

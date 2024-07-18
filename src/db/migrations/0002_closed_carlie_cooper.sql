@@ -1,1 +1,0 @@
-ALTER TABLE `summoners` MODIFY COLUMN `profile_icon_id` int NOT NULL;

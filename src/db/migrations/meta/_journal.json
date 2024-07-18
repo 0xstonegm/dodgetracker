@@ -1,117 +1,12 @@
 {
-  "version": "6",
+  "version": "7",
   "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1715537007111,
-      "tag": "0000_grey_dust",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1715608902613,
-      "tag": "0001_tiny_rictor",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1715610231424,
-      "tag": "0002_closed_carlie_cooper",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1715610611684,
-      "tag": "0003_past_slipstream",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1715677435902,
-      "tag": "0004_tricky_eternity",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1715874603158,
-      "tag": "0005_funny_scarlet_spider",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1715876245114,
-      "tag": "0006_hesitant_colossus",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "5",
-      "when": 1715876759770,
-      "tag": "0007_mysterious_madelyne_pryor",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "5",
-      "when": 1716725793752,
-      "tag": "0008_sudden_sunset_bain",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "5",
-      "when": 1716726036778,
-      "tag": "0009_mysterious_dark_phoenix",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "5",
-      "when": 1720450382671,
-      "tag": "0010_groovy_maverick",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "5",
-      "when": 1720456467971,
-      "tag": "0011_overconfident_lilandra",
-      "breakpoints": true
-    },
-    {
-      "idx": 12,
-      "version": "5",
-      "when": 1720456616587,
-      "tag": "0012_overjoyed_the_hood",
-      "breakpoints": true
-    },
-    {
-      "idx": 13,
-      "version": "5",
-      "when": 1720456738782,
-      "tag": "0013_classy_goliath",
-      "breakpoints": true
-    },
-    {
-      "idx": 14,
-      "version": "5",
-      "when": 1720459647835,
-      "tag": "0014_silky_sinister_six",
-      "breakpoints": true
-    },
-    {
-      "idx": 15,
-      "version": "5",
-      "when": 1720891310482,
-      "tag": "0015_bright_iceman",
+      "version": "7",
+      "when": 1721327328234,
+      "tag": "0000_nebulous_fenris",
       "breakpoints": true
     }
   ]

@@ -1,2 +1,0 @@
-CREATE INDEX `region_created_at_dodge_id` ON `dodges` (`region`,`created_at`,`dodge_id`);--> statement-breakpoint
-CREATE INDEX `puuid_summoner_id_region` ON `summoners` (`puuid`,`summoner_id`,`region`);

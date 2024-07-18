@@ -2,16 +2,16 @@ import "dotenv/config";
 import { type Config } from "drizzle-kit";
 
 export default {
-  dialect: "mysql",
+  dialect: "postgresql",
   schema: "./src/db/schema.ts",
   out: "./src/db/migrations/",
-  dbCredentials: {
-    host: process.env.DB_HOST!,
-    user: process.env.DB_USER!,
-    port: parseInt(process.env.DB_PORT ?? "3306", 10),
-    password: process.env.DB_PASS!,
-    database: process.env.DB_NAME!,
+  introspect: {
+    casing: "camel",
   },
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+  },
+  schemaFilter: ["public", "dodgetracker"],
   strict: true,
   verbose: true,
 } satisfies Config;

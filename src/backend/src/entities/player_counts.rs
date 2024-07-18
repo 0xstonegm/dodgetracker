@@ -2,17 +2,17 @@
 
 use sea_orm::entity::prelude::*;
 
-use super::sea_orm_active_enums::RankTier;
+use super::sea_orm_active_enums::RankTierEnum;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "player_counts")]
+#[sea_orm(schema_name = "dodgetracker", table_name = "player_counts")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i32,
+    pub id: i64,
     pub region: String,
-    pub player_count: i32,
-    pub rank_tier: RankTier,
-    pub at_time: DateTimeUtc,
+    pub player_count: i64,
+    pub at_time: DateTimeWithTimeZone,
+    pub rank_tier: RankTierEnum,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

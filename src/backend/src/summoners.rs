@@ -47,7 +47,7 @@ pub async fn upsert_summoners(
                 summoner_id: Set(Some(s.id.clone())),
                 region: Set(region.to_string()),
                 account_id: Set(Some(s.account_id.clone())),
-                profile_icon_id: Set(s.profile_icon_id),
+                profile_icon_id: Set(s.profile_icon_id as i64),
                 summoner_level: Set(s.summoner_level),
                 ..Default::default()
             }),

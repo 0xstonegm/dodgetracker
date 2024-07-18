@@ -3,17 +3,17 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "summoners")]
+#[sea_orm(schema_name = "dodgetracker", table_name = "summoners")]
 pub struct Model {
     pub summoner_id: Option<String>,
     pub region: String,
     pub account_id: Option<String>,
-    pub profile_icon_id: i32,
+    pub profile_icon_id: i64,
     #[sea_orm(primary_key, auto_increment = false)]
     pub puuid: String,
     pub summoner_level: i64,
-    pub created_at: DateTimeUtc,
-    pub updated_at: DateTimeUtc,
+    pub created_at: DateTimeWithTimeZone,
+    pub updated_at: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

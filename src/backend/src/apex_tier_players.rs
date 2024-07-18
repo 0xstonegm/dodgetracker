@@ -12,7 +12,7 @@ use tracing::instrument;
 
 use crate::config::INSERT_CHUNK_SIZE;
 use crate::entities::apex_tier_players;
-use crate::entities::sea_orm_active_enums::RankTier;
+use crate::entities::sea_orm_active_enums::RankTierEnum;
 use crate::riot_api::RIOT_API;
 use crate::util::with_timeout;
 
@@ -47,7 +47,7 @@ pub async fn get_players_from_db(
 pub async fn get_players_from_api(
     region: PlatformRoute,
 ) -> Result<(
-    HashMap<String, (LeagueItem, RankTier)>,
+    HashMap<String, (LeagueItem, RankTierEnum)>,
     (usize, usize, usize),
 )> {
     let t1 = Instant::now();
@@ -94,21 +94,21 @@ pub async fn get_players_from_api(
         challenger_result.entries.len(),
     );
 
-    let result: HashMap<String, (LeagueItem, RankTier)> = master_result
+    let result: HashMap<String, (LeagueItem, RankTierEnum)> = master_result
         .entries
         .into_iter()
-        .map(|entry| (entry.summoner_id.clone(), (entry, RankTier::Master)))
-        .chain(
-            grandmaster_result
-                .entries
-                .into_iter()
-                .map(|entry| (entry.summoner_id.clone(), (entry, RankTier::Grandmaster))),
-        )
+        .map(|entry| (entry.summoner_id.clone(), (entry, RankTierEnum::Master)))
+        .chain(grandmaster_result.entries.into_iter().map(|entry| {
+            (
+                entry.summoner_id.clone(),
+                (entry, RankTierEnum::Grandmaster),
+            )
+        }))
         .chain(
             challenger_result
                 .entries
                 .into_iter()
-                .map(|entry| (entry.summoner_id.clone(), (entry, RankTier::Challenger))),
+                .map(|entry| (entry.summoner_id.clone(), (entry, RankTierEnum::Challenger))),
         )
         .collect();
 
@@ -124,7 +124,7 @@ pub async fn get_players_from_api(
 
 #[instrument(skip_all, fields(players = players.len()))]
 pub async fn upsert_players(
-    players: &HashMap<String, (LeagueItem, RankTier)>,
+    players: &HashMap<String, (LeagueItem, RankTierEnum)>,
     region: PlatformRoute,
     txn: &DatabaseTransaction,
 ) -> Result<()> {
@@ -136,9 +136,9 @@ pub async fn upsert_players(
             summoner_id: ActiveValue::Set(player.summoner_id.clone()),
             region: ActiveValue::Set(region.to_string()),
             rank_tier: ActiveValue::Set(tier.to_owned()),
-            wins: ActiveValue::Set(player.wins),
-            losses: ActiveValue::Set(player.losses),
-            current_lp: ActiveValue::Set(player.league_points),
+            wins: ActiveValue::Set(player.wins as i64),
+            losses: ActiveValue::Set(player.losses as i64),
+            current_lp: ActiveValue::Set(player.league_points as i64),
             ..Default::default()
         })
         .collect();

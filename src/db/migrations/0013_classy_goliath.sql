@@ -1,1 +1,0 @@
-CREATE INDEX `summoner_id` ON `summoners` (`summoner_id`);

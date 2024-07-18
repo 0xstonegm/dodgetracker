@@ -1,9 +1,9 @@
 use std::{collections::HashMap, time::Instant};
 
 use anyhow::Result;
+use chrono::{DateTime, FixedOffset};
 use riven::{consts::PlatformRoute, models::league_v4::LeagueItem};
 use sea_orm::{
-    prelude::{ChronoDateTimeUtc, DateTimeUtc},
     ActiveValue::Set,
     ColumnTrait, DatabaseTransaction, EntityTrait, QueryFilter,
 };
@@ -11,13 +11,13 @@ use tracing::{info, instrument};
 
 use crate::{
     config::INSERT_CHUNK_SIZE,
-    entities::{apex_tier_players, demotions, promotions, sea_orm_active_enums::RankTier},
+    entities::{apex_tier_players, demotions, promotions, sea_orm_active_enums::RankTierEnum},
 };
 
 fn has_promoted(
     summoner_id: &String,
     db_players: &HashMap<String, apex_tier_players::Model>,
-    demotions: &HashMap<String, Vec<ChronoDateTimeUtc>>,
+    demotions: &HashMap<String, Vec<DateTime<FixedOffset>>>,
 ) -> bool {
     match db_players.get(summoner_id) {
         None => true,
@@ -32,7 +32,7 @@ fn has_promoted(
 
 fn has_demoted(
     player_only_in_db: &apex_tier_players::Model,
-    demotions: &HashMap<String, Vec<ChronoDateTimeUtc>>,
+    demotions: &HashMap<String, Vec<DateTime<FixedOffset>>>,
 ) -> bool {
     match demotions.get(&player_only_in_db.summoner_id) {
         None => true,
@@ -47,7 +47,7 @@ fn has_demoted(
 async fn get_demotions(
     region: PlatformRoute,
     txn: &DatabaseTransaction,
-) -> Result<HashMap<String, Vec<ChronoDateTimeUtc>>> {
+) -> Result<HashMap<String, Vec<DateTime<FixedOffset>>>> {
     let t1 = Instant::now();
 
     info!("Getting demotions from DB...");
@@ -58,7 +58,7 @@ async fn get_demotions(
 
     let result = demotions.into_iter().fold(
         HashMap::new(),
-        |mut acc: HashMap<String, Vec<DateTimeUtc>>, demotion| {
+        |mut acc: HashMap<String, Vec<DateTime<FixedOffset>>>, demotion| {
             acc.entry(demotion.summoner_id)
                 .or_default()
                 .push(demotion.created_at);
@@ -78,7 +78,7 @@ async fn get_demotions(
 
 #[instrument(skip_all, fields(api_players = api_players.len(), db_players = db_players.len()))]
 pub async fn insert_promotions(
-    api_players: &HashMap<String, (LeagueItem, RankTier)>,
+    api_players: &HashMap<String, (LeagueItem, RankTierEnum)>,
     db_players: &HashMap<String, apex_tier_players::Model>,
     region: PlatformRoute,
     txn: &DatabaseTransaction,
@@ -95,8 +95,8 @@ pub async fn insert_promotions(
                 Some(promotions::ActiveModel {
                     summoner_id: Set(summoner_id.clone()),
                     region: Set(region.to_string()),
-                    at_wins: Set(stats.wins),
-                    at_losses: Set(stats.losses),
+                    at_wins: Set(stats.wins as i64),
+                    at_losses: Set(stats.losses as i64),
                     ..Default::default()
                 })
             } else {
@@ -122,7 +122,7 @@ pub async fn insert_promotions(
 
 #[instrument(skip_all, fields(api_players = api_players.len(), db_players = db_players.len()))]
 pub async fn insert_demotions(
-    api_players: &HashMap<String, (LeagueItem, RankTier)>,
+    api_players: &HashMap<String, (LeagueItem, RankTierEnum)>,
     db_players: &HashMap<String, apex_tier_players::Model>,
     region: PlatformRoute,
     txn: &DatabaseTransaction,
@@ -187,21 +187,22 @@ pub async fn insert_demotions(
 mod test {
     use std::collections::HashMap;
 
-    use chrono::{DateTime, NaiveDate, TimeZone, Utc};
+    use chrono::{DateTime, FixedOffset, NaiveDate, TimeZone, Utc};
     use riven::consts::PlatformRoute;
 
     use crate::{
-        entities::{apex_tier_players, sea_orm_active_enums::RankTier},
+        entities::{apex_tier_players, sea_orm_active_enums::RankTierEnum},
         promotions_demotions::{has_demoted, has_promoted},
     };
 
-    fn str_to_utc(str: &str) -> DateTime<Utc> {
+    fn str_to_utc(str: &str) -> DateTime<FixedOffset> {
         Utc.from_utc_datetime(
             &NaiveDate::parse_from_str(str, "%Y-%m-%d")
                 .expect("Failed to parse date")
                 .and_hms_opt(0, 0, 0)
                 .expect("Invalid time"),
         )
+        .into()
     }
 
     #[test]
@@ -228,8 +229,8 @@ mod test {
                 current_lp: 100,
                 wins: 10,
                 losses: 5,
-                rank_tier: RankTier::Challenger,
-                created_at: Utc::now(),
+                rank_tier: RankTierEnum::Challenger,
+                created_at: Utc::now().into(),
                 updated_at: str_to_utc("2024-07-01"),
             },
         );
@@ -261,8 +262,8 @@ mod test {
                 current_lp: 100,
                 wins: 10,
                 losses: 5,
-                rank_tier: RankTier::Challenger,
-                created_at: Utc::now(),
+                rank_tier: RankTierEnum::Challenger,
+                created_at: Utc::now().into(),
                 updated_at: str_to_utc("2024-07-03"),
             },
         );
@@ -293,8 +294,8 @@ mod test {
                 current_lp: 100,
                 wins: 10,
                 losses: 5,
-                rank_tier: RankTier::Challenger,
-                created_at: Utc::now(),
+                rank_tier: RankTierEnum::Challenger,
+                created_at: Utc::now().into(),
                 updated_at: str_to_utc("2024-07-10"),
             },
         );
@@ -331,8 +332,8 @@ mod test {
             current_lp: 100,
             wins: 10,
             losses: 5,
-            rank_tier: RankTier::Challenger,
-            created_at: Utc::now(),
+            rank_tier: RankTierEnum::Challenger,
+            created_at: Utc::now().into(),
             updated_at: str_to_utc("2024-07-10"),
         };
 
@@ -354,8 +355,8 @@ mod test {
             current_lp: 100,
             wins: 10,
             losses: 5,
-            rank_tier: RankTier::Challenger,
-            created_at: Utc::now(),
+            rank_tier: RankTierEnum::Challenger,
+            created_at: Utc::now().into(),
             updated_at: str_to_utc("2024-07-10"),
         };
 
@@ -381,8 +382,8 @@ mod test {
             current_lp: 100,
             wins: 10,
             losses: 5,
-            rank_tier: RankTier::Challenger,
-            created_at: Utc::now(),
+            rank_tier: RankTierEnum::Challenger,
+            created_at: Utc::now().into(),
             updated_at: str_to_utc("2024-07-10"),
         };
 

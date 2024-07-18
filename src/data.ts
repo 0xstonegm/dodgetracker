@@ -76,8 +76,8 @@ export async function getDodgesByPlayer(
     .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
     .where(
       and(
-        sql<boolean>`${riotIds.lowerGameName} = BINARY LOWER(${gameName})`,
-        sql<boolean>`${riotIds.lowerTagLine} = BINARY LOWER(${tagLine})`,
+        sql<boolean>`${riotIds.lowerGameName} = LOWER(${gameName})`,
+        sql<boolean>`${riotIds.lowerTagLine} = LOWER(${tagLine})`,
       ),
     )
     .orderBy(desc(dodges.createdAt))
@@ -110,8 +110,8 @@ export async function getAllDodgesByPlayer(gameName: string, tagLine: string) {
     .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
     .where(
       and(
-        sql<boolean>`${riotIds.lowerGameName} = BINARY LOWER(${gameName})`,
-        sql<boolean>`${riotIds.lowerTagLine} = BINARY LOWER(${tagLine})`,
+        sql<boolean>`${riotIds.lowerGameName} = LOWER(${gameName})`,
+        sql<boolean>`${riotIds.lowerTagLine} = LOWER(${tagLine})`,
       ),
     )
     .orderBy(desc(dodges.createdAt));
@@ -160,8 +160,8 @@ export async function getSummoner(
     )
     .where(
       and(
-        sql<boolean>`${riotIds.lowerGameName} = BINARY LOWER(${gameName})`,
-        sql<boolean>`${riotIds.lowerTagLine} = BINARY LOWER(${tagLine})`,
+        sql<boolean>`${riotIds.lowerGameName} = LOWER(${gameName})`,
+        sql<boolean>`${riotIds.lowerTagLine} = LOWER(${tagLine})`,
       ),
     )
     .limit(1);
@@ -176,17 +176,17 @@ export async function getDodgeCounts(gameName: string, tagLine: string) {
   console.log(gameName, tagLine);
   const res = await db
     .select({
-      last24Hours: sql<number>`COUNT(CASE WHEN ${dodges.createdAt} >= CURRENT_TIMESTAMP - INTERVAL 1 DAY THEN 1 END)`,
-      last7Days: sql<number>`COUNT(CASE WHEN ${dodges.createdAt} >= CURRENT_TIMESTAMP - INTERVAL 7 DAY THEN 1 END)`,
-      last30Days: sql<number>`COUNT(CASE WHEN ${dodges.createdAt} >= CURRENT_TIMESTAMP - INTERVAL 30 DAY THEN 1 END)`,
+      last24Hours: sql<number>`COUNT(CASE WHEN ${dodges.createdAt} >= CURRENT_TIMESTAMP - INTERVAL '1 day' THEN 1 END)`,
+      last7Days: sql<number>`COUNT(CASE WHEN ${dodges.createdAt} >= CURRENT_TIMESTAMP - INTERVAL '7 day' THEN 1 END)`,
+      last30Days: sql<number>`COUNT(CASE WHEN ${dodges.createdAt} >= CURRENT_TIMESTAMP - INTERVAL '30 day' THEN 1 END)`,
     })
     .from(riotIds)
     .innerJoin(summoners, eq(riotIds.puuid, summoners.puuid))
     .innerJoin(dodges, eq(summoners.summonerId, dodges.summonerId))
     .where(
       and(
-        sql<boolean>`${riotIds.lowerGameName} = BINARY LOWER(${gameName})`,
-        sql<boolean>`${riotIds.lowerTagLine} = BINARY LOWER(${tagLine})`,
+        sql<boolean>`${riotIds.lowerGameName} = LOWER(${gameName})`,
+        sql<boolean>`${riotIds.lowerTagLine} = LOWER(${tagLine})`,
       ),
     )
     .having(sql<number>`COUNT(${dodges.dodgeId}) > 0`);
@@ -348,8 +348,8 @@ export async function getDodgesCount(
       .where(
         and(
           eq(dodges.region, riotRegion),
-          sql<boolean>`${riotIds.lowerGameName} = BINARY LOWER(${gameName})`,
-          sql<boolean>`${riotIds.lowerTagLine} = BINARY LOWER(${tagLine})`,
+          sql<boolean>`${riotIds.lowerGameName} = LOWER(${gameName})`,
+          sql<boolean>`${riotIds.lowerTagLine} = LOWER(${tagLine})`,
         ),
       );
   } else {
@@ -380,7 +380,7 @@ export async function getLatestPlayerCount(riotRegion: string): Promise<{
         eq(playerCounts.rankTier, "MASTER"),
       ),
     )
-    .orderBy(desc(playerCounts.playerCountId))
+    .orderBy(desc(playerCounts.id))
     .limit(1);
   const grandmasterRes = await db
     .select()
@@ -391,7 +391,7 @@ export async function getLatestPlayerCount(riotRegion: string): Promise<{
         eq(playerCounts.rankTier, "GRANDMASTER"),
       ),
     )
-    .orderBy(desc(playerCounts.playerCountId))
+    .orderBy(desc(playerCounts.id))
     .limit(1);
   const challengerRes = await db
     .select()
@@ -402,7 +402,7 @@ export async function getLatestPlayerCount(riotRegion: string): Promise<{
         eq(playerCounts.rankTier, "CHALLENGER"),
       ),
     )
-    .orderBy(desc(playerCounts.playerCountId))
+    .orderBy(desc(playerCounts.id))
     .limit(1);
 
   const masterCount = masterRes[0]?.playerCount;

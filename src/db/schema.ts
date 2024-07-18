@@ -1,70 +1,44 @@
-import { SQL, sql } from "drizzle-orm";
 import {
   bigint,
+  bigserial,
   index,
-  int,
-  mysqlEnum,
-  mysqlTable,
+  pgSchema,
   primaryKey,
   timestamp,
-  unique,
-  varbinary,
+  uniqueIndex,
   varchar,
-} from "drizzle-orm/mysql-core";
+} from "drizzle-orm/pg-core";
 
-export const apexTierPlayers = mysqlTable(
-  "apex_tier_players",
-  {
-    summonerId: varchar("summoner_id", { length: 255 }).notNull(),
-    summonerName: varchar("summoner_name", { length: 32 }),
-    region: varchar("region", { length: 5 }).notNull(),
-    rankTier: mysqlEnum("rank_tier", [
-      "MASTER",
-      "GRANDMASTER",
-      "CHALLENGER",
-    ]).notNull(),
-    currentLp: int("current_lp").notNull(),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" })
-      .defaultNow()
-      .onUpdateNow()
-      .notNull(),
-    wins: int("wins").notNull().notNull(),
-    losses: int("losses").notNull().notNull(),
-  },
-  (table) => {
-    return {
-      apexTierPlayersSummonerIdRegion: primaryKey({
-        columns: [table.summonerId, table.region],
-        name: "apex_tier_players_summoner_id_region",
-      }),
-      summonerId: index("summoner_id").on(table.summonerId),
-      region: index("region").on(table.region),
-    };
-  },
-);
+export const dodgetracker = pgSchema("dodgetracker");
+export const rankTierEnum = dodgetracker.enum("rank_tier_enum", [
+  "CHALLENGER",
+  "GRANDMASTER",
+  "MASTER",
+]);
 
-export const demotions = mysqlTable(
+export const demotions = dodgetracker.table(
   "demotions",
   {
-    demotionId: int("demotion_id").autoincrement().notNull(),
+    demotionId: bigserial("demotion_id", { mode: "bigint" })
+      .primaryKey()
+      .notNull(),
     summonerId: varchar("summoner_id", { length: 255 }).notNull(),
     region: varchar("region", { length: 5 }).notNull(),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" })
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
-      .onUpdateNow()
       .notNull(),
-    atWins: int("at_wins").notNull(),
-    atLosses: int("at_losses").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    atWins: bigint("at_wins", { mode: "number" }).notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    atLosses: bigint("at_losses", { mode: "number" }).notNull(),
   },
   (table) => {
     return {
-      demotionsDemotionId: primaryKey({
-        columns: [table.demotionId],
-        name: "demotions_demotion_id",
-      }),
-      summonerIdRegion: index("summoner_id_region").on(
+      idx18293SummonerIdRegion: index("idx_18293_summoner_id_region").using(
+        "btree",
         table.summonerId,
         table.region,
       ),
@@ -72,70 +46,29 @@ export const demotions = mysqlTable(
   },
 );
 
-export const dodges = mysqlTable(
-  "dodges",
-  {
-    dodgeId: int("dodge_id").autoincrement().notNull(),
-    summonerId: varchar("summoner_id", { length: 255 }).notNull(),
-    region: varchar("region", { length: 10 }).notNull(),
-    lpBefore: int("lp_before").notNull(),
-    lpAfter: int("lp_after").notNull(),
-    rankTier: mysqlEnum("rank_tier", [
-      "MASTER",
-      "GRANDMASTER",
-      "CHALLENGER",
-    ]).notNull(),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" })
-      .defaultNow()
-      .onUpdateNow()
-      .notNull(),
-    atWins: int("at_wins").notNull(),
-    atLosses: int("at_losses").notNull(),
-  },
-  (table) => {
-    return {
-      summonerId: index("summoner_id").on(table.summonerId, table.region),
-      createdAt: index("created_at").on(table.createdAt),
-      summonerIdRegionCreatedAt: index("summoner_id_region_created_at").on(
-        table.summonerId,
-        table.region,
-        table.createdAt,
-      ),
-      dodgesDodgeId: primaryKey({
-        columns: [table.dodgeId],
-        name: "dodges_dodge_id",
-      }),
-      regionCreatedAtDodgeId: index("region_created_at_dodge_id").on(
-        table.region,
-        table.createdAt,
-        table.dodgeId,
-      ),
-    };
-  },
-);
-
-export const promotions = mysqlTable(
+export const promotions = dodgetracker.table(
   "promotions",
   {
-    promotionId: int("promotion_id").autoincrement().notNull(),
+    promotionId: bigserial("promotion_id", { mode: "bigint" })
+      .primaryKey()
+      .notNull(),
     summonerId: varchar("summoner_id", { length: 255 }).notNull(),
     region: varchar("region", { length: 5 }).notNull(),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" })
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
-      .onUpdateNow()
       .notNull(),
-    atWins: int("at_wins").notNull(),
-    atLosses: int("at_losses").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    atWins: bigint("at_wins", { mode: "number" }).notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    atLosses: bigint("at_losses", { mode: "number" }).notNull(),
   },
   (table) => {
     return {
-      promotionsPromotionId: primaryKey({
-        columns: [table.promotionId],
-        name: "promotions_promotion_id",
-      }),
-      summonerIdRegion: index("summoner_id_region").on(
+      idx18311SummonerIdRegion: index("idx_18311_summoner_id_region").using(
+        "btree",
         table.summonerId,
         table.region,
       ),
@@ -143,102 +76,156 @@ export const promotions = mysqlTable(
   },
 );
 
-export const riotIds = mysqlTable(
-  "riot_ids",
-  {
-    puuid: varchar("puuid", { length: 255 }).notNull(),
-    gameName: varchar("game_name", { length: 255 }).notNull().default(""),
-    tagLine: varchar("tag_line", { length: 255 }).notNull().default(""),
-    lowerGameName: varbinary("lower_game_name", {
-      length: 255,
-    }).generatedAlwaysAs((): SQL => sql`LOWER(${riotIds.gameName})`, {
-      mode: "stored",
-    }),
-    lowerTagLine: varbinary("lower_tag_line", {
-      length: 255,
-    }).generatedAlwaysAs((): SQL => sql`LOWER(${riotIds.tagLine})`, {
-      mode: "stored",
-    }),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" })
-      .defaultNow()
-      .onUpdateNow()
-      .notNull(),
-    lolprosSlug: varchar("lolpros_slug", { length: 255 }),
-  },
-  (table) => {
-    return {
-      riotIdsPuuid: primaryKey({
-        columns: [table.puuid],
-        name: "riot_ids_puuid",
-      }),
-      lowerGameNameTagLine: index("lower_game_name_tag_line").on(
-        table.lowerGameName,
-        table.lowerTagLine,
-      ),
-      puuidGameNameTagLine: index("puuid_game_name_tag_line").on(
-        table.puuid,
-        table.gameName,
-        table.tagLine,
-      ),
-    };
-  },
-);
-
-export const summoners = mysqlTable(
+export const summoners = dodgetracker.table(
   "summoners",
   {
     summonerId: varchar("summoner_id", { length: 255 }),
     region: varchar("region", { length: 10 }).notNull(),
     accountId: varchar("account_id", { length: 255 }),
-    profileIconId: int("profile_icon_id").notNull(),
-    puuid: varchar("puuid", { length: 255 }).notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    profileIconId: bigint("profile_icon_id", { mode: "number" }).notNull(),
+    puuid: varchar("puuid", { length: 255 }).primaryKey().notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     summonerLevel: bigint("summoner_level", { mode: "number" }).notNull(),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" })
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
-      .onUpdateNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
       .notNull(),
   },
   (table) => {
     return {
-      summonersPuuid: primaryKey({
-        columns: [table.puuid],
-        name: "summoners_puuid",
-      }),
-      summonerIdRegion: unique("summoner_id_region").on(
+      idx18325Puuid: index("idx_18325_puuid").using("btree", table.puuid),
+      idx18325PuuidSummonerIdRegion: index(
+        "idx_18325_puuid_summoner_id_region",
+      ).using("btree", table.puuid, table.summonerId, table.region),
+      idx18325Region: index("idx_18325_region").using("btree", table.region),
+      idx18325SummonerId: index("idx_18325_summoner_id").using(
+        "btree",
         table.summonerId,
-        table.region,
       ),
-      summonerId: index("summoner_id").on(table.summonerId),
-      puuid: index("puuid").on(table.puuid),
-      puuidSummonerIdRegion: index("puuid_summoner_id_region").on(
-        table.puuid,
-        table.summonerId,
-        table.region,
+      idx18325SummonerIdRegion: uniqueIndex(
+        "idx_18325_summoner_id_region",
+      ).using("btree", table.summonerId, table.region),
+    };
+  },
+);
+
+export const riotIds = dodgetracker.table(
+  "riot_ids",
+  {
+    puuid: varchar("puuid", { length: 255 }).primaryKey().notNull(),
+    gameName: varchar("game_name", { length: 255 }).default("").notNull(),
+    tagLine: varchar("tag_line", { length: 255 }).default("").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    lolprosSlug: varchar("lolpros_slug", { length: 255 }),
+    lowerGameName: varchar("lower_game_name", { length: 255 }),
+    lowerTagLine: varchar("lower_tag_line", { length: 255 }),
+  },
+  (table) => {
+    return {
+      idx18316PuuidGameNameTagLine: index(
+        "idx_18316_puuid_game_name_tag_line",
+      ).using("btree", table.puuid, table.gameName, table.tagLine),
+      lowerGameNameTagLine: index("lower_game_name_tag_line").using(
+        "btree",
+        table.lowerGameName,
+        table.lowerTagLine,
       ),
     };
   },
 );
 
-export const playerCounts = mysqlTable(
-  "player_counts",
+export const dodges = dodgetracker.table(
+  "dodges",
   {
-    playerCountId: int("id").autoincrement().notNull(),
+    dodgeId: bigserial("dodge_id", { mode: "bigint" }).primaryKey().notNull(),
+    summonerId: varchar("summoner_id", { length: 255 }).notNull(),
     region: varchar("region", { length: 10 }).notNull(),
-    playerCount: int("player_count").notNull(),
-    rankTier: mysqlEnum("rank_tier", [
-      "MASTER",
-      "GRANDMASTER",
-      "CHALLENGER",
-    ]).notNull(),
-    atTime: timestamp("at_time", { mode: "date" }).defaultNow().notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    lpBefore: bigint("lp_before", { mode: "number" }).notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    lpAfter: bigint("lp_after", { mode: "number" }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    atWins: bigint("at_wins", { mode: "number" }).notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    atLosses: bigint("at_losses", { mode: "number" }).notNull(),
+    rankTier: rankTierEnum("rank_tier").notNull(),
   },
   (table) => {
     return {
-      playerCountsPlayerCountId: primaryKey({
-        columns: [table.playerCountId],
-        name: "player_counts_player_count_id",
+      idx18299CreatedAt: index("idx_18299_created_at").using(
+        "btree",
+        table.createdAt,
+      ),
+      idx18299RegionCreatedAtDodgeId: index(
+        "idx_18299_region_created_at_dodge_id",
+      ).using("btree", table.region, table.createdAt, table.dodgeId),
+      idx18299SummonerId: index("idx_18299_summoner_id").using(
+        "btree",
+        table.summonerId,
+        table.region,
+      ),
+      idx18299SummonerIdRegionCreatedAt: index(
+        "idx_18299_summoner_id_region_created_at",
+      ).using("btree", table.summonerId, table.region, table.createdAt),
+    };
+  },
+);
+
+export const playerCounts = dodgetracker.table("player_counts", {
+  id: bigserial("id", { mode: "bigint" }).primaryKey().notNull(),
+  region: varchar("region", { length: 10 }).notNull(),
+  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+  playerCount: bigint("player_count", { mode: "number" }).notNull(),
+  atTime: timestamp("at_time", { withTimezone: true, mode: "string" })
+    .defaultNow()
+    .notNull(),
+  rankTier: rankTierEnum("rank_tier").notNull(),
+});
+
+export const apexTierPlayers = dodgetracker.table(
+  "apex_tier_players",
+  {
+    summonerId: varchar("summoner_id", { length: 255 }).notNull(),
+    summonerName: varchar("summoner_name", { length: 32 }),
+    region: varchar("region", { length: 5 }).notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    currentLp: bigint("current_lp", { mode: "number" }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    wins: bigint("wins", { mode: "number" }).notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    losses: bigint("losses", { mode: "number" }).notNull(),
+    rankTier: rankTierEnum("rank_tier").notNull(),
+  },
+  (table) => {
+    return {
+      idx18287Region: index("idx_18287_region").using("btree", table.region),
+      idx18287SummonerId: index("idx_18287_summoner_id").using(
+        "btree",
+        table.summonerId,
+      ),
+      idx18287Primary: primaryKey({
+        columns: [table.summonerId, table.region],
+        name: "idx_18287_primary",
       }),
     };
   },
