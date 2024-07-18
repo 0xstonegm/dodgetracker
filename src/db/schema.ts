@@ -24,10 +24,10 @@ export const demotions = dodgetracker.table(
       .notNull(),
     summonerId: varchar("summoner_id", { length: 255 }).notNull(),
     region: varchar("region", { length: 5 }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
       .defaultNow()
       .notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -54,10 +54,10 @@ export const promotions = dodgetracker.table(
       .notNull(),
     summonerId: varchar("summoner_id", { length: 255 }).notNull(),
     region: varchar("region", { length: 5 }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
       .defaultNow()
       .notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -87,10 +87,10 @@ export const summoners = dodgetracker.table(
     puuid: varchar("puuid", { length: 255 }).primaryKey().notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     summonerLevel: bigint("summoner_level", { mode: "number" }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
       .defaultNow()
       .notNull(),
   },
@@ -118,10 +118,10 @@ export const riotIds = dodgetracker.table(
     puuid: varchar("puuid", { length: 255 }).primaryKey().notNull(),
     gameName: varchar("game_name", { length: 255 }).default("").notNull(),
     tagLine: varchar("tag_line", { length: 255 }).default("").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
       .defaultNow()
       .notNull(),
     lolprosSlug: varchar("lolpros_slug", { length: 255 }),
@@ -152,10 +152,10 @@ export const dodges = dodgetracker.table(
     lpBefore: bigint("lp_before", { mode: "number" }).notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     lpAfter: bigint("lp_after", { mode: "number" }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
       .defaultNow()
       .notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -190,7 +190,7 @@ export const playerCounts = dodgetracker.table("player_counts", {
   region: varchar("region", { length: 10 }).notNull(),
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   playerCount: bigint("player_count", { mode: "number" }).notNull(),
-  atTime: timestamp("at_time", { withTimezone: true, mode: "string" })
+  atTime: timestamp("at_time", { withTimezone: true, mode: "date" })
     .defaultNow()
     .notNull(),
   rankTier: rankTierEnum("rank_tier").notNull(),
@@ -204,10 +204,10 @@ export const apexTierPlayers = dodgetracker.table(
     region: varchar("region", { length: 5 }).notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     currentLp: bigint("current_lp", { mode: "number" }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
       .defaultNow()
       .notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
