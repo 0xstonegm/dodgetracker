@@ -1,12 +1,19 @@
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { Client } from "pg";
+import { Pool } from "pg";
 
-const client = new Client({
+const poolConnection = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-await client.connect();
-const db = drizzle(client);
+type Drizzle = ReturnType<typeof drizzle>;
+const customGlobal = globalThis as { db?: Drizzle };
+
+const isProduction = process.env.NODE_ENV === "production";
+
+const db: Drizzle = customGlobal.db ?? drizzle(poolConnection);
+if (!isProduction) {
+  customGlobal.db = db;
+}
 
 export { db };
