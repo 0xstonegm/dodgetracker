@@ -86,8 +86,8 @@ export async function GET(request: NextRequest) {
       or(
         and(
           eq(summoners.region, region.toUpperCase()),
-          like(riotIds.gameName, gameName + "%"),
-          like(riotIds.tagLine, tagLine + "%"),
+          like(riotIds.lowerGameName, gameName.toLowerCase() + "%"),
+          like(riotIds.lowerTagLine, tagLine.toLowerCase() + "%"),
         ),
         like(riotIds.lolprosSlug, gameName + "%"),
       ),
