@@ -3,10 +3,7 @@ use std::{collections::HashMap, time::Instant};
 use anyhow::Result;
 use chrono::{DateTime, FixedOffset};
 use riven::{consts::PlatformRoute, models::league_v4::LeagueItem};
-use sea_orm::{
-    ActiveValue::Set,
-    ColumnTrait, DatabaseTransaction, EntityTrait, QueryFilter,
-};
+use sea_orm::{ActiveValue::Set, ColumnTrait, DatabaseTransaction, EntityTrait, QueryFilter};
 use tracing::{info, instrument};
 
 use crate::{
