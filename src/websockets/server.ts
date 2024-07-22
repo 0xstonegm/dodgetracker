@@ -11,6 +11,7 @@ import {
   type Dodge,
   type RegionUpdate,
 } from "../lib/types";
+import logger from "./logger";
 
 type WebSocketWithRegion = WebSocket & { region: string };
 
@@ -33,7 +34,9 @@ const pgClient = new Client({
 });
 
 function broadcastDodge(dodge: Dodge) {
-  console.log("Broadcasting dodge: ", dodge);
+  logger.info(
+    `Broadcasting ${dodge.riotRegion} dodge with ID: ${dodge.dodgeId}`,
+  );
   wss.clients.forEach((client) => {
     const region = (client as WebSocketWithRegion).region;
     if (region !== dodge.riotRegion) return;
@@ -51,7 +54,7 @@ function broadcastDodge(dodge: Dodge) {
 }
 
 function broadcastRegionUpdate(regionUpdate: RegionUpdate) {
-  console.log("Broadcasting region update: ", regionUpdate);
+  logger.info(`Broadcasting region update: ${regionUpdate.region}`);
   wss.clients.forEach((client) => {
     if ((client as WebSocketWithRegion).region === regionUpdate.region) {
       if (client.readyState === WebSocket.OPEN) {
@@ -79,18 +82,18 @@ async function getLatestUpdateTime(region: string) {
   return result.rows[0].json_data;
 }
 
-pgClient.connect().catch(console.error);
+pgClient.connect().catch(logger.error);
 
 pgClient
   .query("LISTEN dodge_insert")
   .then(() => {
-    console.log("Listening for dodge_insert events");
+    logger.info("Listening for dodge_insert events");
   })
   .catch(console.error);
 pgClient
   .query("LISTEN region_update")
   .then(() => {
-    console.log("Listening for region_update events");
+    logger.info("Listening for region_update events");
   })
   .catch(console.error);
 
@@ -102,7 +105,10 @@ pgClient.on("notification", (notification) => {
       );
 
       if (!parseResult.success) {
-        console.error(parseResult.error);
+        logger.error(
+          "Error parsing dodge_insert notification: ",
+          parseResult.error,
+        );
         return;
       }
 
@@ -115,7 +121,10 @@ pgClient.on("notification", (notification) => {
       );
 
       if (!parseResult.success) {
-        console.error(parseResult.error);
+        logger.error(
+          "Error parsing region_update notification: ",
+          parseResult.error,
+        );
         return;
       }
 
@@ -125,9 +134,8 @@ pgClient.on("notification", (notification) => {
 });
 
 wss.on("connection", (ws: WebSocketWithRegion, req) => {
-  console.log(
-    `${new Date().toISOString().slice(0, 19).replace("T", "-")}: Client connected`,
-  );
+  logger.info("Client connected");
+  logger.info(`Number of connected clients: ${wss.clients.size}`);
 
   const queryParams = Object.fromEntries(
     new URL(
@@ -138,7 +146,7 @@ wss.on("connection", (ws: WebSocketWithRegion, req) => {
   const queryParamResult = queryParamSchema.safeParse(queryParams);
 
   if (!queryParamResult.success) {
-    console.error(queryParamResult.error);
+    logger.error("Error parsing query params: ", queryParamResult.error);
     ws.send(
       JSON.stringify({
         error: "Invalid region",
@@ -150,11 +158,11 @@ wss.on("connection", (ws: WebSocketWithRegion, req) => {
   }
 
   ws.region = queryParamResult.data.region;
+  logger.info(`Client region detected: ${ws.region}`);
 
   getLatestUpdateTime(ws.region)
     .then((result) => {
       if (result) {
-        console.log("Latest update time: ", result);
         ws.send(
           JSON.stringify({
             type: "region_update",
@@ -166,14 +174,15 @@ wss.on("connection", (ws: WebSocketWithRegion, req) => {
     .catch(console.error);
 
   ws.on("close", () => {
-    console.log("Client disconnected");
+    logger.info("Client disconnected");
+    logger.info(`Number of connected clients: ${wss.clients.size}`);
   });
 
   ws.on("error", (error) => {
-    console.error("WebSocket error:", error);
+    logger.error("WebSocket error: ", error);
   });
 });
 
 server.listen(port, () => {
-  console.log(`Server started on port ${port}`);
+  logger.info(`Server started on port ${port}`);
 });
