@@ -15,6 +15,10 @@ export default function LastUpdate(props: { lastUpdatedAt: Date | null }) {
 
   const [ref, hovering] = useHover();
 
+  const timeDiff = props.lastUpdatedAt
+    ? timeDiffSeconds(props.lastUpdatedAt)
+    : null;
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTick((tick) => (tick + 1) % 2);
@@ -25,9 +29,9 @@ export default function LastUpdate(props: { lastUpdatedAt: Date | null }) {
 
   useEffect(() => {
     if (props.lastUpdatedAt) {
-      const currentTimeDiff = timeDiffSeconds(props.lastUpdatedAt);
       if (
-        currentTimeDiff <= 0.5 &&
+        timeDiff &&
+        timeDiff <= 0.5 &&
         (!lastHighlight || props.lastUpdatedAt > lastHighlight)
       ) {
         setHighlight(true);
@@ -35,7 +39,7 @@ export default function LastUpdate(props: { lastUpdatedAt: Date | null }) {
         setTimeout(() => setHighlight(false), 250); // Remove highlight after 250ms
       }
     }
-  }, [props.lastUpdatedAt, tick, lastHighlight]);
+  }, [props.lastUpdatedAt, tick, lastHighlight, timeDiff]);
 
   if (!props.lastUpdatedAt) return null;
 
@@ -53,7 +57,7 @@ export default function LastUpdate(props: { lastUpdatedAt: Date | null }) {
             )}
           >
             <Timer className="size-4" />
-            {timeDiffSeconds(props.lastUpdatedAt).toFixed(1)}s
+            {timeDiff && `${timeDiff.toFixed(1)}s`}
           </p>
         </p>
       </PopoverTrigger>
