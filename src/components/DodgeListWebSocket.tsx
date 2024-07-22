@@ -1,9 +1,9 @@
 "use client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import useWebSocket from "react-use-websocket";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 import { z } from "zod";
-import { Dodge, dodgeSchema, regionUpdateScema } from "../lib/types";
+import { dodgeSchema, regionUpdateScema, type Dodge } from "../lib/types";
 import { userRegionToRiotRegion } from "../regions";
 import DodgeList from "./DodgeList";
 import LastUpdate from "./LastUpdate";
@@ -71,29 +71,25 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
       .catch(console.error);
   }
 
-  const { lastJsonMessage } = useWebSocket(
+  const { lastJsonMessage, readyState } = useWebSocket(
     `${websocketUrl}/?region=${riotRegion}`,
     {
       onOpen: () => {
-        console.log("WebSocket connection opened");
         invalidateQuery();
       },
       onClose: () => {
-        console.log("WebSocket connection closed");
         invalidateQuery();
       },
       onError: (event) => {
-        return console.error("WebSocket error", event);
+        console.error("WebSocket error", event);
       },
       shouldReconnect: (_) => true,
     },
   );
 
-  // Effect to handle incoming messages
   useEffect(() => {
     if (lastJsonMessage !== null) {
       try {
-        console.log("Received WebSocket message:", lastJsonMessage);
         const result = websocketMessageSchema.safeParse(lastJsonMessage);
         if (!result.success) {
           console.error("Error parsing WebSocket message:", result.error);
@@ -126,7 +122,9 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
   return (
     <>
       <div className="flex items-center justify-center">
-        <LastUpdate lastUpdatedAt={lastUpdate} />
+        {readyState == ReadyState.OPEN && (
+          <LastUpdate lastUpdatedAt={lastUpdate} />
+        )}
       </div>
       <DodgeList
         dodges={dodges}
