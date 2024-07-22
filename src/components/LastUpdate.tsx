@@ -65,10 +65,13 @@ export default function LastUpdate(props: { lastUpdatedAt: Date | null }) {
         <div className="space-y-4">
           <ul className="list-inside list-disc space-y-2">
             <li>
-              Dodges are automatically detected 24/7. The dodge list is updated
-              in <b>real-time</b>, no need to refresh.
+              New dodges are sent from the server in <b>real-time</b>, no need
+              to refresh the page.
             </li>
-            <li>The time since the last dodge check is displayed above.</li>
+            <li>
+              The time since the last dodge check on the server is displayed
+              above.
+            </li>
           </ul>
         </div>
       </PopoverContent>
