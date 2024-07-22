@@ -1,4 +1,4 @@
-import DodgeList from "@/src/components/DodgeList";
+import DodgeListSSR from "@/src/components/DodgeListSSR";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
 import StatSiteButton from "@/src/components/StatSiteButton";
 import {
@@ -142,7 +142,7 @@ export default async function Summoner({
               }
             >
               <div className="mx-auto lg:w-5/6">
-                <DodgeList
+                <DodgeListSSR
                   userRegion={region}
                   pageNumber={pageNumber}
                   gameName={gameName}
