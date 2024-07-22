@@ -1,5 +1,6 @@
 "use client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import posthog from "posthog-js";
 import { useEffect, useMemo, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { z } from "zod";
@@ -81,6 +82,7 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
         invalidateQuery();
       },
       onError: (event) => {
+        posthog.capture("websocket_error", { event });
         console.error("WebSocket error", event);
       },
       shouldReconnect: (_) => true,
@@ -90,12 +92,7 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
   useEffect(() => {
     if (lastJsonMessage !== null) {
       try {
-        const result = websocketMessageSchema.safeParse(lastJsonMessage);
-        if (!result.success) {
-          console.error("Error parsing WebSocket message:", result.error);
-          return;
-        }
-        const message = result.data;
+        const message = websocketMessageSchema.parse(lastJsonMessage);
 
         if (message.type === "region_update") {
           setLastUpdate(message.data.update_time);
@@ -105,6 +102,7 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
           });
         }
       } catch (error) {
+        posthog.capture("websocket_msg_parse_error", { error });
         console.error("Error parsing WebSocket message:", error);
       }
     }
