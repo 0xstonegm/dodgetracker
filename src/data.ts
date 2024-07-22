@@ -51,7 +51,6 @@ export async function getDodgesByPlayer(
   pageSize: number,
   page: number,
 ): Promise<Dodge[]> {
-  console.log(gameName, tagLine, pageSize, page);
   return await db
     .select({
       dodgeId: dodges.dodgeId,
@@ -173,7 +172,6 @@ export async function getSummoner(
 }
 
 export async function getDodgeCounts(gameName: string, tagLine: string) {
-  console.log(gameName, tagLine);
   const res = await db
     .select({
       last24Hours: sql<number>`COUNT(CASE WHEN ${dodges.createdAt} >= CURRENT_TIMESTAMP - INTERVAL '1 day' THEN 1 END)`,
