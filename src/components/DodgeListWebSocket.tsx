@@ -27,6 +27,7 @@ const dodgeMessageSchema = z.object({
 });
 const regionUpdateMessage = z.object({
   type: z.literal("region_update"),
+  serverTime: z.string().datetime({ offset: true }).pipe(z.coerce.date()),
   data: regionUpdateScema,
 });
 const websocketMessageSchema = z.discriminatedUnion("type", [
@@ -50,7 +51,10 @@ async function fetchDodges(riotRegion: string) {
 export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
   const riotRegion = userRegionToRiotRegion(props.userRegion);
   const queryKey = useMemo(() => ["dodges", riotRegion], [riotRegion]);
-  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [lastUpdate, setLastUpdate] = useState<{
+    lastUpdateTime: Date;
+    serverTime: Date;
+  } | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -86,10 +90,14 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
   useEffect(() => {
     if (lastJsonMessage !== null) {
       try {
+        console.log(lastJsonMessage);
         const message = websocketMessageSchema.parse(lastJsonMessage);
 
         if (message.type === "region_update") {
-          setLastUpdate(message.data.update_time);
+          setLastUpdate({
+            lastUpdateTime: message.data.update_time,
+            serverTime: message.serverTime,
+          });
         } else if (message.type === "dodge") {
           queryClient.setQueryData(queryKey, (oldData: Dodge[]) => {
             return [message.data, ...oldData];
@@ -114,8 +122,11 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
   return (
     <>
       <div className="flex items-center justify-center">
-        {readyState == ReadyState.OPEN && (
-          <LastUpdate lastUpdatedAt={lastUpdate} />
+        {readyState == ReadyState.OPEN && lastUpdate && (
+          <LastUpdate
+            lastUpdatedAt={lastUpdate.lastUpdateTime}
+            initialServerTime={lastUpdate.serverTime}
+          />
         )}
       </div>
       <DodgeList

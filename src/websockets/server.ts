@@ -55,11 +55,16 @@ function broadcastDodge(dodge: Dodge) {
 
 function broadcastRegionUpdate(regionUpdate: RegionUpdate) {
   logger.info(`Broadcasting region update: ${regionUpdate.region}`);
+  const serverTime = new Date().toISOString();
   wss.clients.forEach((client) => {
     if ((client as WebSocketWithRegion).region === regionUpdate.region) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(
-          JSON.stringify({ type: "region_update", data: regionUpdate }),
+          JSON.stringify({
+            type: "region_update",
+            data: regionUpdate,
+            serverTime,
+          }),
         );
       }
     }
@@ -163,10 +168,12 @@ wss.on("connection", (ws: WebSocketWithRegion, req) => {
   getLatestUpdateTime(ws.region)
     .then((result) => {
       if (result) {
+        const serverTime = new Date().toISOString();
         ws.send(
           JSON.stringify({
             type: "region_update",
             data: result,
+            serverTime,
           }),
         );
       }

@@ -4,34 +4,45 @@ import { useEffect, useState } from "react";
 import { cn } from "../lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
-function timeDiffSeconds(date: Date) {
-  return (Date.now() - date.getTime()) / 1000;
+function calculateElapsedSeconds(
+  initialServerTime: Date,
+  lastUpdatedAt: Date,
+): number {
+  const now = Date.now();
+  const initialClientTime = initialServerTime.getTime();
+  const lastUpdateServerTime = lastUpdatedAt.getTime();
+  return (
+    (now - initialClientTime + (initialClientTime - lastUpdateServerTime)) /
+    1000
+  );
 }
 
-export default function LastUpdate(props: { lastUpdatedAt: Date | null }) {
-  const [tick, setTick] = useState(0);
-  const [highlight, setHighlight] = useState(false);
+export default function LastUpdate(props: {
+  lastUpdatedAt: Date;
+  initialServerTime: Date;
+}) {
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(() =>
+    calculateElapsedSeconds(props.initialServerTime, props.lastUpdatedAt),
+  );
+  const [highlight, setHighlight] = useState<boolean>(false);
   const [lastHighlight, setLastHighlight] = useState<Date | null>(null);
 
   const [ref, hovering] = useHover();
 
-  const timeDiff = props.lastUpdatedAt
-    ? timeDiffSeconds(props.lastUpdatedAt)
-    : null;
-
   useEffect(() => {
     const interval = setInterval(() => {
-      setTick((tick) => (tick + 1) % 2);
+      setElapsedSeconds(
+        calculateElapsedSeconds(props.initialServerTime, props.lastUpdatedAt),
+      );
     }, 100);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [props.initialServerTime, props.lastUpdatedAt]);
 
   useEffect(() => {
     if (props.lastUpdatedAt) {
       if (
-        timeDiff &&
-        timeDiff <= 0.5 &&
+        elapsedSeconds <= 0.5 &&
         (!lastHighlight || props.lastUpdatedAt > lastHighlight)
       ) {
         setHighlight(true);
@@ -39,7 +50,7 @@ export default function LastUpdate(props: { lastUpdatedAt: Date | null }) {
         setTimeout(() => setHighlight(false), 250); // Remove highlight after 250ms
       }
     }
-  }, [props.lastUpdatedAt, tick, lastHighlight, timeDiff]);
+  }, [props.lastUpdatedAt, elapsedSeconds, lastHighlight]);
 
   if (!props.lastUpdatedAt) return null;
 
@@ -57,7 +68,7 @@ export default function LastUpdate(props: { lastUpdatedAt: Date | null }) {
             )}
           >
             <Timer className="size-4" />
-            {timeDiff && `${timeDiff.toFixed(1)}s`}
+            {elapsedSeconds !== null && `${elapsedSeconds.toFixed(1)}s`}
           </p>
         </p>
       </PopoverTrigger>
