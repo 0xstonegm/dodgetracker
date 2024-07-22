@@ -10,16 +10,10 @@ import DodgeList from "./DodgeList";
 import LastUpdate from "./LastUpdate";
 import LoadingSpinner from "./LoadingSpinner";
 
-/* eslint-disable */
-interface BigInt {
-  /** Convert to BigInt to string form in JSON.stringify */
-  toJSON: () => string;
-}
-// @ts-ignore
+// @ts-expect-error: Overriding toJSON method for BigInt
 BigInt.prototype.toJSON = function () {
   return this.toString();
 };
-/* eslint-enable */
 
 type DodgeListWebSocketProps = {
   userRegion: string;

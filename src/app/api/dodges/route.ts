@@ -1,16 +1,10 @@
 import { getDodges } from "@/src/data";
 import { type NextRequest } from "next/server";
 
-/* eslint-disable */
-interface BigInt {
-  /** Convert to BigInt to string form in JSON.stringify */
-  toJSON: () => string;
-}
-// @ts-ignore
+// @ts-expect-error: Overriding toJSON method for BigInt
 BigInt.prototype.toJSON = function () {
   return this.toString();
 };
-/* eslint-enable */
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
