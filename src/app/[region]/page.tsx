@@ -6,7 +6,7 @@ import { supportedUserRegions } from "@/src/regions";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import Notif from "./_components/Notif";
+import Banner from "./_components/Banner";
 
 interface Props {
   params: {
@@ -28,6 +28,7 @@ export default async function Region({ params, searchParams }: Props) {
 
   return (
     <>
+      {Date.now() <= new Date("2024-08-01").getTime() && <Banner />}
       <div className="flex w-full justify-end">
         <div className="border-b border-l border-zinc-900 px-2 text-sm font-light">
           <Suspense key={suspenseKey} fallback={<p>Loading player count...</p>}>
@@ -58,7 +59,6 @@ export default async function Region({ params, searchParams }: Props) {
         }
       >
         <div className="mx-auto lg:w-3/4">
-          <Notif />
           <ErrorBoundary
             fallback={
               <div className="flex w-full items-center justify-center">
