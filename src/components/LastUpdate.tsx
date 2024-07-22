@@ -61,7 +61,7 @@ export default function LastUpdate(props: { lastUpdatedAt: Date | null }) {
           </p>
         </p>
       </PopoverTrigger>
-      <PopoverContent className="w-70 bg-zinc-800 sm:w-96">
+      <PopoverContent className="max-w-50 bg-zinc-800 sm:max-w-96">
         <div className="space-y-4">
           <ul className="list-inside list-disc space-y-2">
             <li>
