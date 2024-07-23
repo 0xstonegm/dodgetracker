@@ -6,8 +6,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function timeDiffString(utcTime: Date): string {
-  const timeDiff = Date.now() - new Date(utcTime).getTime();
+export function timeDiffString(time: Date, clientServerDiff: number): string {
+  const timeDiff = Date.now() - new Date(time).getTime() + clientServerDiff;
 
   const diffInSeconds: number = timeDiff / 1000;
   const diffInMinutes: number = diffInSeconds / 60;

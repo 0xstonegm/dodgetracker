@@ -9,6 +9,7 @@ import TimeString from "./TimeString";
 
 export default function DodgeList(props: {
   dodges: Dodge[];
+  clientServerTimeDiff: number;
   userRegion: string;
   statSiteButtons: boolean;
   profileLink: boolean;
@@ -87,7 +88,10 @@ export default function DodgeList(props: {
               </p>
             </section>
             <section className="flex flex-wrap items-center justify-end text-right text-xs font-light md:text-sm">
-              <TimeString utcTime={dodge.time} />
+              <TimeString
+                utcTime={dodge.time}
+                clientServerTimeDiff={props.clientServerTimeDiff}
+              />
             </section>
           </div>
         </li>

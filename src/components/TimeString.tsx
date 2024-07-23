@@ -4,7 +4,10 @@ import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { timeDiffString } from "../lib/utils";
 
-function TimeString({ utcTime: utcTime }: { utcTime: Date | null }) {
+function TimeString(props: {
+  utcTime: Date | null;
+  clientServerTimeDiff: number;
+}) {
   const [, setTick] = useState(0); // Use state to force re-render
 
   useEffect(() => {
@@ -15,15 +18,18 @@ function TimeString({ utcTime: utcTime }: { utcTime: Date | null }) {
     return () => clearInterval(interval);
   }, []);
 
-  if (utcTime === null) {
+  if (props.utcTime === null) {
     return <p>Time unknown</p>;
   }
 
-  const formattedDate = format(utcTime, "HH:mm:ss, eee do 'of' MMMM yyyy");
+  const formattedDate = format(
+    props.utcTime,
+    "HH:mm:ss, eee do 'of' MMMM yyyy",
+  );
 
   return (
     <p title={`Dodge detected at:\n${formattedDate}`} suppressHydrationWarning>
-      {timeDiffString(utcTime)}
+      {timeDiffString(props.utcTime, props.clientServerTimeDiff)}
     </p>
   );
 }

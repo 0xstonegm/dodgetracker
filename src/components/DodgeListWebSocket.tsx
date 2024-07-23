@@ -4,7 +4,7 @@ import posthog from "posthog-js";
 import { useEffect, useMemo, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { z } from "zod";
-import { dodgeSchema, regionUpdateScema, type Dodge } from "../lib/types";
+import { dodgeSchema, regionUpdateScema } from "../lib/types";
 import { userRegionToRiotRegion } from "../regions";
 import DodgeList from "./DodgeList";
 import LastUpdate from "./LastUpdate";
@@ -35,9 +35,11 @@ const websocketMessageSchema = z.discriminatedUnion("type", [
   dodgeMessageSchema,
 ]);
 
-const dodgeListSchema = z.object({
+const dodgesApiResponseSchema = z.object({
   dodges: z.array(dodgeSchema),
+  serverTime: z.string().datetime({ offset: true }).pipe(z.coerce.date()),
 });
+type DodgesApiResponse = z.infer<typeof dodgesApiResponseSchema>;
 
 async function fetchDodges(riotRegion: string) {
   const response = await fetch(`/api/dodges?region=${riotRegion}`);
@@ -45,10 +47,11 @@ async function fetchDodges(riotRegion: string) {
     throw new Error(`Fetch failed with status: ${response.status}.`);
 
   const data = await response.json(); // eslint-disable-line
-  return dodgeListSchema.parse(data).dodges;
+  return dodgesApiResponseSchema.parse(data);
 }
 
 export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
+  const [clientServerTimeDiff, setClientServerTimeDiff] = useState(0);
   const riotRegion = userRegionToRiotRegion(props.userRegion);
   const queryKey = useMemo(() => ["dodges", riotRegion], [riotRegion]);
   const [lastUpdate, setLastUpdate] = useState<{
@@ -58,7 +61,7 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
 
   const queryClient = useQueryClient();
 
-  const { data: dodges, isFetching } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey,
     queryFn: () => fetchDodges(riotRegion),
     staleTime: Infinity,
@@ -88,6 +91,13 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
   );
 
   useEffect(() => {
+    console.log("Calculating client-server time difference");
+    if (data?.serverTime) {
+      setClientServerTimeDiff(data.serverTime.getTime() - Date.now());
+    }
+  }, [data?.serverTime]);
+
+  useEffect(() => {
     if (lastJsonMessage !== null) {
       try {
         const message = websocketMessageSchema.parse(lastJsonMessage);
@@ -97,9 +107,18 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
             lastUpdateTime: message.data.update_time,
             serverTime: message.serverTime,
           });
+          queryClient.setQueryData(queryKey, (oldData: DodgesApiResponse) => {
+            return {
+              dodges: oldData.dodges,
+              serverTime: message.serverTime,
+            };
+          });
         } else if (message.type === "dodge") {
-          queryClient.setQueryData(queryKey, (oldData: Dodge[]) => {
-            return [message.data, ...oldData];
+          queryClient.setQueryData(queryKey, (oldData: DodgesApiResponse) => {
+            return {
+              dodges: [message.data, ...oldData.dodges],
+              serverTime: oldData.serverTime,
+            };
           });
         }
       } catch (error) {
@@ -109,14 +128,14 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
     }
   }, [lastJsonMessage, queryClient, queryKey]);
 
-  if (!dodges && isFetching) {
+  if (!data && isFetching) {
     return (
       <div className="flex h-[75vh] items-center justify-center">
         <LoadingSpinner />
       </div>
     );
   }
-  if (!dodges) return;
+  if (!data) return;
   return (
     <>
       <div className="flex min-h-8 items-center justify-center">
@@ -131,10 +150,11 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
         )}
       </div>
       <DodgeList
-        dodges={dodges}
+        dodges={data.dodges}
         userRegion={props.userRegion}
         profileLink={true}
         statSiteButtons={true}
+        clientServerTimeDiff={clientServerTimeDiff}
       />
     </>
   );

@@ -20,5 +20,8 @@ export async function GET(request: NextRequest) {
 
   const dodges = await getDodges(region, 100, 1);
 
-  return Response.json({ dodges });
+  return Response.json({
+    dodges,
+    serverTime: new Date().toISOString(),
+  });
 }

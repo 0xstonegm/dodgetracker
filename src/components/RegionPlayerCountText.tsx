@@ -26,7 +26,7 @@ export default function RegionPlayerCountText({
   return (
     <p
       className={cn(className)}
-      title={`Last updated ${timeDiffString(props.lastUpdated)}`}
+      title={`Last updated ${timeDiffString(props.lastUpdated, 0)}`}
     >
       Master+ players in {props.region.toUpperCase()}: {props.playerCount}
     </p>

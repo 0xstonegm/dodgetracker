@@ -55,7 +55,15 @@ export default async function DodgeListSSR({
 
   return (
     <>
-      <DodgeList {...{ userRegion, dodges, profileLink, statSiteButtons }} />
+      <DodgeList
+        clientServerTimeDiff={0} // TODO: Improve this
+        {...{
+          userRegion,
+          dodges,
+          profileLink,
+          statSiteButtons,
+        }}
+      />
       {totalPageCount > 1 && (
         <div className="flex justify-center">
           <PaginationControls
