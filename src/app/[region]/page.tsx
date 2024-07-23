@@ -58,7 +58,7 @@ export default async function Region({ params, searchParams }: Props) {
           </div>
         }
       >
-        <div className="mx-auto lg:w-3/4">
+        <div className="mx-auto xl:w-3/4">
           <ErrorBoundary
             fallback={
               <div className="flex w-full items-center justify-center">
