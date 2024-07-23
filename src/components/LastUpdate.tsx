@@ -1,6 +1,6 @@
 import { useHover } from "@uidotdev/usehooks";
 import { Timer } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "../lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
@@ -11,11 +11,26 @@ function calculateElapsedSeconds(
   return (Date.now() - lastUpdatedAt.getTime() + timeDiff) / 1000;
 }
 
+function clientServerTimeDiff(serverTime: Date): number {
+  return serverTime.getTime() - Date.now();
+}
+
 export default function LastUpdate(props: {
   lastUpdatedAt: Date;
   initialServerTime: Date;
 }) {
-  const [elapsedSeconds, setElapsedSeconds] = useState<number | null>(null);
+  const initialElapsedSeconds = useMemo(() => {
+    const timeDiff = clientServerTimeDiff(props.initialServerTime);
+    const initialElapsedSeconds = calculateElapsedSeconds(
+      timeDiff,
+      props.lastUpdatedAt,
+    );
+    return initialElapsedSeconds;
+  }, [props.lastUpdatedAt, props.initialServerTime]);
+
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(
+    initialElapsedSeconds,
+  );
   const [highlight, setHighlight] = useState<boolean>(false);
   const [lastHighlight, setLastHighlight] = useState<Date | null>(null);
 
@@ -23,7 +38,7 @@ export default function LastUpdate(props: {
 
   useEffect(() => {
     // The time difference between the server and the client
-    const timeDiff = props.lastUpdatedAt.getTime() - Date.now();
+    const timeDiff = clientServerTimeDiff(props.initialServerTime);
 
     const interval = setInterval(() => {
       setElapsedSeconds(calculateElapsedSeconds(timeDiff, props.lastUpdatedAt));
@@ -35,7 +50,6 @@ export default function LastUpdate(props: {
   useEffect(() => {
     if (props.lastUpdatedAt) {
       if (
-        elapsedSeconds &&
         elapsedSeconds <= 1 &&
         (!lastHighlight || props.lastUpdatedAt > lastHighlight)
       ) {
@@ -45,8 +59,6 @@ export default function LastUpdate(props: {
       }
     }
   }, [props.lastUpdatedAt, elapsedSeconds, lastHighlight]);
-
-  if (!props.lastUpdatedAt) return null;
 
   return (
     <Popover open={hovering}>
@@ -62,7 +74,7 @@ export default function LastUpdate(props: {
             )}
           >
             <Timer className="size-4" />
-            {elapsedSeconds !== null && `${elapsedSeconds.toFixed(1)}s`}
+            {elapsedSeconds.toFixed(1)}s
           </p>
         </p>
       </PopoverTrigger>
