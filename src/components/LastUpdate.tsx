@@ -63,7 +63,14 @@ export default function LastUpdate(props: {
   return (
     <Popover open={hovering}>
       <PopoverTrigger className="cursor-default" tabIndex={-1}>
-        <p className="flex items-center gap-1 text-sm md:text-base" ref={ref}>
+        <p
+          className="flex items-center gap-1 text-sm md:text-base"
+          ref={ref}
+          onMouseLeave={(e) => {
+            // Prevent focus ring from showing
+            e.currentTarget.blur();
+          }}
+        >
           Last Dodge Check:
           <p
             className={cn(
