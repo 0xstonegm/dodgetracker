@@ -90,7 +90,6 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
   useEffect(() => {
     if (lastJsonMessage !== null) {
       try {
-        console.log(lastJsonMessage);
         const message = websocketMessageSchema.parse(lastJsonMessage);
 
         if (message.type === "region_update") {
