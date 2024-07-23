@@ -116,12 +116,14 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
       </div>
     );
   }
-
   if (!dodges) return;
   return (
     <>
-      <div className="flex items-center justify-center">
-        {readyState == ReadyState.OPEN && lastUpdate && (
+      <div className="flex min-h-8 items-center justify-center">
+        {readyState !== ReadyState.OPEN && (
+          <div>Connecting to real time updates...</div>
+        )}
+        {readyState === ReadyState.OPEN && lastUpdate && (
           <LastUpdate
             lastUpdatedAt={lastUpdate.lastUpdateTime}
             initialServerTime={lastUpdate.serverTime}
