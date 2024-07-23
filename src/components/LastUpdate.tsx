@@ -5,35 +5,28 @@ import { cn } from "../lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 function calculateElapsedSeconds(
-  initialServerTime: Date,
+  timeDiff: number, // the time difference between the server and the client
   lastUpdatedAt: Date,
 ): number {
-  const now = Date.now();
-  const initialClientTime = initialServerTime.getTime();
-  const lastUpdateServerTime = lastUpdatedAt.getTime();
-  return (
-    (now - initialClientTime + (initialClientTime - lastUpdateServerTime)) /
-    1000
-  );
+  return (Date.now() - lastUpdatedAt.getTime() + timeDiff) / 1000;
 }
 
 export default function LastUpdate(props: {
   lastUpdatedAt: Date;
   initialServerTime: Date;
 }) {
-  const [elapsedSeconds, setElapsedSeconds] = useState<number>(() =>
-    calculateElapsedSeconds(props.initialServerTime, props.lastUpdatedAt),
-  );
+  const [elapsedSeconds, setElapsedSeconds] = useState<number | null>(null);
   const [highlight, setHighlight] = useState<boolean>(false);
   const [lastHighlight, setLastHighlight] = useState<Date | null>(null);
 
   const [ref, hovering] = useHover();
 
   useEffect(() => {
+    // The time difference between the server and the client
+    const timeDiff = props.lastUpdatedAt.getTime() - Date.now();
+
     const interval = setInterval(() => {
-      setElapsedSeconds(
-        calculateElapsedSeconds(props.initialServerTime, props.lastUpdatedAt),
-      );
+      setElapsedSeconds(calculateElapsedSeconds(timeDiff, props.lastUpdatedAt));
     }, 100);
 
     return () => clearInterval(interval);
@@ -42,12 +35,13 @@ export default function LastUpdate(props: {
   useEffect(() => {
     if (props.lastUpdatedAt) {
       if (
-        elapsedSeconds <= 0.5 &&
+        elapsedSeconds &&
+        elapsedSeconds <= 1 &&
         (!lastHighlight || props.lastUpdatedAt > lastHighlight)
       ) {
         setHighlight(true);
         setLastHighlight(props.lastUpdatedAt);
-        setTimeout(() => setHighlight(false), 250); // Remove highlight after 250ms
+        setTimeout(() => setHighlight(false), 250);
       }
     }
   }, [props.lastUpdatedAt, elapsedSeconds, lastHighlight]);
