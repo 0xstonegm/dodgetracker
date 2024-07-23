@@ -18,9 +18,6 @@ export default function ProfileLink(props: ProfileLinkProps) {
       onClick={(_e) => {
         captureEvent("profile_link_clicked", props.href);
       }}
-      onMouseEnter={(_e) => {
-        captureEvent("profile_link_hovered", props.href);
-      }}
       href={props.href}
       style={{
         pointerEvents: props.profileLink ? "auto" : "none",
