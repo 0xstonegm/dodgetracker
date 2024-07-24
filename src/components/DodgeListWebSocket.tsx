@@ -41,6 +41,10 @@ const dodgesApiResponseSchema = z.object({
 });
 type DodgesApiResponse = z.infer<typeof dodgesApiResponseSchema>;
 
+function calculateTimeDifference(serverTime: Date) {
+  return serverTime.getTime() - Date.now();
+}
+
 async function fetchDodges(riotRegion: string) {
   const response = await fetch(`/api/dodges?region=${riotRegion}`);
   if (!response.ok)
@@ -91,9 +95,8 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
   );
 
   useEffect(() => {
-    console.log("Calculating client-server time difference");
     if (data?.serverTime) {
-      setClientServerTimeDiff(data.serverTime.getTime() - Date.now());
+      setClientServerTimeDiff(calculateTimeDifference(data.serverTime));
     }
   }, [data?.serverTime]);
 
@@ -145,7 +148,7 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
         {readyState === ReadyState.OPEN && lastUpdate && (
           <LastUpdate
             lastUpdatedAt={lastUpdate.lastUpdateTime}
-            initialServerTime={lastUpdate.serverTime}
+            clientServerTimeDiff={clientServerTimeDiff}
           />
         )}
       </div>

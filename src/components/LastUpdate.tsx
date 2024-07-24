@@ -5,28 +5,23 @@ import { cn } from "../lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 function calculateElapsedSeconds(
-  timeDiff: number, // the time difference between the server and the client
+  clientServerTimeDiff: number,
   lastUpdatedAt: Date,
 ): number {
-  return (Date.now() - lastUpdatedAt.getTime() + timeDiff) / 1000;
-}
-
-function clientServerTimeDiff(serverTime: Date): number {
-  return serverTime.getTime() - Date.now();
+  return (Date.now() - lastUpdatedAt.getTime() + clientServerTimeDiff) / 1000;
 }
 
 export default function LastUpdate(props: {
   lastUpdatedAt: Date;
-  initialServerTime: Date;
+  clientServerTimeDiff: number;
 }) {
   const initialElapsedSeconds = useMemo(() => {
-    const timeDiff = clientServerTimeDiff(props.initialServerTime);
     const initialElapsedSeconds = calculateElapsedSeconds(
-      timeDiff,
+      props.clientServerTimeDiff,
       props.lastUpdatedAt,
     );
     return initialElapsedSeconds;
-  }, [props.lastUpdatedAt, props.initialServerTime]);
+  }, [props.lastUpdatedAt, props.clientServerTimeDiff]);
 
   const [elapsedSeconds, setElapsedSeconds] = useState<number>(
     initialElapsedSeconds,
@@ -37,15 +32,17 @@ export default function LastUpdate(props: {
   const [ref, hovering] = useHover();
 
   useEffect(() => {
-    // The time difference between the server and the client
-    const timeDiff = clientServerTimeDiff(props.initialServerTime);
-
     const interval = setInterval(() => {
-      setElapsedSeconds(calculateElapsedSeconds(timeDiff, props.lastUpdatedAt));
+      setElapsedSeconds(
+        calculateElapsedSeconds(
+          props.clientServerTimeDiff,
+          props.lastUpdatedAt,
+        ),
+      );
     }, 100);
 
     return () => clearInterval(interval);
-  }, [props.initialServerTime, props.lastUpdatedAt]);
+  }, [props.lastUpdatedAt, props.clientServerTimeDiff]);
 
   useEffect(() => {
     if (props.lastUpdatedAt) {
