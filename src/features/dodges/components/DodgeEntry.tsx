@@ -22,6 +22,7 @@ export default function DodgeEntry(props: {
           profileIconId={props.dodge.profileIconId}
           userRegion={props.userRegion}
           profileLink={props.profileLink}
+          scale
         />
         {props.statSiteButtons && (
           <>

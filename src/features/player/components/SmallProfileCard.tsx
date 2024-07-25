@@ -1,4 +1,4 @@
-import { profileIconUrl } from "@/src/lib/utils";
+import { cn, profileIconUrl } from "@/src/lib/utils";
 import Image from "next/image";
 import ProfileLink from "./ProfileLink";
 
@@ -8,13 +8,21 @@ export default function SmallProfileCard(props: {
   profileIconId: number;
   userRegion: string;
   profileLink: boolean;
+  scale?: boolean;
 }) {
   return (
     <ProfileLink
       href={`/${props.userRegion}/${props.gameName}-${props.tagLine}`}
       profileLink={props.profileLink}
     >
-      <section className="mr-2 flex origin-right transform items-center justify-center underline-offset-4 transition-transform hover:underline sm:justify-start md:hover:scale-105">
+      <section
+        className={cn(
+          "mr-2 flex origin-right transform items-center justify-center underline-offset-4 transition-transform hover:underline sm:justify-start",
+          {
+            "md:hover:scale-105": props.scale,
+          },
+        )}
+      >
         <div className="relative size-10 self-center md:size-12">
           <Image
             alt="Profile Icon"

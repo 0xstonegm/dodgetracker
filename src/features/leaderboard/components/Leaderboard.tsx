@@ -1,15 +1,14 @@
 import { unstable_cache } from "next/cache";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import PaginationControls from "../../../components/PaginationControls";
 import RankInfo from "../../../components/RankInfo";
 import { getLeaderboard } from "../../../data";
 import { type Tier } from "../../../lib/types";
-import { cn, profileIconUrl } from "../../../lib/utils";
+import { cn } from "../../../lib/utils";
 import { userRegionToRiotRegion } from "../../../regions";
 import { isCurrentSeason } from "../../../seasons";
 import { StatSite } from "../../../statSites";
-import ProfileLink from "../../player/components/ProfileLink";
+import SmallProfileCard from "../../player/components/SmallProfileCard";
 import StatSiteButton from "../../player/components/StatSiteButton";
 
 const pageSize = 50;
@@ -74,26 +73,13 @@ export default async function Leaderboard({
                   {(pageNumber - 1) * pageSize + index + 1}.
                 </p>
                 <section className="flex flex-wrap items-center md:text-xl">
-                  <ProfileLink
-                    href={`/${userRegion}/${entry.gameName}-${entry.tagLine}`}
+                  <SmallProfileCard
+                    gameName={entry.gameName}
+                    tagLine={entry.tagLine}
+                    profileIconId={entry.profileIconId}
+                    userRegion={userRegion}
                     profileLink={true}
-                  >
-                    <div className="mr-2 flex items-center justify-center underline-offset-4 sm:justify-start md:hover:underline">
-                      <div className="relative size-10 self-center md:size-12">
-                        <Image
-                          alt="Profile Icon"
-                          src={profileIconUrl(entry.profileIconId)}
-                          layout="fill"
-                          style={{ objectFit: "contain" }}
-                          quality={100}
-                          unoptimized
-                        ></Image>
-                      </div>
-                      <div className="break-all pl-2 font-bold underline-offset-4 hover:underline">
-                        {entry.gameName}#{entry.tagLine}
-                      </div>
-                    </div>
-                  </ProfileLink>
+                  />
                   <div className="flex flex-wrap md:items-center md:justify-center">
                     {entry.lolProsSlug && (
                       <div className="mr-1">
