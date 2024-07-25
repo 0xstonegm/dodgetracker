@@ -17,7 +17,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import DodgeCounts from "../../../features/dodges/components/DodgeCounts";
 import DodgeTypes from "../../../features/dodges/components/DodgeTypes";
-import ProfileCard from "../../../features/player/components/ProfileCard";
+import ProfileCard from "../../../features/player/components/BigProfileCard";
 
 // FIXME: Add metadata
 

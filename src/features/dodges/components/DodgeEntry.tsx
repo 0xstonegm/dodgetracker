@@ -1,10 +1,9 @@
 import RankInfo from "@/src/components/RankInfo";
 import TimeString from "@/src/components/TimeString";
 import { type Dodge, type Tier } from "@/src/lib/types";
-import { cn, profileIconUrl } from "@/src/lib/utils";
+import { cn } from "@/src/lib/utils";
 import { StatSite } from "@/src/statSites";
-import Image from "next/image";
-import ProfileLink from "../../player/components/ProfileLink";
+import SmallProfileCard from "../../player/components/SmallProfileCard";
 import StatSiteButton from "../../player/components/StatSiteButton";
 
 export default function DodgeEntry(props: {
@@ -17,27 +16,13 @@ export default function DodgeEntry(props: {
   return (
     <div className="grid grid-cols-[3fr,1.2fr,0.9fr,0.8fr] gap-1 md:grid-cols-[2fr,0.8fr,0.3fr,0.6fr] md:gap-2">
       <section className="flex flex-wrap items-center md:text-xl">
-        <ProfileLink
-          href={`/${props.userRegion}/${props.dodge.gameName}-${props.dodge.tagLine}`}
+        <SmallProfileCard
+          gameName={props.dodge.gameName}
+          tagLine={props.dodge.tagLine}
+          profileIconId={props.dodge.profileIconId}
+          userRegion={props.userRegion}
           profileLink={props.profileLink}
-        >
-          <section className="mr-2 flex origin-right transform items-center justify-center underline-offset-4 transition-transform hover:underline sm:justify-start md:hover:scale-105">
-            <div className="relative size-10 self-center md:size-12">
-              <Image
-                alt="Profile Icon"
-                src={profileIconUrl(props.dodge.profileIconId)}
-                quality={100}
-                unoptimized
-                layout="fill"
-                style={{ objectFit: "contain" }}
-              ></Image>
-            </div>
-            <div className="flex flex-wrap break-all pl-2 font-bold">
-              <p>{props.dodge.gameName}</p>
-              <p>#{props.dodge.tagLine}</p>
-            </div>
-          </section>
-        </ProfileLink>
+        />
         {props.statSiteButtons && (
           <>
             {props.dodge.lolProsSlug && (
