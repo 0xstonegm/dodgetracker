@@ -1,10 +1,11 @@
+import RankInfo from "@/src/components/RankInfo";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/src/components/ui/popover";
 import { type Tier } from "@/src/lib/types";
-import { getRankEmblem, isWithinDays, profileIconUrl } from "@/src/lib/utils";
+import { isWithinDays, profileIconUrl } from "@/src/lib/utils";
 import { InfoIcon } from "lucide-react";
 import Image from "next/image";
 
@@ -45,16 +46,11 @@ export default async function ProfileCard(props: {
           <div className="flex items-center justify-center text-sm md:text-base">
             {recentlyUpdated ? (
               <>
-                <div className="relative mr-2 size-8 md:size-12">
-                  <Image
-                    src={getRankEmblem(props.rankTier)}
-                    alt={props.rankTier}
-                    fill
-                    quality={100}
-                    unoptimized
-                  />
-                </div>
-                {props.currentLp}LP
+                <RankInfo
+                  rankTier={props.rankTier}
+                  lp={props.currentLp}
+                  disableCol
+                />
               </>
             ) : (
               <Popover>
