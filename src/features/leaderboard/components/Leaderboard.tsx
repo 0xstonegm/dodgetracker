@@ -1,16 +1,16 @@
 import { unstable_cache } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getLeaderboard } from "../data";
-import { type Tier } from "../lib/types";
-import { cn, profileIconUrl } from "../lib/utils";
-import { userRegionToRiotRegion } from "../regions";
-import { isCurrentSeason } from "../seasons";
-import { StatSite } from "../statSites";
-import PaginationControls from "./PaginationControls";
-import ProfileLink from "./ProfileLink";
-import RankInfo from "./RankInfo";
-import StatSiteButton from "./StatSiteButton";
+import PaginationControls from "../../../components/PaginationControls";
+import RankInfo from "../../../components/RankInfo";
+import { getLeaderboard } from "../../../data";
+import { type Tier } from "../../../lib/types";
+import { cn, profileIconUrl } from "../../../lib/utils";
+import { userRegionToRiotRegion } from "../../../regions";
+import { isCurrentSeason } from "../../../seasons";
+import { StatSite } from "../../../statSites";
+import ProfileLink from "../../player/components/ProfileLink";
+import StatSiteButton from "../../player/components/StatSiteButton";
 
 const pageSize = 50;
 const maxPages = 100;

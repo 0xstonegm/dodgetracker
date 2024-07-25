@@ -7,11 +7,11 @@ import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
-import { autoFetchInterval, autoFetchKey } from "../autoFetch";
-import { cn, secondsBetween } from "../lib/utils";
-import Toast from "./Toast";
-import withNoSSR from "./higherOrder/withNoSSR";
-import { Button } from "./ui/button";
+import { autoFetchInterval, autoFetchKey } from "../../../autoFetch";
+import Toast from "../../../components/Toast";
+import withNoSSR from "../../../components/higherOrder/withNoSSR";
+import { Button } from "../../../components/ui/button";
+import { cn, secondsBetween } from "../../../lib/utils";
 
 const notifPressCountIntervalSecs = 10;
 const notifPressCountThreshold = 3;

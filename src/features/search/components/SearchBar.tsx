@@ -10,10 +10,15 @@ import { usePathname, useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import { type Tier } from "../lib/types";
-import { cn, getRankEmblem, isWithinDays, profileIconUrl } from "../lib/utils";
-import { userRegionToRiotRegion } from "../regions";
-import { Input } from "./ui/input";
+import { Input } from "../../../components/ui/input";
+import { type Tier } from "../../../lib/types";
+import {
+  cn,
+  getRankEmblem,
+  isWithinDays,
+  profileIconUrl,
+} from "../../../lib/utils";
+import { userRegionToRiotRegion } from "../../../regions";
 
 type SearchBarProps = React.HTMLAttributes<HTMLDivElement>;
 

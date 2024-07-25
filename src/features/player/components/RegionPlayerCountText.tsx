@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { cn, timeDiffString } from "../lib/utils";
+import { cn, timeDiffString } from "../../../lib/utils";
 
 type RegionPlayerCountTextProps = {
   region: string;

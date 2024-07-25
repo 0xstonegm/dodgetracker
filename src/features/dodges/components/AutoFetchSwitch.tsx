@@ -3,11 +3,11 @@
 import { useLocalStorage } from "@uidotdev/usehooks";
 import posthog from "posthog-js";
 import toast from "react-hot-toast";
-import { autoFetchInterval, autoFetchKey } from "../autoFetch";
-import { cn } from "../lib/utils";
-import Toast from "./Toast";
-import withNoSSR from "./higherOrder/withNoSSR";
-import { Switch } from "./ui/switch";
+import { autoFetchInterval, autoFetchKey } from "../../../autoFetch";
+import Toast from "../../../components/Toast";
+import withNoSSR from "../../../components/higherOrder/withNoSSR";
+import { Switch } from "../../../components/ui/switch";
+import { cn } from "../../../lib/utils";
 
 function AutoFetchSwitch() {
   const [autoFetch, setAutoFetch] = useLocalStorage(autoFetchKey, false);

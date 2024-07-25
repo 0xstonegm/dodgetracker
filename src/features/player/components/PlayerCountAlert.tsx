@@ -1,7 +1,11 @@
 import { Info } from "lucide-react";
-import { getLatestPlayerCount } from "../data";
-import { userRegionToRiotRegion } from "../regions";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "../../../components/ui/alert";
+import { getLatestPlayerCount } from "../../../data";
+import { userRegionToRiotRegion } from "../../../regions";
 
 type PlayerCountAlertProps = {
   userRegion: string;

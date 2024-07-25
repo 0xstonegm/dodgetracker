@@ -1,8 +1,12 @@
 import { useHover } from "@uidotdev/usehooks";
 import { Timer } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { cn } from "../lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../../components/ui/popover";
+import { cn } from "../../../lib/utils";
 
 function calculateElapsedSeconds(
   clientServerTimeDiff: number,

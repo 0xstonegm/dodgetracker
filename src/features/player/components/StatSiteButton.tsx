@@ -1,9 +1,9 @@
 "use client";
 
 import posthog from "posthog-js";
-import { cn } from "../lib/utils";
-import { StatSite, getDeeplolUrl, getOpggUrl } from "../statSites";
-import { Button } from "./ui/button";
+import { Button } from "../../../components/ui/button";
+import { cn } from "../../../lib/utils";
+import { StatSite, getDeeplolUrl, getOpggUrl } from "../../../statSites";
 
 export interface StatSiteButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {

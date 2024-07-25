@@ -1,12 +1,12 @@
-import DodgeListWebSocket from "@/src/components/DodgeListWebSocket";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
-import PlayerCountAlert from "@/src/components/PlayerCountAlert";
-import RegionPlayerCount from "@/src/components/RegionPlayerCount";
+import DodgeListWebSocket from "@/src/features/dodges/components/DodgeListWebSocket";
+import PlayerCountAlert from "@/src/features/player/components/PlayerCountAlert";
+import RegionPlayerCount from "@/src/features/player/components/RegionPlayerCount";
 import { supportedUserRegions } from "@/src/regions";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import Banner from "./_components/Banner";
+import Banner from "../../components/Banner";
 
 interface Props {
   params: {

@@ -1,7 +1,7 @@
 import { unstable_cache } from "next/cache";
-import { getLatestPlayerCount } from "../data";
-import { cn } from "../lib/utils";
-import { userRegionToRiotRegion } from "../regions";
+import { getLatestPlayerCount } from "../../../data";
+import { cn } from "../../../lib/utils";
+import { userRegionToRiotRegion } from "../../../regions";
 import RegionPlayerCountText from "./RegionPlayerCountText";
 
 export interface RegionPlayerCountProps

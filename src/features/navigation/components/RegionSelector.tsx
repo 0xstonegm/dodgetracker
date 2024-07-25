@@ -2,8 +2,8 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import React, { useTransition } from "react";
-import { cn } from "../lib/utils";
-import { supportedUserRegions } from "../regions";
+import { cn } from "../../../lib/utils";
+import { supportedUserRegions } from "../../../regions";
 
 type RegionSelectorProps = React.HTMLAttributes<HTMLSelectElement>;
 

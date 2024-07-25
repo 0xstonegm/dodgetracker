@@ -1,11 +1,11 @@
 import Image from "next/image";
-import { type Dodge, type Tier } from "../lib/types";
-import { cn, profileIconUrl } from "../lib/utils";
-import { StatSite } from "../statSites";
-import ProfileLink from "./ProfileLink";
-import RankInfo from "./RankInfo";
-import StatSiteButton from "./StatSiteButton";
-import TimeString from "./TimeString";
+import RankInfo from "../../../components/RankInfo";
+import TimeString from "../../../components/TimeString";
+import { type Dodge, type Tier } from "../../../lib/types";
+import { cn, profileIconUrl } from "../../../lib/utils";
+import { StatSite } from "../../../statSites";
+import ProfileLink from "../../player/components/ProfileLink";
+import StatSiteButton from "../../player/components/StatSiteButton";
 
 export default function DodgeList(props: {
   dodges: Dodge[];

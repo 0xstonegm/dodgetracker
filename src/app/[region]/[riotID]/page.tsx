@@ -1,6 +1,4 @@
-import DodgeListSSR from "@/src/components/DodgeListSSR";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
-import StatSiteButton from "@/src/components/StatSiteButton";
 import {
   Tabs,
   TabsContent,
@@ -8,6 +6,8 @@ import {
   TabsTrigger,
 } from "@/src/components/ui/tabs";
 import { getSummoner } from "@/src/data";
+import DodgeListSSR from "@/src/features/dodges/components/DodgeListSSR";
+import StatSiteButton from "@/src/features/player/components/StatSiteButton";
 import { type Tier } from "@/src/lib/types";
 import { decodeRiotIdURIComponent } from "@/src/lib/utils";
 import { supportedUserRegions, userRegionToRiotRegion } from "@/src/regions";
@@ -15,9 +15,9 @@ import { StatSite } from "@/src/statSites";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import DodgeCounts from "./_components/DodgeCounts";
-import DodgeTypes from "./_components/DodgeTypes";
-import ProfileCard from "./_components/ProfileCard";
+import DodgeCounts from "../../../features/dodges/components/DodgeCounts";
+import DodgeTypes from "../../../features/dodges/components/DodgeTypes";
+import ProfileCard from "../../../features/player/components/ProfileCard";
 
 // FIXME: Add metadata
 

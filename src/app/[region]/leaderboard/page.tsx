@@ -1,6 +1,6 @@
-import Leaderboard from "@/src/components/Leaderboard";
-import LeaderboardFilters from "@/src/components/LeaderboardFilters";
 import LoadingSpinner from "@/src/components/LoadingSpinner";
+import Leaderboard from "@/src/features/leaderboard/components/Leaderboard";
+import LeaderboardFilters from "@/src/features/leaderboard/components/LeaderboardFilters";
 import { LeaderboardSearchParamsSchema } from "@/src/lib/types";
 import { supportedUserRegions } from "@/src/regions";
 import { type Metadata } from "next";

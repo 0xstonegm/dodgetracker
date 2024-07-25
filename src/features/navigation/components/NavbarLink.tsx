@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "../lib/utils";
-import { supportedUserRegions } from "../regions";
+import { cn } from "../../../lib/utils";
+import { supportedUserRegions } from "../../../regions";
 
 interface NavBarLinkProps extends React.HTMLAttributes<HTMLDivElement> {
   path: string;

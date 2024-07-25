@@ -1,7 +1,7 @@
-import { getDodges, getDodgesByPlayer, getDodgesCount } from "../data";
-import { userRegionToRiotRegion } from "../regions";
+import PaginationControls from "../../../components/PaginationControls";
+import { getDodges, getDodgesByPlayer, getDodgesCount } from "../../../data";
+import { userRegionToRiotRegion } from "../../../regions";
 import DodgeList from "./DodgeList";
-import PaginationControls from "./PaginationControls";
 
 interface DodgeListProps {
   pageNumber: number;

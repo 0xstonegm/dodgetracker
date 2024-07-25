@@ -1,9 +1,9 @@
 import Link from "next/link";
+import { Separator } from "../../../components/ui/separator";
+import SearchBar from "../../search/components/SearchBar";
 import Logo from "./Logo";
 import NavbarLink from "./NavbarLink";
 import RegionSelector from "./RegionSelector";
-import SearchBar from "./SearchBar";
-import { Separator } from "./ui/separator";
 
 function NavBar() {
   return (

@@ -4,11 +4,11 @@ import posthog from "posthog-js";
 import { useEffect, useMemo, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { z } from "zod";
-import { dodgeSchema, regionUpdateScema } from "../lib/types";
-import { userRegionToRiotRegion } from "../regions";
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import { dodgeSchema, regionUpdateScema } from "../../../lib/types";
+import { userRegionToRiotRegion } from "../../../regions";
 import DodgeList from "./DodgeList";
 import LastUpdate from "./LastUpdate";
-import LoadingSpinner from "./LoadingSpinner";
 
 // @ts-expect-error: Overriding toJSON method for BigInt
 BigInt.prototype.toJSON = function () {
