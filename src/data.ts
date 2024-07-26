@@ -62,6 +62,9 @@ export async function getDodgesByPlayer(
       gameName: riotIds.gameName,
       tagLine: riotIds.tagLine,
       lolProsSlug: riotIds.lolprosSlug,
+      lolProsName: lolPros.name,
+      lolProsCountry: lolPros.country,
+      lolProsPosition: lolPros.position,
       profileIconId: summoners.profileIconId,
       riotRegion: dodges.region,
       rankTier: dodges.rankTier,
@@ -78,6 +81,7 @@ export async function getDodgesByPlayer(
       ),
     )
     .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
+    .leftJoin(lolPros, eq(riotIds.lolprosSlug, lolPros.slug))
     .where(
       and(
         sql<boolean>`${riotIds.lowerGameName} = LOWER(${gameName})`,

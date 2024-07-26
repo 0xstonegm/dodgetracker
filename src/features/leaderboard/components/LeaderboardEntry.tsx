@@ -28,6 +28,9 @@ export default function LeaderboardEntry(props: {
       <section className="flex flex-wrap items-center md:text-xl">
         <SmallProfileCard
           lolProsSlug={props.entry.lolProsSlug}
+          lolProsName={null}
+          lolProsCountry={null}
+          lolProsPosition={null}
           gameName={props.entry.gameName}
           tagLine={props.entry.tagLine}
           profileIconId={props.entry.profileIconId}
