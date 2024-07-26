@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "@/src/components/ui/popover";
 import { type Tier, type dodgeSchema } from "@/src/lib/types";
-import { isWithinDays, profileIconUrl } from "@/src/lib/utils";
+import { cn, isWithinDays, profileIconUrl } from "@/src/lib/utils";
 import { InfoIcon } from "lucide-react";
 import Image from "next/image";
 import { type z } from "zod";
@@ -28,6 +28,12 @@ export default async function BigProfileCard(props: {
   // TODO: show more information if summoner not found
   const recentlyUpdated = isWithinDays(props.lastUpdateTime, new Date(), 3);
 
+  const hasLolProsInfo =
+    props.lolProsSlug &&
+    props.lolProsName &&
+    props.lolProsPosition &&
+    props.lolProsCountry;
+
   return (
     <section>
       <section className="flex">
@@ -46,23 +52,25 @@ export default async function BigProfileCard(props: {
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-evenly pl-2">
+        <div
+          className={cn("flex flex-col pl-2", {
+            "justify-between": hasLolProsInfo,
+            "justify-center": !hasLolProsInfo,
+          })}
+        >
           <div>
             <p className="text-lg font-bold md:text-xl">
               {props.gameName}#{props.tagLine}
             </p>
-            {props.lolProsSlug &&
-              props.lolProsName &&
-              props.lolProsPosition &&
-              props.lolProsCountry && (
-                <section className="flex items-center gap-[2px] text-sm font-light">
-                  <PlayerFlag countryCode={props.lolProsCountry} height={28} />
-                  <PositionIcon position={props.lolProsPosition} size={23} />
-                  <p>{props.lolProsName}</p>
-                </section>
-              )}
+            {hasLolProsInfo && (
+              <section className="flex items-center gap-[2px] text-sm font-light">
+                <PlayerFlag countryCode={props.lolProsCountry!} height={28} />
+                <PositionIcon position={props.lolProsPosition!} size={23} />
+                <p>{props.lolProsName}</p>
+              </section>
+            )}
           </div>
-          <div className="flex items-center justify-center text-sm md:text-base">
+          <div className="flex text-sm md:text-base">
             {recentlyUpdated ? (
               <>
                 <RankInfo
