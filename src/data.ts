@@ -149,6 +149,9 @@ export async function getSummoner(
       tagLine: riotIds.tagLine,
       riotRegion: summoners.region,
       lolProsSlug: riotIds.lolprosSlug,
+      lolProsName: lolPros.name,
+      lolProsCountry: lolPros.country,
+      lolProsPosition: lolPros.position,
       summonerLevel: summoners.summonerLevel,
       profileIconId: summoners.profileIconId,
       rankTier: apexTierPlayers.rankTier,
@@ -166,6 +169,7 @@ export async function getSummoner(
         eq(summoners.region, apexTierPlayers.region),
       ),
     )
+    .leftJoin(lolPros, eq(riotIds.lolprosSlug, lolPros.slug))
     .where(
       and(
         sql<boolean>`${riotIds.lowerGameName} = LOWER(${gameName})`,

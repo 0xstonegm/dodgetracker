@@ -17,7 +17,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import DodgeCounts from "../../../features/dodges/components/DodgeCounts";
 import DodgeTypes from "../../../features/dodges/components/DodgeTypes";
-import ProfileCard from "../../../features/player/components/BigProfileCard";
+import BigProfileCard from "../../../features/player/components/BigProfileCard";
 
 // FIXME: Add metadata
 
@@ -63,11 +63,15 @@ export default async function Summoner({
   return (
     <section>
       <section className="flex min-h-[25vh] flex-wrap items-center justify-center border-b-4 border-zinc-900 bg-zinc-600">
-        <div className="flex flex-col items-center justify-center">
-          <div className="m-2 my-4 md:mx-14">
-            <ProfileCard
+        <div className="flex flex-col items-center justify-center gap-2">
+          <div className="mt-2 md:mx-14">
+            <BigProfileCard
               gameName={summoner.gameName}
               tagLine={summoner.tagLine}
+              lolProsSlug={summoner.lolProsSlug}
+              lolProsName={summoner.lolProsName}
+              lolProsCountry={summoner.lolProsCountry}
+              lolProsPosition={summoner.lolProsPosition}
               rankTier={summoner.rankTier as Tier}
               currentLp={summoner.currentLp}
               profileIconId={summoner.profileIconId}
@@ -75,7 +79,7 @@ export default async function Summoner({
               lastUpdateTime={summoner.lastUpdateTime}
             />
           </div>
-          <section className="flex items-center justify-center gap-1">
+          <section className="mt-1 flex items-center justify-center gap-1">
             {summoner.lolProsSlug && (
               <StatSiteButton
                 statSite={StatSite.LOLPROS}

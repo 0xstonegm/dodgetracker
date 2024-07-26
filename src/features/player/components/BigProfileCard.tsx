@@ -4,16 +4,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/src/components/ui/popover";
-import { type Tier } from "@/src/lib/types";
+import { type Tier, type dodgeSchema } from "@/src/lib/types";
 import { isWithinDays, profileIconUrl } from "@/src/lib/utils";
 import { InfoIcon } from "lucide-react";
 import Image from "next/image";
+import { type z } from "zod";
+import PlayerFlag from "./PlayerFlag";
+import PositionIcon from "./PositionIcon";
 
-export default async function ProfileCard(props: {
+export default async function BigProfileCard(props: {
   profileIconId: number;
   summonerLevel: number;
   gameName: string;
   tagLine: string;
+  lolProsSlug: string | null;
+  lolProsName: string | null;
+  lolProsCountry: string | null;
+  lolProsPosition: z.infer<typeof dodgeSchema.shape.lolProsPosition>;
   rankTier: Tier;
   currentLp: number;
   lastUpdateTime: Date;
@@ -39,9 +46,21 @@ export default async function ProfileCard(props: {
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center pl-2">
-          <div className="text-lg font-bold md:text-xl">
-            {props.gameName}#{props.tagLine}
+        <div className="flex flex-col items-center justify-evenly pl-2">
+          <div>
+            <p className="text-lg font-bold md:text-xl">
+              {props.gameName}#{props.tagLine}
+            </p>
+            {props.lolProsSlug &&
+              props.lolProsName &&
+              props.lolProsPosition &&
+              props.lolProsCountry && (
+                <section className="flex items-center gap-[2px] text-sm font-light">
+                  <PlayerFlag countryCode={props.lolProsCountry} height={28} />
+                  <PositionIcon position={props.lolProsPosition} size={23} />
+                  <p>{props.lolProsName}</p>
+                </section>
+              )}
           </div>
           <div className="flex items-center justify-center text-sm md:text-base">
             {recentlyUpdated ? (
