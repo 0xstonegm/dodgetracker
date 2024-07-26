@@ -269,6 +269,9 @@ export async function getLeaderboard(
       tagLine: riotIds.tagLine,
       riotRegion: summoners.region,
       lolProsSlug: riotIds.lolprosSlug,
+      lolProsName: lolPros.name,
+      lolProsCountry: lolPros.country,
+      lolProsPosition: lolPros.position,
       rankTier: apexTierPlayers.rankTier,
       currentLP: apexTierPlayers.currentLp,
       profileIconId: summoners.profileIconId,
@@ -292,11 +295,15 @@ export async function getLeaderboard(
         eq(summoners.region, apexTierPlayers.region),
       ),
     )
+    .leftJoin(lolPros, eq(riotIds.lolprosSlug, lolPros.slug))
     .groupBy(
       riotIds.gameName,
       riotIds.tagLine,
       summoners.region,
       riotIds.lolprosSlug,
+      lolPros.name,
+      lolPros.country,
+      lolPros.position,
       apexTierPlayers.rankTier,
       apexTierPlayers.currentLp,
       summoners.profileIconId,
