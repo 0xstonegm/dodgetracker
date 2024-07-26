@@ -1,6 +1,7 @@
 import {
   apexTierPlayers,
   dodges,
+  lolPros,
   playerCounts,
   riotIds,
   summoners,
@@ -23,6 +24,9 @@ export async function getDodges(
       gameName: riotIds.gameName,
       tagLine: riotIds.tagLine,
       lolProsSlug: riotIds.lolprosSlug,
+      lolProsName: lolPros.name,
+      lolProsCountry: lolPros.country,
+      lolProsPosition: lolPros.position,
       profileIconId: summoners.profileIconId,
       riotRegion: dodges.region,
       rankTier: dodges.rankTier,
@@ -39,6 +43,7 @@ export async function getDodges(
       ),
     )
     .innerJoin(riotIds, eq(summoners.puuid, riotIds.puuid))
+    .leftJoin(lolPros, eq(riotIds.lolprosSlug, lolPros.slug))
     .where(eq(dodges.region, riotRegion))
     .orderBy(desc(dodges.createdAt), desc(dodges.dodgeId))
     .limit(pageSize)

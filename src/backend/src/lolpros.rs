@@ -1,29 +1,86 @@
+use core::error;
 use std::time::{Duration, Instant};
 
-use anyhow::Result;
+use anyhow::{anyhow, Context, Result};
 use futures::future::join_all;
 use sea_orm::{sea_query::OnConflict, ActiveValue::Set, DatabaseTransaction, EntityTrait};
-use serde::Deserialize;
-use tracing::{info, instrument, warn};
+use tracing::{error, info, instrument, warn};
 use urlencoding::encode;
 
-use crate::{config::INSERT_CHUNK_SIZE, entities::riot_ids, util::with_timeout};
+use crate::{
+    config::INSERT_CHUNK_SIZE,
+    entities::{lol_pros, riot_ids, sea_orm_active_enums::PositionEnum},
+    util::with_timeout,
+};
 
-#[derive(Deserialize, Debug)]
-struct LolprosProfile {
+#[derive(Debug)]
+struct LolProsProfile {
     slug: String,
+    name: String,
+    country: String,
+    position: PositionEnum,
 }
 
-async fn get_lolpros_slug(game_name: String, tag_line: String) -> Result<Option<String>> {
+async fn get_lolpros_slug(
+    game_name: String,
+    tag_line: String,
+) -> Result<Option<lol_pros::ActiveModel>> {
     let query = encode(format!("{}#{}", game_name, tag_line).as_str()).to_string();
     let url = format!("https://api.lolpros.gg/es/search?query={}", query);
 
-    let profiles: Vec<LolprosProfile> = reqwest::get(&url).await?.json().await?;
+    let response: Vec<serde_json::Value> = reqwest::get(&url)
+        .await
+        .context("Failed to fetch data from API")?
+        .json()
+        .await
+        .context("Failed to parse JSON response")?;
 
-    if profiles.is_empty() {
-        Ok(None)
+    if let Some(profile) = response.first() {
+        let slug = profile
+            .get("slug")
+            .and_then(|v| v.as_str())
+            .context("Missing slug field")?
+            .to_string();
+
+        let name = profile
+            .get("name")
+            .and_then(|v| v.as_str())
+            .context("Missing name field")?
+            .to_string();
+
+        let country = profile
+            .get("country")
+            .and_then(|v| v.as_str())
+            .context("Missing country field")?
+            .to_string();
+
+        let position = match profile
+            .get("league_player")
+            .and_then(|lp| lp.get("position"))
+            .and_then(|v| v.as_str())
+            .context("Missing position field")?
+        {
+            "10_top" => PositionEnum::Top,
+            "20_jungle" => PositionEnum::Jungle,
+            "30_mid" => PositionEnum::Mid,
+            "40_adc" => PositionEnum::Bot,
+            "50_support" => PositionEnum::Support,
+            pos => {
+                error!(position = pos, "Unknown position.");
+                return Err(anyhow!("Unknown position for lolpros player"));
+            }
+        };
+
+        Ok(Some(lol_pros::ActiveModel {
+            slug: Set(slug),
+            name: Set(name),
+            country: Set(country),
+            position: Set(position),
+            updated_at: Set(chrono::Utc::now().into()),
+            ..Default::default()
+        }))
     } else {
-        Ok(Some(profiles[0].slug.clone()))
+        Ok(None)
     }
 }
 
@@ -52,15 +109,19 @@ pub async fn upsert_lolpros_slugs(
         "Lolpros API queries completed."
     );
 
-    let accounts_with_slug: Vec<riot_ids::ActiveModel> = accounts
-        .iter()
-        .zip(results)
-        .filter_map(|(model, result)| match result {
-            Ok(Ok(Some(slug))) => Some(riot_ids::ActiveModel {
-                puuid: model.puuid.clone(),
-                lolpros_slug: Set(Some(slug)),
-                ..Default::default()
-            }),
+    let mut riot_ids_to_upsert = vec![];
+    let mut slugs_to_upsert = vec![];
+
+    for (model, result) in accounts.iter().zip(results) {
+        match result {
+            Ok(Ok(Some(profile))) => {
+                riot_ids_to_upsert.push(riot_ids::ActiveModel {
+                    puuid: Set(model.puuid.clone().unwrap()),
+                    lolpros_slug: Set(Some(profile.slug.clone().unwrap())),
+                    ..Default::default()
+                });
+                slugs_to_upsert.push(profile);
+            }
             Ok(Err(e)) => {
                 warn!(
                     game_name = model.game_name.clone().unwrap(),
@@ -69,7 +130,6 @@ pub async fn upsert_lolpros_slugs(
                     error = ?e,
                     "Lolpros API query failed. Ignoring.",
                 );
-                None
             }
             Err(e) => {
                 warn!(
@@ -79,23 +139,22 @@ pub async fn upsert_lolpros_slugs(
                     error = ?e,
                     "Lolpros API query timed out. Ignoring.",
                 );
-                None
             }
-            _ => None,
-        })
-        .collect();
+            _ => {}
+        }
+    }
 
-    if accounts_with_slug.is_empty() {
+    if riot_ids_to_upsert.is_empty() && slugs_to_upsert.is_empty() {
         return Ok(());
     }
 
     let t2 = Instant::now();
     info!(
-        slugs = accounts_with_slug.len(),
-        "Upserting lolpros slugs into DB...",
+        slugs = riot_ids_to_upsert.len(),
+        "Upserting lolpros slugs into riot_ids DB...",
     );
 
-    for chunk in accounts_with_slug.chunks(INSERT_CHUNK_SIZE) {
+    for chunk in riot_ids_to_upsert.chunks(INSERT_CHUNK_SIZE) {
         riot_ids::Entity::insert_many(chunk.to_vec())
             .on_conflict(
                 OnConflict::column(riot_ids::Column::Puuid)
@@ -108,9 +167,39 @@ pub async fn upsert_lolpros_slugs(
 
     info!(
         perf = t2.elapsed().as_millis(),
-        slugs = accounts_with_slug.len(),
+        slugs = riot_ids_to_upsert.len(),
         metric = "lolpros_db_upsert",
         "Upserted lolpros slugs into DB."
     );
+
+    let t3 = Instant::now();
+    info!(
+        slugs = slugs_to_upsert.len(),
+        "Upserting lolpros profiles into lolpros DB...",
+    );
+
+    for chunk in slugs_to_upsert.chunks(INSERT_CHUNK_SIZE) {
+        lol_pros::Entity::insert_many(chunk.to_vec())
+            .on_conflict(
+                OnConflict::column(lol_pros::Column::Slug)
+                    .update_columns([
+                        lol_pros::Column::Name,
+                        lol_pros::Column::Country,
+                        lol_pros::Column::Position,
+                        lol_pros::Column::UpdatedAt,
+                    ])
+                    .to_owned(),
+            )
+            .exec(txn)
+            .await?;
+    }
+
+    info!(
+        perf = t3.elapsed().as_millis(),
+        slugs = slugs_to_upsert.len(),
+        metric = "lolpros_profiles_db_upsert",
+        "Upserted lolpros profiles into DB."
+    );
+
     Ok(())
 }

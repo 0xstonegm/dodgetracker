@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { positionEnum, rankTierEnum } from "../db/schema";
 import { getCurrentSeason, seasons } from "../seasons";
 
 export enum Tier {
@@ -27,9 +28,27 @@ export const dodgeSchema = z.object({
       if (value === undefined) return null;
       return value;
     }),
+  lolProsName: z
+    .union([z.string(), z.undefined(), z.null()])
+    .transform((value) => {
+      if (value === undefined) return null;
+      return value;
+    }),
+  lolProsCountry: z
+    .union([z.string(), z.undefined(), z.null()])
+    .transform((value) => {
+      if (value === undefined) return null;
+      return value;
+    }),
+  lolProsPosition: z
+    .union([z.enum(positionEnum.enumValues), z.undefined(), z.null()])
+    .transform((value) => {
+      if (value === undefined) return null;
+      return value;
+    }),
   profileIconId: z.number(),
   riotRegion: z.string(),
-  rankTier: z.enum(["CHALLENGER", "GRANDMASTER", "MASTER"]),
+  rankTier: z.enum(rankTierEnum.enumValues),
   lp: z.number(),
   lpLost: z.coerce.number(),
   time: z.string().datetime({ offset: true }).pipe(z.coerce.date()),

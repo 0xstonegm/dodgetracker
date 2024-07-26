@@ -10,6 +10,9 @@ BEGIN
             r.game_name AS "gameName", 
             r.tag_line AS "tagLine", 
             r.lolpros_slug AS "lolProsSlug", 
+            l.name AS "lolProsName", 
+            l.country AS "lolProsCountry", 
+            l.position AS "lolProsPosition", 
             s.profile_icon_id AS "profileIconId", 
             d.region AS "riotRegion", 
             d.rank_tier AS "rankTier", 
@@ -19,14 +22,15 @@ BEGIN
         FROM dodges d
         JOIN summoners s ON d.summoner_id = s.summoner_id AND d.region = s.region
         JOIN riot_ids r ON s.puuid = r.puuid
+        LEFT JOIN lol_pros l ON r.lolpros_slug = l.slug
         WHERE NEW.dodge_id = d.dodge_id
     ) t;
 
     PERFORM pg_notify('dodge_insert', dodge_data::text);
     RETURN NEW;
 END;
-
 $$ LANGUAGE plpgsql;
+
 CREATE TRIGGER trigger_notify_dodge_insert
 AFTER INSERT ON dodges
 FOR EACH ROW

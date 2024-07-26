@@ -12,7 +12,10 @@ pub async fn get_db() -> &'static DatabaseConnection {
         let db_url = env::var("BACKEND_DATABASE_URL").expect("DB URL not set");
 
         Database::connect::<ConnectOptions>(
-            ConnectOptions::new(db_url).sqlx_logging(false).to_owned(),
+            ConnectOptions::new(db_url)
+                .sqlx_logging(false)
+                .set_schema_search_path("dodgetracker")
+                .to_owned(),
         )
         .await
         .unwrap()

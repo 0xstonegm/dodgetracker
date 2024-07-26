@@ -15,6 +15,13 @@
       "when": 1721594906092,
       "tag": "0001_mighty_paladin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1721980502314,
+      "tag": "0002_hard_human_robot",
+      "breakpoints": true
     }
   ]
 }

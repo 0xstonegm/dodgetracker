@@ -237,3 +237,24 @@ export const latestUpdates = dodgetracker.table("latest_updates", {
     .defaultNow()
     .notNull(),
 });
+
+export const positionEnum = dodgetracker.enum("position_enum", [
+  "TOP",
+  "JUNGLE",
+  "MID",
+  "BOT",
+  "SUPPORT",
+]);
+
+export const lolPros = dodgetracker.table("lol_pros", {
+  slug: varchar("slug", { length: 255 }).primaryKey().notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  country: varchar("country", { length: 5 }).notNull(),
+  position: positionEnum("position").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .defaultNow()
+    .notNull(),
+});
