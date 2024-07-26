@@ -57,6 +57,7 @@ export default async function DodgeListSSR({
     <>
       <DodgeList
         clientServerTimeDiff={0} // TODO: Improve this
+        showLolProsInfo={false}
         {...{
           userRegion,
           dodges,

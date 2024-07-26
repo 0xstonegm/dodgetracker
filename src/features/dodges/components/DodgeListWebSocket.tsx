@@ -153,6 +153,7 @@ export default function DodgeListWebSocket(props: DodgeListWebSocketProps) {
         )}
       </div>
       <DodgeList
+        showLolProsInfo={true}
         dodges={data.dodges}
         userRegion={props.userRegion}
         profileLink={true}

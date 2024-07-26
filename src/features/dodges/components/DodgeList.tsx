@@ -6,6 +6,7 @@ export default function DodgeList(props: {
   clientServerTimeDiff: number;
   userRegion: string;
   statSiteButtons: boolean;
+  showLolProsInfo: boolean;
   profileLink: boolean;
 }) {
   return (
@@ -16,6 +17,7 @@ export default function DodgeList(props: {
             dodge={dodge}
             clientServerTimeDiff={props.clientServerTimeDiff}
             userRegion={props.userRegion}
+            showLolProsInfo={props.showLolProsInfo}
             statSiteButtons={props.statSiteButtons}
             profileLink={props.profileLink}
           />

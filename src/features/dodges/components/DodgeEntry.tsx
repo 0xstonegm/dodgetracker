@@ -12,6 +12,7 @@ export default function DodgeEntry(props: {
   userRegion: string;
   statSiteButtons: boolean;
   profileLink: boolean;
+  showLolProsInfo: boolean;
 }) {
   return (
     <div className="grid grid-cols-[3fr,1.2fr,0.9fr,0.8fr] gap-1 md:grid-cols-[2fr,0.8fr,0.3fr,0.6fr] md:gap-2">
@@ -21,6 +22,7 @@ export default function DodgeEntry(props: {
           lolProsName={props.dodge.lolProsName}
           lolProsCountry={props.dodge.lolProsCountry}
           lolProsPosition={props.dodge.lolProsPosition}
+          showLolProsInfo={props.showLolProsInfo}
           gameName={props.dodge.gameName}
           tagLine={props.dodge.tagLine}
           profileIconId={props.dodge.profileIconId}

@@ -2,26 +2,9 @@ import { type dodgeSchema } from "@/src/lib/types";
 import { cn, profileIconUrl } from "@/src/lib/utils";
 import Image from "next/image";
 import { type z } from "zod";
+import PlayerFlag from "./PlayerFlag";
+import PositionIcon from "./PositionIcon";
 import ProfileLink from "./ProfileLink";
-
-function getFullPosition(
-  position: z.infer<typeof dodgeSchema.shape.lolProsPosition>,
-) {
-  switch (position) {
-    case "TOP":
-      return "position_top";
-    case "JUNGLE":
-      return "position_jungle";
-    case "MID":
-      return "position_mid";
-    case "BOT":
-      return "position_bottom";
-    case "SUPPORT":
-      return "position_support";
-    default:
-      throw new Error("Invalid position");
-  }
-}
 
 export default function SmallProfileCard(props: {
   gameName: string;
@@ -31,6 +14,7 @@ export default function SmallProfileCard(props: {
   lolProsName: string | null;
   lolProsCountry: string | null;
   lolProsPosition: z.infer<typeof dodgeSchema.shape.lolProsPosition>;
+  showLolProsInfo: boolean;
   userRegion: string;
   profileLink: boolean;
   scale?: boolean;
@@ -63,26 +47,13 @@ export default function SmallProfileCard(props: {
             <p>{props.gameName}</p>
             <p>#{props.tagLine}</p>
           </div>
-          {props.lolProsName &&
+          {props.showLolProsInfo &&
+            props.lolProsName &&
             props.lolProsCountry &&
             props.lolProsPosition && (
               <section className="flex items-center gap-[2px] text-sm font-light">
-                <Image
-                  alt={`${props.lolProsCountry} Flag`}
-                  src={`http://purecatamphetamine.github.io/country-flag-icons/3x2/${props.lolProsCountry}.svg`}
-                  quality={100}
-                  width={30}
-                  height={20}
-                  unoptimized
-                ></Image>
-                <Image
-                  alt={props.lolProsPosition}
-                  src={`https://raw.communitydragon.org/14.14/plugins/rcp-fe-lol-career-stats/global/default/${getFullPosition(props.lolProsPosition)}.png`}
-                  quality={100}
-                  width={23}
-                  height={23}
-                  unoptimized
-                ></Image>
+                <PlayerFlag countryCode={props.lolProsCountry} height={28} />
+                <PositionIcon position={props.lolProsPosition} size={23} />
                 <p>{props.lolProsName}</p>
               </section>
             )}
