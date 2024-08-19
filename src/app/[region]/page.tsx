@@ -8,6 +8,8 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import Banner from "../../components/Banner";
 
+// Comment
+
 interface Props {
   params: {
     region: string;
